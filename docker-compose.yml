@@ -1,6 +1,6 @@
 version: '3.9'
 services:
-  dev:
+#  dev:
 #    container_name: server-dev
 #    image: server-dev:1.0.0
 #    build:
