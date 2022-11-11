@@ -1,4 +1,3 @@
-export class CreateUserDto {
-  readonly username: string;
-  readonly password: string;
-}
+import { User } from 'src/users/user.entity';
+
+export class CreateUserDto extends User {}

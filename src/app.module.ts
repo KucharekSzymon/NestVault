@@ -18,7 +18,6 @@ import { UsersModule } from './users/users.module';
       inject: [ConfigService],
     }),*/
     MongooseModule.forRoot('mongodb://root:pass12345@localhost:27017'), // to zamiany na env value
-    CatsModule,
     AuthModule,
     UsersModule,
   ],
