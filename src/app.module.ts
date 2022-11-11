@@ -10,7 +10,7 @@ import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRootAsync({
+    /*MongooseModule.forRootAsync({ //temp wylaczenie zeby zrobic od nowa wedlug docsow
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => ({
         uri: config.get('mongodb.uri'),
@@ -18,11 +18,11 @@ import { UsersModule } from './users/users.module';
         useUnifiedTopology: true,
       }),
       inject: [ConfigService],
-    }),
+    }),*/
+    MongooseModule.forRoot('mongodb://root:pass12345@localhost:27017'), // to zamiany na env value
     CatsModule,
     AuthModule,
     UsersModule,
   ],
-  controllers: [AppController],
 })
 export class AppModule {}
