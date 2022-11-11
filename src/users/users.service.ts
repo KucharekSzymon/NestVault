@@ -1,24 +1,46 @@
-import { Injectable } from '@nestjs/common';
-
-// This should be a real class/interface representing a user entity
-export type User = any;
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CreateUserDto } from './dto/create-user.dto';
+import { HashService } from './hash.service';
+import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
-  private readonly users = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-  ];
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private hashService: HashService,
+  ) {}
+  /**
+   * Find user by his username
+   * @param username Name of searched user
+   * @return {UserDocument} Found user
+   */
+  async getUserByUsername(username: string) {
+    return this.userModel.findOne({ username }).exec();
+  }
+  /**
+   * Registering user in database
+   * @param createUserDto User credentials
+   * @returns Saving user to databse
+   */
+  async registerUser(createUserDto: CreateUserDto) {
+    /**
+     * Vaidates Dto
+     */
+    const createUser = new this.userModel(createUserDto);
+    /**
+     * User const for checking if he exists
+     */
+    const user = await this.getUserByUsername(createUser.username);
+    if (user) {
+      throw new BadRequestException();
+    }
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username);
+    createUser.password = await this.hashService.hashPassword(
+      createUser.password,
+    );
+
+    return createUser.save();
   }
 }
