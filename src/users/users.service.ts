@@ -34,7 +34,9 @@ export class UsersService {
      */
     const user = await this.getUserByUsername(createUser.username);
     if (user) {
-      throw new BadRequestException();
+      throw new BadRequestException({
+        message: 'Email already taken',
+      });
     }
 
     createUser.password = await this.hashService.hashPassword(
