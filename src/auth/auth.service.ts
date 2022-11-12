@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { HashService } from 'src/users/hash.service';
@@ -20,6 +20,10 @@ export class AuthService {
     const user = await this.usersService.getUserByUsername(username);
     if (user && (await this.hashService.comparePassword(pass, user.password))) {
       return user;
+    } else {
+      throw new BadRequestException({
+        message: 'You have entered a wrong username or password',
+      });
     }
     return null;
   }
