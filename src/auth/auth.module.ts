@@ -11,6 +11,7 @@ import { User } from 'src/users/user.entity';
 import { UserSchema } from 'src/users/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
 import { HashService } from 'src/users/hash.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -22,9 +23,13 @@ import { HashService } from 'src/users/hash.service';
         schema: UserSchema,
       },
     ]),
-    JwtModule.register({
-      secret: 'asd', // do zamiany na ev value
-      signOptions: { expiresIn: '60d' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('jwtSecret'),
+        expiresIn: '60d',
+      }),
+      inject: [ConfigService],
     }),
   ],
   providers: [AuthService, UsersService, LocalStrategy, HashService],
