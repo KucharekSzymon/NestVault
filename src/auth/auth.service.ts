@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { HashService } from 'src/users/hash.service';
@@ -12,14 +12,18 @@ export class AuthService {
   ) {}
   /**
    * Checking if provided user data is valid with data saved in database
-   * @param email User email provided
+   * @param username Username provided
    * @param pass User password
    * @returns User Obejct or null if credintials dont match
    */
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.getUserByUsername(email);
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.usersService.getUserByUsername(username);
     if (user && (await this.hashService.comparePassword(pass, user.password))) {
       return user;
+    } else {
+      throw new BadRequestException({
+        message: 'You have entered a wrong username or password',
+      });
     }
     return null;
   }
@@ -29,7 +33,7 @@ export class AuthService {
    * @returns Access token to autenticate user
    */
   async login(user: any) {
-    const payload = { username: user.email, sub: user.id };
+    const payload = { username: user.username, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };

@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalStrategy } from './local.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
 import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
-import { JwtStrategy } from './jwt.strategy';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import { UserSchema } from 'src/users/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
 import { HashService } from 'src/users/hash.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -22,9 +22,13 @@ import { HashService } from 'src/users/hash.service';
         schema: UserSchema,
       },
     ]),
-    JwtModule.register({
-      secret: 'asd', // do zamiany na ev value
-      signOptions: { expiresIn: '60d' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('jwtSecret'),
+        expiresIn: '60d',
+      }),
+      inject: [ConfigService],
     }),
   ],
   providers: [AuthService, UsersService, LocalStrategy, HashService],

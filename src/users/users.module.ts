@@ -6,17 +6,21 @@ import { UsersController } from './users.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { HashService } from './hash.service';
 import { AuthService } from 'src/auth/auth.service';
-import { JwtStrategy } from 'src/auth/jwt.strategy';
-import { LocalStrategy } from 'src/auth/local.strategy';
+import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
+import { LocalStrategy } from 'src/auth/strategies/local.strategy';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    JwtModule.register({
-      secret: 'asd',
-      signOptions: {
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('jwtSecret'),
         expiresIn: '60d',
-      },
+      }),
+      inject: [ConfigService],
     }),
   ],
   providers: [
