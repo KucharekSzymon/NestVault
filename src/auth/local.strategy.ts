@@ -10,7 +10,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
   /**
    * Checking if provided user credientials are same as saved in database
-   * @param username User email string
+   * @param username Username string
    * @param password User password string
    * @returns User object or trows exception with message
    */
