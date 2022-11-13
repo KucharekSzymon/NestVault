@@ -17,6 +17,11 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
+  /**
+   * Registering new user to database with hashed password and hashed signed tokens
+   * @param createUserDto User object
+   * @returns Tokens if user creditentials match or message if not
+   */
   async signUp(createUserDto: CreateUserDto): Promise<any> {
     // Check if user exists
     const userExists = await this.usersService.findByEmail(createUserDto.email);
@@ -34,7 +39,11 @@ export class AuthService {
     await this.updateRefreshToken(newUser._id, tokens.refreshToken);
     return tokens;
   }
-
+  /**
+   * Logging as user that returns valid tokens
+   * @param data Object containing user creditentials
+   * @returns User JWT tokens if data match with saved in database
+   */
   async signIn(data: AuthDto) {
     // Check if user exists
     const user = await this.usersService.findByEmail(data.email);
@@ -46,11 +55,19 @@ export class AuthService {
     await this.updateRefreshToken(user._id, tokens.refreshToken);
     return tokens;
   }
-
+  /**
+   * Logout as user thats remove refresh token
+   * @param userId User unique id
+   */
   async logout(userId: string) {
     this.usersService.update(userId, { refreshToken: null });
   }
-
+  /**
+   * Refreshing user tokens after checking provided token
+   * @param userId User unique id
+   * @param refreshToken JWT token signed while registering / signing in / refreshing
+   * @returns Refreshed tokens
+   */
   async refreshTokens(userId: string, refreshToken: string) {
     const user = await this.usersService.findById(userId);
     if (!user || !user.refreshToken)
@@ -64,18 +81,31 @@ export class AuthService {
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
   }
-
+  /**
+   * Hashing data with argon algorythm
+   * @param data Plain data
+   * @returns Hashed data
+   */
   hashData(data: string) {
     return argon2.hash(data);
   }
-
+  /**
+   * Replacing Old user token with new refreshed one
+   * @param userId User unique id
+   * @param refreshToken User old token
+   */
   async updateRefreshToken(userId: string, refreshToken: string) {
     const hashedRefreshToken = await this.hashData(refreshToken);
     await this.usersService.update(userId, {
       refreshToken: hashedRefreshToken,
     });
   }
-
+  /**
+   * JWT service that's return valid tokens
+   * @param userId User unique id
+   * @param email user email address
+   * @returns Two valid tokens
+   */
   async getTokens(userId: string, email: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
