@@ -5,9 +5,9 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { HashService } from './hash.service';
-import { AuthService } from 'src/old-auth/auth.service';
-import { JwtStrategy } from 'src/old-auth/strategies/jwt.strategy';
-import { LocalStrategy } from 'src/old-auth/strategies/local.strategy';
+import { AuthService } from 'src/deprecated/old-auth/auth.service';
+import { JwtStrategy } from 'src/deprecated/old-auth/strategies/jwt.strategy';
+import { LocalStrategy } from 'src/deprecated/old-auth/strategies/local.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
