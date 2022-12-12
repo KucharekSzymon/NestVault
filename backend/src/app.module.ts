@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ cache: true }),
+    ConfigModule.forRoot(/*{ cache: true }*/),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
