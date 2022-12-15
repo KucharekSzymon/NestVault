@@ -4,6 +4,9 @@
 
 #config
 
+#uploaded files
+/upload
+
 #.env
 
 # Logs
