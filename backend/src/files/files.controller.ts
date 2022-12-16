@@ -3,7 +3,7 @@ import {
   Post,
   Body,
   UseInterceptors,
-  UploadedFiles,
+  UploadedFile,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -24,11 +24,10 @@ export class FilesController {
   @UseInterceptors(FileInterceptor('file', multerOptions))
   uploadfile(
     @Body() createFileDto: CreateFileDto,
-    @UploadedFiles() files,
+    @UploadedFile() file,
     @Req() req,
   ) {
-    console.log(req.user['sub']);
-    console.log(createFileDto);
+    createFileDto.name = file.originalname;
     createFileDto.owner = req.user['sub'];
     return this.filesService.create(createFileDto);
   }
