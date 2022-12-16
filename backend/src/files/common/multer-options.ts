@@ -7,13 +7,14 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 // Multer configuration
 export const multerConfig = {
   dest: './upload/', //process.env.UPLOAD_LOCATION,
+  fileSize: +process.env.MAX_FILE_SIZE,
 };
 
 // Multer upload options
 export const multerOptions = {
   // Enable file size limits
   limits: {
-    fileSize: +process.env.MAX_FILE_SIZE,
+    fileSize: multerConfig.fileSize,
   },
   // Check the mimetypes to allow for upload
   /*fileFilter: (req: any, file: any, cb: any) => {
@@ -35,18 +36,18 @@ export const multerOptions = {
   storage: diskStorage({
     // Destination storage path details
     destination: (req: any, file: any, cb: any) => {
-      const uploadPath = multerConfig.dest;
+      const basePath = multerConfig.dest;
+      if (!existsSync(basePath)) mkdirSync(basePath);
+      const uploadPath = basePath + req.body.owner;
       // Create folder if doesn't exist
-      if (!existsSync(uploadPath)) {
-        mkdirSync(uploadPath);
-      }
+      if (!existsSync(uploadPath)) mkdirSync(uploadPath);
+
       cb(null, uploadPath);
     },
     // File modification details
     filename: (req: any, file: any, cb: any) => {
-      // Calling the callback passing the random name generated with the original extension name
-      console.log(req.body);
-      cb(null, `${uuid()}${extname(file.originalname)}`);
+      //ToDo Add hadnling when file exist in case of override or adding new index (n)
+      cb(null, file.originalname);
     },
   }),
 };
