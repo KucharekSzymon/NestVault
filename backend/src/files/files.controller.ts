@@ -28,6 +28,8 @@ export class FilesController {
     @Req() req,
   ) {
     console.log(req.user['sub']);
+    console.log(createFileDto);
+    createFileDto.owner = req.user['sub'];
     return this.filesService.create(createFileDto);
   }
 }
