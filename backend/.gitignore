@@ -2,7 +2,7 @@
 /dist
 /node_modules
 
-#config
+#config ignore will be added in final version
 
 #uploaded files
 /upload
