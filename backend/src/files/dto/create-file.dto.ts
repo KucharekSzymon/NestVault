@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import mongoose from 'mongoose';
 
 export class CreateFileDto {
   @ApiProperty()
   name: string;
   @ApiProperty()
-  ownerId: string;
+  owner: mongoose.Schema.Types.ObjectId;
 }

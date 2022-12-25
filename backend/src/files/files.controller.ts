@@ -28,7 +28,7 @@ export class FilesController {
     @Req() req,
   ) {
     createFileDto.name = file.originalname;
-    createFileDto.ownerId = req.user['sub'];
+    createFileDto.owner = req.user['sub'];
     return this.filesService.create(createFileDto);
   }
 }
