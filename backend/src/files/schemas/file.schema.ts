@@ -7,7 +7,7 @@ export class File {
   @Prop({ required: true })
   name: string;
   @Prop({ required: true })
-  owner: string;
+  ownerId: string;
 }
 
 export const FileSchema = SchemaFactory.createForClass(File);
