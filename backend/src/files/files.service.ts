@@ -13,4 +13,10 @@ export class FilesService {
     const createdFile = new this.fileModel(createFileDto);
     return createdFile.save();
   }
+  async findAll(): Promise<FileDocument[]> {
+    return this.fileModel.find().exec();
+  }
+  findByOwner(owner: string) {
+    return this.fileModel.find({ owner }).exec();
+  }
 }

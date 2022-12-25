@@ -6,6 +6,7 @@ import {
   UploadedFile,
   UseGuards,
   Req,
+  Get,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -30,5 +31,15 @@ export class FilesController {
     createFileDto.name = file.originalname;
     createFileDto.owner = req.user['sub'];
     return this.filesService.create(createFileDto);
+  }
+  @UseGuards(AccessTokenGuard)
+  @Get()
+  findAll() {
+    return this.filesService.findAll();
+  }
+  @UseGuards(AccessTokenGuard)
+  @Get('onlyMine')
+  findOnlyMine(@Req() req) {
+    return this.filesService.findByOwner(req.user['sub']);
   }
 }
