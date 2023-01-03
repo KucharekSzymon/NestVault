@@ -14,7 +14,7 @@ import HelloWorld from "./components/HelloWorld.vue";
     />
 
     <div class="wrapper">
-      <HelloWorld msg="You did ita" />
+      <HelloWorld msg="You did it" />
 
       <nav>
         <RouterLink to="/" class="text-2xl font-mono">Home</RouterLink>
