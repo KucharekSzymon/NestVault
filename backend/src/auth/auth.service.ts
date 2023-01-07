@@ -61,6 +61,7 @@ export class AuthService {
    */
   async logout(userId: string) {
     this.usersService.update(userId, { refreshToken: null });
+    return 'User logged out';
   }
   /**
    * Refreshing user tokens after checking provided token
