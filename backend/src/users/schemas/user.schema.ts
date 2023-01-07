@@ -21,6 +21,11 @@ export class User {
   @Prop({ required: true })
   password: string;
   /**
+   * 
+   */
+  @Prop({default: false})
+  isAdmin: boolean;
+  /**
    * User hashed autentication token
    */
   @Prop()

@@ -8,5 +8,7 @@ export class CreateUserDto {
   @ApiProperty()
   password: string;
   @ApiProperty()
+  isAdmin: boolean;
+  @ApiProperty()
   refreshToken?: string;
 }

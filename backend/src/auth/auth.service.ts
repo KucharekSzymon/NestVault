@@ -40,7 +40,7 @@ export class AuthService {
     return tokens;
   }
   /**
-   * Logging as user that returns valid tokens
+   * Logging as user that returns valid tokens with user data
    * @param data Object containing user creditentials
    * @returns User JWT tokens if data match with saved in database
    */
@@ -53,7 +53,8 @@ export class AuthService {
       throw new BadRequestException('Password is incorrect');
     const tokens = await this.getTokens(user._id, user.email);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
-    return tokens;
+    const bundle = [user, tokens]
+    return bundle;
   }
   /**
    * Logout as user thats remove refresh token
