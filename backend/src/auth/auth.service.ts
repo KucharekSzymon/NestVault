@@ -40,7 +40,7 @@ export class AuthService {
     return tokens;
   }
   /**
-   * Logging as user that returns valid tokens with user data
+   * Logging as user that returns valid user data bundled with JWT tokens
    * @param data Object containing user creditentials
    * @returns User JWT tokens if data match with saved in database
    */
