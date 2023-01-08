@@ -1,35 +1,28 @@
 <template>
-  <div class="col-md-12">
-    <div class="card card-container">
-      <img
-        id="profile-img"
-        src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-        class="profile-img-card"
-      />
+  <div>
+    <div>
+      <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
       <Form @submit="handleLogin" :validation-schema="schema">
-        <div class="form-group">
+        <div>
           <label for="email">Email</label>
-          <Field name="email" type="text" class="form-control" />
-          <ErrorMessage name="email" class="error-feedback" />
+          <Field name="email" type="text" />
+          <ErrorMessage name="email" />
         </div>
-        <div class="form-group">
+        <div>
           <label for="password">Password</label>
-          <Field name="password" type="password" class="form-control" />
-          <ErrorMessage name="password" class="error-feedback" />
+          <Field name="password" type="password" />
+          <ErrorMessage name="password" />
         </div>
 
-        <div class="form-group">
-          <button class="btn btn-primary btn-block" :disabled="loading">
-            <span
-              v-show="loading"
-              class="spinner-border spinner-border-sm"
-            ></span>
+        <div>
+          <button :disabled="loading">
+            <span v-show="loading"> <!--Logging loading bar --></span>
             <span>Login</span>
           </button>
         </div>
 
-        <div class="form-group">
-          <div v-if="message" class="alert alert-danger" role="alert">
+        <div>
+          <div v-if="message" role="alert">
             {{ message }}
           </div>
         </div>

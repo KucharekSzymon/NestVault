@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <header class="jumbotron">
+    <header>
       <pre>
         {{ content }}
       </pre>
