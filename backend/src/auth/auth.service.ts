@@ -53,7 +53,7 @@ export class AuthService {
       throw new BadRequestException('Password is incorrect');
     const tokens = await this.getTokens(user._id, user.email);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
-    const bundle = [user, tokens]
+    const bundle = [user, tokens];
     return bundle;
   }
   /**
