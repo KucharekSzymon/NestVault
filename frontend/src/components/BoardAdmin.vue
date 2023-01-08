@@ -13,7 +13,7 @@ export default {
   name: "Admin",
   data() {
     return {
-      content: "",
+      content: "AdminBoard",
     };
   },
   mounted() {
