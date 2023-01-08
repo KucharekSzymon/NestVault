@@ -8,6 +8,7 @@
 
 <script>
 import UserService from "../services/user.service";
+import eventBus from "../common/eventBus";
 
 export default {
   name: "User",
@@ -28,6 +29,10 @@ export default {
             error.response.data.message) ||
           error.message ||
           error.toString();
+
+        if (error.response && error.response.status === 403) {
+          eventBus.dispatch("logout");
+        }
       }
     );
   },
