@@ -4,7 +4,7 @@
       <a href="/">File Server</a>
       <div>
         <li>
-          <router-link to="/home"> </router-link>
+          <router-link to="/home"> Home</router-link>
         </li>
         <li v-if="showAdminBoard">
           <router-link to="/admin">Admin Board</router-link>
