@@ -18,8 +18,8 @@
       <strong>Email:</strong>
       {{ currentUser.email }}
     </p>
-    <p>
-      <strong>Role:</strong>
+    <p v-if="currentUser.admin == true">
+      <strong>Admin:</strong>
       {{ currentUser.admin }}
     </p>
   </div>
