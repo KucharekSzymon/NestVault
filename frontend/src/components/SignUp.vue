@@ -60,7 +60,7 @@ export default {
         .required("Email is required!")
         .email("Email is invalid!")
         .max(50, "Must be maximum 50 characters!"),
-      username: yup
+      name: yup
         .string()
         .required("Name is required!")
         .min(3, "Must be at least 3 characters!")

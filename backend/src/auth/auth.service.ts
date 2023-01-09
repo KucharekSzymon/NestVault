@@ -37,7 +37,7 @@ export class AuthService {
     });
     const tokens = await this.getTokens(newUser._id, newUser.email);
     await this.updateRefreshToken(newUser._id, tokens.refreshToken);
-    return tokens;
+    return { message: 'Registered successfully!' };
   }
   /**
    * Logging as user that returns valid user data bundled with JWT tokens
