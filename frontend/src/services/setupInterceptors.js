@@ -29,10 +29,8 @@ const setup = (store) => {
           originalConfig.retry = true;
 
           try {
-            const rs = await axiosInstance.post("/auth/refresh", {
-              refreshToken: TokenService.getLocalRefreshToken(),
-            });
-            const { accessToken } = rs.data;
+            const rs = await axiosInstance.get("/auth/refresh");
+            const accessToken = rs.data.accessToken;
 
             store.dispatch("auth/refreshToken", accessToken);
             TokenService.updateLocalAccessToken(accessToken);
