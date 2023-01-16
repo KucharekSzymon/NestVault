@@ -37,7 +37,7 @@ export class AuthService {
     });
     const tokens = await this.getTokens(newUser._id, newUser.email);
     await this.updateRefreshToken(newUser._id, tokens.refreshToken);
-    return tokens;
+    return { message: 'Registered successfully!' };
   }
   /**
    * Logging as user that returns valid user data bundled with JWT tokens
@@ -53,7 +53,14 @@ export class AuthService {
       throw new BadRequestException('Password is incorrect');
     const tokens = await this.getTokens(user._id, user.email);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
-    const bundle = [user, tokens];
+    const bundle = {
+      name: user.name,
+      email: user.email,
+      admin: user.isAdmin,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
+
     return bundle;
   }
   /**

@@ -1,5 +1,6 @@
 import {
   Controller,
+  Req,
   Get,
   Post,
   Body,
@@ -27,6 +28,12 @@ export class UsersController {
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('me')
+  findOnlyMine(@Req() req) {
+    return this.usersService.findById(req.user['sub']);
   }
 
   @Get(':id')
