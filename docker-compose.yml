@@ -1,11 +1,11 @@
 version: '3.9'
 services:
 #  dev:
-#    container_name: server-dev
+#    container_name: server-dev-backend
 #    image: server-dev:1.0.0
 #    build:
-#      context: .
-#      dockerfile: ./Dockerfile
+#      context: ./backend
+#      dockerfile: ./backend/Dockerfile
 #    command: npm run start:debug
 #    ports:
 #      - 3333:3000
