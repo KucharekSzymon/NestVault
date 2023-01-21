@@ -6,4 +6,10 @@ export class CreateFileDto {
   name: string;
   @ApiProperty()
   owner: mongoose.Schema.Types.ObjectId;
+  @ApiProperty()
+  path: string;
+  @ApiProperty()
+  readPerm: mongoose.Schema.Types.ObjectId[];
+  @ApiProperty()
+  writePerm: mongoose.Schema.Types.ObjectId[];
 }
