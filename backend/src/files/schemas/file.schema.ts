@@ -13,12 +13,11 @@ export class File {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   })
+  owner: User;
   @Prop({ required: true })
   path: string;
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-  readPerm: Event[];
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-  writePerm: Event[];
+  sharedTo: User[];
 }
 
 export const FileSchema = SchemaFactory.createForClass(File);

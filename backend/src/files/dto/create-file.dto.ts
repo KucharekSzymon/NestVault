@@ -9,7 +9,5 @@ export class CreateFileDto {
   @ApiProperty()
   path: string;
   @ApiProperty()
-  readPerm: mongoose.Schema.Types.ObjectId[];
-  @ApiProperty()
-  writePerm: mongoose.Schema.Types.ObjectId[];
+  sharedTo?: mongoose.Schema.Types.ObjectId[];
 }

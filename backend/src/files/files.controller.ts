@@ -14,7 +14,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { multerOptions } from './common/multer-options';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
-import { UsersService } from 'src/users/users.service';
 
 @ApiTags('files')
 @Controller('files')
