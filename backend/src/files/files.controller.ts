@@ -29,8 +29,8 @@ export class FilesController {
     @Req() req,
   ) {
     createFileDto.name = file.originalname;
-    createFileDto.owner = req.user['sub'];
-    createFileDto.path = req.user['sub'];
+    createFileDto.owner = req.user._id;
+    createFileDto.path = req.user._id;
 
     return this.filesService.create(createFileDto);
   }
@@ -42,6 +42,6 @@ export class FilesController {
   @UseGuards(AccessTokenGuard)
   @Get('onlyMine')
   findOnlyMine(@Req() req) {
-    return this.filesService.findByOwner(req.user['sub']);
+    return this.filesService.findByOwner(req.user._id);
   }
 }

@@ -19,6 +19,10 @@ export class FilesService {
     return this.fileModel.find().exec();
   }
   findByOwner(owner: string) {
-    return this.fileModel.find({ owner }).populate('sharedTo').exec();
+    return this.fileModel
+      .find({ owner })
+      .populate('sharedTo')
+      .populate('owner')
+      .exec();
   }
 }
