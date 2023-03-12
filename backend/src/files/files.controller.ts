@@ -7,6 +7,8 @@ import {
   UseGuards,
   Req,
   Get,
+  StreamableFile,
+  Res,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -14,6 +16,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { multerOptions } from './common/multer-options';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
+import { Response } from 'express';
 
 @ApiTags('files')
 @Controller('files')
@@ -43,5 +46,16 @@ export class FilesController {
   @Get('onlyMine')
   findOnlyMine(@Req() req) {
     return this.filesService.findByOwner(req.user._id);
+  }
+  @Get('download') //Download
+  buffer(@Res() response: Response) {
+    const file = this.filesService.imageBuffer();
+    response.send(file);
+  }
+
+  @Get('preview') //Preview
+  stream(@Res() response: Response) {
+    const file = this.filesService.imageStream();
+    file.pipe(response);
   }
 }
