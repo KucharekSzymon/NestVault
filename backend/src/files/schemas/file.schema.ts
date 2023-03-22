@@ -17,7 +17,7 @@ export class File {
   @Prop({ required: true })
   path: string;
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-  sharedTo: User[];
+  authorizedUsers: User[];
 }
 
 export const FileSchema = SchemaFactory.createForClass(File);

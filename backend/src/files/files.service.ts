@@ -20,26 +20,30 @@ export class FilesService {
   async findAll(): Promise<FileDocument[]> {
     return this.fileModel.find().exec();
   }
-  findByOwner(owner: string) {
-    return this.fileModel
-      .find({ owner })
-      .populate('sharedTo')
-      .populate('owner')
-      .exec();
+  async findByOwner(owner: string) {
+    return this.fileModel.find({ owner }).populate('sharedTo').exec();
+  }
+  async checkPermission(fileID: string) {
+    const file = await this.fileModel.findById(fileID);
+    if (file) {
+      console.log(typeof file.owner._id);
+      return true;
+    }
   }
   imageBuffer() {
     return readFileSync(join(process.cwd(), 'test.png'));
   }
 
-  imageStream() {
+  async imageStream(userId: string, fileId: string) {
+    const x = await this.checkPermission(fileId);
     return createReadStream(join(process.cwd(), 'test.png'));
   }
 
   fileBuffer() {
-    return readFileSync(join(process.cwd(), 'package.json'));
+    return readFileSync(join(process.cwd(), 'test.png'));
   }
 
   fileStream() {
-    return createReadStream(join(process.cwd(), 'package.json'));
+    return createReadStream(join(process.cwd(), 'test.png'));
   }
 }

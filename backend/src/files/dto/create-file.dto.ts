@@ -9,5 +9,5 @@ export class CreateFileDto {
   @ApiProperty()
   path: string;
   @ApiProperty()
-  sharedTo?: mongoose.Schema.Types.ObjectId[];
+  authorizedUsers?: mongoose.Schema.Types.ObjectId[];
 }

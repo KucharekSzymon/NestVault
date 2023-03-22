@@ -9,6 +9,7 @@ import {
   Get,
   StreamableFile,
   Res,
+  Param,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -37,6 +38,7 @@ export class FilesController {
 
     return this.filesService.create(createFileDto);
   }
+
   @UseGuards(AccessTokenGuard)
   @Get()
   findAll() {
@@ -47,15 +49,28 @@ export class FilesController {
   findOnlyMine(@Req() req) {
     return this.filesService.findByOwner(req.user._id);
   }
-  @Get('download') //Download
+
+  @Get('buffer')
   buffer(@Res() response: Response) {
     const file = this.filesService.imageBuffer();
     response.send(file);
   }
-
-  @Get('preview') //Preview
-  stream(@Res() response: Response) {
-    const file = this.filesService.imageStream();
+  @UseGuards(AccessTokenGuard)
+  @Get('stream/:id')
+  async stream(
+    @Res() response: Response,
+    @Req() req,
+    @Param('id') fileId: string,
+  ) {
+    const file = await this.filesService.imageStream(req.user._id, fileId);
     file.pipe(response);
+  }
+
+  @Get('streamable')
+  streamable(@Res({ passthrough: true }) response: Response) {
+    const file = this.filesService.fileStream();
+    // or
+    // const file = this.downloadService.fileBuffer();
+    return new StreamableFile(file); // 👈 supports Buffer and Stream
   }
 }
