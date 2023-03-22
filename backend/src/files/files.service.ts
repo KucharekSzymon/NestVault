@@ -21,7 +21,7 @@ export class FilesService {
     return this.fileModel.find().exec();
   }
   async findByOwner(owner: string) {
-    return this.fileModel.find({ owner }).populate('sharedTo').exec();
+    return this.fileModel.find({ owner }).populate('authorizedUsers').exec();
   }
   async checkPermission(fileID: string) {
     const file = await this.fileModel.findById(fileID);
