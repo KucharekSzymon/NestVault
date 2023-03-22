@@ -38,7 +38,7 @@ export const multerOptions = {
     destination: (req: any, file: any, cb: any) => {
       const basePath = multerConfig.dest;
       if (!existsSync(basePath)) mkdirSync(basePath);
-      const uploadPath = basePath + req.user['sub'];
+      const uploadPath = basePath + req.user._id;
       // Create folder if doesn't exist
       if (!existsSync(uploadPath)) mkdirSync(uploadPath);
 

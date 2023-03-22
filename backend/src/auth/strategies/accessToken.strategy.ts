@@ -22,9 +22,6 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: JwtPayload) {
-    console.log({
-      payload,
-    });
     const user = await this.userService.findByEmail(payload.email);
     return user;
   }

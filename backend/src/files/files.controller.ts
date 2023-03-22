@@ -62,7 +62,7 @@ export class FilesController {
     @Req() req,
     @Param('id') fileId: string,
   ) {
-    const file = await this.filesService.imageStream(req.user._id, fileId);
+    const file = await this.filesService.imageStream(fileId, req.user._id);
     file.pipe(response);
   }
 
