@@ -29,9 +29,10 @@ export class FilesController {
   @UseInterceptors(FileInterceptor('file', multerOptions))
   uploadfile(
     @Body() createFileDto: CreateFileDto,
-    @UploadedFile() file,
+    @UploadedFile() file: Express.Multer.File,
     @Req() req,
   ) {
+    console.log(file);
     createFileDto.name = file.originalname;
     createFileDto.owner = req.user._id;
     createFileDto.path = req.user._id;
@@ -72,5 +73,10 @@ export class FilesController {
     // or
     // const file = this.downloadService.fileBuffer();
     return new StreamableFile(file); // 👈 supports Buffer and Stream
+  }
+  @Post('upload2')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
   }
 }

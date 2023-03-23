@@ -6,16 +6,15 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 // Multer configuration
 export const multerConfig = {
-  dest: './upload/', //process.env.UPLOAD_LOCATION,
-  fileSize: +process.env.MAX_FILE_SIZE,
+  dest: './upload/',
 };
 
 // Multer upload options
 export const multerOptions = {
   // Enable file size limits
-  limits: {
+  /*limits: {
     fileSize: multerConfig.fileSize,
-  },
+  },*/
   // Check the mimetypes to allow for upload
   /*fileFilter: (req: any, file: any, cb: any) => {
     if (file.mimetype.match(/\/(jpg|jpeg|png|gif|txt)$/)) {
