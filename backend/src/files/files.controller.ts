@@ -47,7 +47,7 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('stream/:id')
+  @Get('preview/:id')
   async stream(
     @Res() response: Response,
     @Req() req,
@@ -58,7 +58,7 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('buffer/:id')
+  @Get('download/:id')
   async buffer(
     @Res() response: Response,
     @Req() req,
