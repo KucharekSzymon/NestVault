@@ -23,11 +23,9 @@ export class FilesService {
     const createdFile = new this.fileModel(createFileDto);
     return createdFile.save();
   }
-  async findAll(): Promise<FileDocument[]> {
-    return this.fileModel.find().exec();
-  }
+
   async findByOwner(owner: string) {
-    return this.fileModel.find({ owner }).populate('authorizedUsers').exec();
+    return this.fileModel.find({ owner }).exec();
   }
   async checkFile(file: File, userId: string) {
     const user = await this.userService.findById(userId);
@@ -40,6 +38,18 @@ export class FilesService {
         );
     } else {
       throw new BadRequestException('File not found.');
+    }
+  }
+  async fileShare(fileOwnerId: string, shareToId: string, fileId: string) {
+    const file = await this.fileModel.findById(fileId);
+    if (await this.checkFile(file, fileOwnerId)) {
+      const user = await this.userService.findById(shareToId);
+      if (user) {
+        file.authorizedUsers.push(user);
+        return this.fileModel
+          .findByIdAndUpdate(fileId, file)
+          .setOptions({ overwrite: true, new: true });
+      }
     }
   }
 

@@ -41,6 +41,17 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
+  @Post('share')
+  async shareFile(@Req() req) {
+    console.log(req.body);
+    return await this.filesService.fileShare(
+      req.user._id,
+      req.body.userId,
+      req.body.fileId,
+    );
+  }
+
+  @UseGuards(AccessTokenGuard)
   @Get('onlyMine')
   findOnlyMine(@Req() req) {
     return this.filesService.findByOwner(req.user._id);
