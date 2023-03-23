@@ -41,21 +41,11 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get()
-  findAll() {
-    return this.filesService.findAll();
-  }
-  @UseGuards(AccessTokenGuard)
   @Get('onlyMine')
   findOnlyMine(@Req() req) {
     return this.filesService.findByOwner(req.user._id);
   }
 
-  @Get('buffer')
-  buffer(@Res() response: Response) {
-    const file = this.filesService.imageBuffer();
-    response.send(file);
-  }
   @UseGuards(AccessTokenGuard)
   @Get('stream/:id')
   async stream(
@@ -67,11 +57,14 @@ export class FilesController {
     file.pipe(response);
   }
 
-  @Get('streamable')
-  streamable(@Res({ passthrough: true }) response: Response) {
-    const file = this.filesService.fileStream();
-    // or
-    // const file = this.downloadService.fileBuffer();
-    return new StreamableFile(file); // 👈 supports Buffer and Stream
+  @UseGuards(AccessTokenGuard)
+  @Get('buffer/:id')
+  async buffer(
+    @Res() response: Response,
+    @Req() req,
+    @Param('id') fileId: string,
+  ) {
+    const file = await this.filesService.imageBuffer(fileId, req.user._id);
+    response.send(file);
   }
 }

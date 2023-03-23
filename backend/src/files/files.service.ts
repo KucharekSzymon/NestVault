@@ -42,9 +42,6 @@ export class FilesService {
       throw new BadRequestException('File not found.');
     }
   }
-  imageBuffer() {
-    return readFileSync(join(process.cwd(), 'test.png'));
-  }
 
   async imageStream(fileId: string, userId: string) {
     const file = await this.fileModel.findById(fileId);
@@ -55,11 +52,10 @@ export class FilesService {
     );
   }
 
-  fileBuffer() {
-    return readFileSync(join(process.cwd(), 'test.png'));
-  }
+  async imageBuffer(fileId: string, userId: string) {
+    const file = await this.fileModel.findById(fileId);
+    await this.checkFile(file, userId);
 
-  fileStream() {
-    return createReadStream(join(process.cwd(), 'test.png'));
+    return readFileSync(join(process.cwd(), 'upload', file.path, file.name));
   }
 }
