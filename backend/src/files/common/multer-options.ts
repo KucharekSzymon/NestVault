@@ -6,16 +6,15 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 // Multer configuration
 export const multerConfig = {
-  dest: './upload/', //process.env.UPLOAD_LOCATION,
-  fileSize: +process.env.MAX_FILE_SIZE,
+  dest: './upload/',
 };
 
 // Multer upload options
 export const multerOptions = {
   // Enable file size limits
-  limits: {
+  /*limits: {
     fileSize: multerConfig.fileSize,
-  },
+  },*/
   // Check the mimetypes to allow for upload
   /*fileFilter: (req: any, file: any, cb: any) => {
     if (file.mimetype.match(/\/(jpg|jpeg|png|gif|txt)$/)) {
@@ -38,7 +37,7 @@ export const multerOptions = {
     destination: (req: any, file: any, cb: any) => {
       const basePath = multerConfig.dest;
       if (!existsSync(basePath)) mkdirSync(basePath);
-      const uploadPath = basePath + req.user['sub'];
+      const uploadPath = basePath + req.user._id;
       // Create folder if doesn't exist
       if (!existsSync(uploadPath)) mkdirSync(uploadPath);
 

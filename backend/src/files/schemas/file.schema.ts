@@ -14,6 +14,10 @@ export class File {
     ref: 'User',
   })
   owner: User;
+  @Prop({ required: true })
+  path: string;
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+  authorizedUsers: User[];
 }
 
 export const FileSchema = SchemaFactory.createForClass(File);
