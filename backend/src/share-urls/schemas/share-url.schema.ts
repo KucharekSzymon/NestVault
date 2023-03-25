@@ -2,12 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { User } from 'src/users/schemas/user.schema';
 
-export type FileDocument = File & Document;
-
 @Schema()
-export class File {
-  @Prop({ required: true })
-  name: string;
+export class ShareUrl {
+  @Prop()
+  description: string;
 
   @Prop({
     required: true,
@@ -16,11 +14,13 @@ export class File {
   })
   owner: User;
 
-  @Prop({ required: true })
-  path: string;
+  @Prop({ type: Date, expires: 3600, default: Date.now }) // expires in 1 hour
+  createTime: Date;
+
+  @Prop({ type: Date, expires: 3600, default: Date.now }) // expires in 1 hour
+  expireTime: Date;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
   authorizedUsers: User[];
 }
-
-export const FileSchema = SchemaFactory.createForClass(File);
+export const ShareUrlSchema = SchemaFactory.createForClass(ShareUrl);
