@@ -27,6 +27,16 @@ export class FilesService {
   async findByOwner(owner: string) {
     return this.fileModel.find({ owner }).exec();
   }
+
+  async findShared(owner: string) {
+    const files = await this.fileModel.find({ owner }).exec();
+    const sharedFiles = [];
+    files.forEach((element) => {
+      if (element.authorizedUsers.length != 0) sharedFiles.push(element);
+    });
+    return sharedFiles;
+  }
+
   async checkFile(file: File, userId: string) {
     const user = await this.userService.findById(userId);
     if (file) {
@@ -40,15 +50,24 @@ export class FilesService {
       throw new BadRequestException('File not found.');
     }
   }
+
   async fileShare(fileOwnerId: string, shareToId: string, fileId: string) {
     const file = await this.fileModel.findById(fileId);
     if (await this.checkFile(file, fileOwnerId)) {
       const user = await this.userService.findById(shareToId);
-      if (user) {
-        file.authorizedUsers.push(user);
-        return this.fileModel
-          .findByIdAndUpdate(fileId, file)
-          .setOptions({ overwrite: true, new: true });
+      if (!file.authorizedUsers.includes(user._id)) {
+        if (user) {
+          file.authorizedUsers.push(user);
+          return this.fileModel
+            .findByIdAndUpdate(fileId, file)
+            .setOptions({ overwrite: true, new: true });
+        } else {
+          throw new BadRequestException('User not found.');
+        }
+      } else {
+        throw new BadRequestException(
+          'This user already have acces to this resoure.',
+        );
       }
     }
   }

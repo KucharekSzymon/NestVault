@@ -7,7 +7,6 @@ import {
   UseGuards,
   Req,
   Get,
-  StreamableFile,
   Res,
   Param,
 } from '@nestjs/common';
@@ -43,7 +42,6 @@ export class FilesController {
   @UseGuards(AccessTokenGuard)
   @Post('share')
   async shareFile(@Req() req) {
-    console.log(req.body);
     return await this.filesService.fileShare(
       req.user._id,
       req.body.userId,
@@ -52,9 +50,15 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('onlyMine')
+  @Get('mine')
   findOnlyMine(@Req() req) {
     return this.filesService.findByOwner(req.user._id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('shared')
+  findShared(@Req() req) {
+    return this.filesService.findShared(req.user._id);
   }
 
   @UseGuards(AccessTokenGuard)
