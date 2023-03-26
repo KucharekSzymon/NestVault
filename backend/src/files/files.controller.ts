@@ -49,6 +49,16 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
+  @Post('revoke')
+  async revoke(@Req() req) {
+    return await this.filesService.fileAccessRevoke(
+      req.user._id,
+      req.body.userId,
+      req.body.fileId,
+    );
+  }
+
+  @UseGuards(AccessTokenGuard)
   @Get('mine')
   findOnlyMine(@Req() req) {
     return this.filesService.findByOwner(req.user._id);

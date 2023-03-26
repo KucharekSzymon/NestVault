@@ -75,6 +75,27 @@ export class FilesService {
       }
     }
   }
+  async fileAccessRevoke(
+    fileOwnerId: string,
+    shareToId: string,
+    fileId: string,
+  ) {
+    const file = await this.fileModel.findById(fileId);
+    if (await this.checkFile(file, fileOwnerId)) {
+      const user = await this.userService.findById(shareToId);
+      if (user) {
+        file.authorizedUsers = file.authorizedUsers.filter(
+          (obj) => !user._id.equals(obj),
+        );
+
+        return this.fileModel
+          .findByIdAndUpdate(fileId, file)
+          .setOptions({ overwrite: true, new: true });
+      } else {
+        throw new BadRequestException('User not found.');
+      }
+    }
+  }
 
   async imageStream(fileId: string, userId: string) {
     const file = await this.fileModel.findById(fileId);
