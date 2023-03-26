@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './files/files.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { ShareUrlsModule } from './share-urls/share-urls.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MulterModule } from '@nestjs/platform-express';
     MulterModule.register({
       dest: './upload',
     }),
+    ShareUrlsModule,
   ],
 })
 export class AppModule {}

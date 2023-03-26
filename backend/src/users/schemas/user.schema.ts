@@ -1,10 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
 @Schema()
 export class User {
+  /**
+   * Unique user id
+   */
+  _id: mongoose.Schema.Types.ObjectId;
   /**
    * User first and last name
    */
@@ -21,9 +25,9 @@ export class User {
   @Prop({ required: true })
   password: string;
   /**
-   * 
+   *
    */
-  @Prop({default: false})
+  @Prop({ default: false })
   isAdmin: boolean;
   /**
    * User hashed autentication token

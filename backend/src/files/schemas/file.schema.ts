@@ -8,12 +8,22 @@ export type FileDocument = File & Document;
 export class File {
   @Prop({ required: true })
   name: string;
+
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   })
   owner: User;
+
+  @Prop({ type: Date, default: Date.now })
+  createTime: Date;
+
+  @Prop({ required: true })
+  path: string;
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+  authorizedUsers: User[];
 }
 
 export const FileSchema = SchemaFactory.createForClass(File);
