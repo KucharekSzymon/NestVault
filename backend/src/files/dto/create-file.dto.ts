@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayUnique, IsNotEmpty } from 'class-validator';
 import mongoose from 'mongoose';
 
 export class CreateFileDto {
@@ -11,7 +10,4 @@ export class CreateFileDto {
 
   @ApiProperty()
   path: string;
-
-  @ApiProperty()
-  authorizedUsers?: mongoose.Schema.Types.ObjectId[];
 }

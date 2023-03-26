@@ -1,6 +1,7 @@
 import {
-  BadRequestException,
+  ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -24,8 +25,12 @@ export class FilesService {
     return createdFile.save();
   }
 
+  async findById(fileId: string) {
+    return this.fileModel.findById(fileId);
+  }
+
   async findByOwner(owner: string) {
-    return this.fileModel.find({ owner }).exec();
+    return await this.fileModel.find({ owner }).exec();
   }
 
   async findShared(owner: string) {
@@ -41,7 +46,8 @@ export class FilesService {
     return await this.fileModel.find({ authorizedUsers: user._id }).exec();
   }
 
-  async checkFile(file: File, userId: string) {
+  async checkFile(fileId: string, userId: string) {
+    const file = await this.fileModel.findById(fileId);
     const user = await this.userService.findById(userId);
     if (file) {
       if (file.owner._id.toString() === user._id.toString()) return true;
@@ -51,13 +57,13 @@ export class FilesService {
           'You dont have acces to this resource.',
         );
     } else {
-      throw new BadRequestException('File not found.');
+      throw new NotFoundException('File not found.');
     }
   }
 
   async fileShare(fileOwnerId: string, shareToId: string, fileId: string) {
     const file = await this.fileModel.findById(fileId);
-    if (await this.checkFile(file, fileOwnerId)) {
+    if (await this.checkFile(fileId, fileOwnerId)) {
       const user = await this.userService.findById(shareToId);
       if (!file.authorizedUsers.includes(user._id)) {
         if (user) {
@@ -66,19 +72,40 @@ export class FilesService {
             .findByIdAndUpdate(fileId, file)
             .setOptions({ overwrite: true, new: true });
         } else {
-          throw new BadRequestException('User not found.');
+          throw new NotFoundException('User not found.');
         }
       } else {
-        throw new BadRequestException(
-          'This user already have acces to this resoure.',
+        throw new ForbiddenException(
+          'This user already have access to this resoure.',
         );
+      }
+    }
+  }
+  async fileAccessRevoke(
+    fileOwnerId: string,
+    shareToId: string,
+    fileId: string,
+  ) {
+    const file = await this.fileModel.findById(fileId);
+    if (await this.checkFile(fileId, fileOwnerId)) {
+      const user = await this.userService.findById(shareToId);
+      if (user) {
+        file.authorizedUsers = file.authorizedUsers.filter(
+          (obj) => !user._id.equals(obj),
+        );
+
+        return this.fileModel
+          .findByIdAndUpdate(fileId, file)
+          .setOptions({ overwrite: true, new: true });
+      } else {
+        throw new NotFoundException('User not found.');
       }
     }
   }
 
   async imageStream(fileId: string, userId: string) {
     const file = await this.fileModel.findById(fileId);
-    await this.checkFile(file, userId);
+    await this.checkFile(fileId, userId);
 
     return createReadStream(
       join(process.cwd(), 'upload', file.path, file.name),
@@ -87,7 +114,7 @@ export class FilesService {
 
   async imageBuffer(fileId: string, userId: string) {
     const file = await this.fileModel.findById(fileId);
-    await this.checkFile(file, userId);
+    await this.checkFile(fileId, userId);
 
     return readFileSync(join(process.cwd(), 'upload', file.path, file.name));
   }

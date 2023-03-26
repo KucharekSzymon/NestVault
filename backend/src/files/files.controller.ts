@@ -31,7 +31,6 @@ export class FilesController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req,
   ) {
-    console.log(file);
     createFileDto.name = file.originalname;
     createFileDto.owner = req.user._id;
     createFileDto.path = req.user._id;
@@ -43,6 +42,16 @@ export class FilesController {
   @Post('share')
   async shareFile(@Req() req) {
     return await this.filesService.fileShare(
+      req.user._id,
+      req.body.userId,
+      req.body.fileId,
+    );
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('revoke')
+  async revoke(@Req() req) {
+    return await this.filesService.fileAccessRevoke(
       req.user._id,
       req.body.userId,
       req.body.fileId,

@@ -25,21 +25,16 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
   @UseGuards(AccessTokenGuard)
   @Get('me')
   findOnlyMine(@Req() req) {
-    return this.usersService.findById(req.user['sub']);
+    return this.usersService.findById(req.user._id);
   }
 
-  @Get(':id')
-  findById(@Param('id') id: string) {
-    return this.usersService.findById(id);
-  }
+  // @Get(':id')
+  // findById(@Param('id') id: string) {
+  //   return this.usersService.findById(id);
+  // }
 
   @UseGuards(AccessTokenGuard)
   @Patch(':id')
