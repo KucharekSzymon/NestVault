@@ -28,6 +28,13 @@ export class ShareUrlsService {
     return this.shareUrlModel.find({ owner }).exec();
   }
 
+  async showUses(linkId: string, owner: string) {
+    return await await this.shareUrlModel
+      .find({ owner })
+      .populate('usedBy')
+      .exec();
+  }
+
   async activate(urlId: string, userId: string) {
     const url = await this.shareUrlModel.findById(urlId);
     const file = await this.fileService.findById(url.file.toString());

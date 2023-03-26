@@ -32,6 +32,12 @@ export class ShareUrlsController {
   }
 
   @UseGuards(AccessTokenGuard)
+  @Get('uses/:id')
+  findUses(@Param('id') id: string, @Req() req) {
+    return this.shareUrlsService.showUses(id, req.user._id);
+  }
+
+  @UseGuards(AccessTokenGuard)
   @Get(':id')
   activate(@Param('id') id: string, @Req() req) {
     return this.shareUrlsService.activate(id, req.user._id);
