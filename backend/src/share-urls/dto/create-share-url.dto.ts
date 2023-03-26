@@ -11,12 +11,6 @@ export class CreateShareUrlDto {
   @ApiProperty()
   owner: mongoose.Schema.Types.ObjectId;
 
-  // @ApiProperty()
-  //createTime: Date;
-
   @ApiProperty()
   expireTime: Date;
-
-  @ApiProperty()
-  authorizedUsers?: mongoose.Schema.Types.ObjectId[];
 }
