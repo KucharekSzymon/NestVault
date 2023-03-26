@@ -31,7 +31,6 @@ export class FilesController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req,
   ) {
-    console.log(file);
     createFileDto.name = file.originalname;
     createFileDto.owner = req.user._id;
     createFileDto.path = req.user._id;

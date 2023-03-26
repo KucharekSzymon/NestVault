@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/swagger';
-import { CreateShareLinkDto } from './create-share-url.dto';
+import { CreateShareUrlDto } from './create-share-url.dto';
 
-export class UpdateFileDto extends PartialType(CreateShareLinkDto) {}
+export class UpdateShareUrlDto extends PartialType(CreateShareUrlDto) {}

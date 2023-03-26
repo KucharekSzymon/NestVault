@@ -1,9 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { type } from 'os';
 import { User } from 'src/users/schemas/user.schema';
+import { File } from 'src/files/schemas/file.schema';
+
+export type ShareUrlDocument = ShareUrl & Document;
 
 @Schema()
 export class ShareUrl {
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'File',
+  })
+  file: File;
+
   @Prop()
   description: string;
 

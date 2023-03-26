@@ -1,15 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import mongoose from 'mongoose';
 
-export class CreateShareLinkDto {
+export class CreateShareUrlDto {
+  @ApiProperty()
+  file: mongoose.Schema.Types.ObjectId;
+
   @ApiProperty()
   description: string;
 
   @ApiProperty()
   owner: mongoose.Schema.Types.ObjectId;
 
-  @ApiProperty()
-  createTime: Date;
+  // @ApiProperty()
+  //createTime: Date;
 
   @ApiProperty()
   expireTime: Date;

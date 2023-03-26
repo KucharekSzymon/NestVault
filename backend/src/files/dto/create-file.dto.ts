@@ -12,6 +12,6 @@ export class CreateFileDto {
   @ApiProperty()
   path: string;
 
-  @ApiProperty()
-  authorizedUsers?: mongoose.Schema.Types.ObjectId[];
+  //@ApiProperty()
+  //authorizedUsers?: mongoose.Schema.Types.ObjectId[];
 }
