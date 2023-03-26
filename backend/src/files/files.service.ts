@@ -1,6 +1,8 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -56,7 +58,7 @@ export class FilesService {
           'You dont have acces to this resource.',
         );
     } else {
-      throw new BadRequestException('File not found.');
+      throw new NotFoundException('File not found.');
     }
   }
 
@@ -71,10 +73,10 @@ export class FilesService {
             .findByIdAndUpdate(fileId, file)
             .setOptions({ overwrite: true, new: true });
         } else {
-          throw new BadRequestException('User not found.');
+          throw new NotFoundException('User not found.');
         }
       } else {
-        throw new BadRequestException(
+        throw new ForbiddenException(
           'This user already have access to this resoure.',
         );
       }
@@ -97,7 +99,7 @@ export class FilesService {
           .findByIdAndUpdate(fileId, file)
           .setOptions({ overwrite: true, new: true });
       } else {
-        throw new BadRequestException('User not found.');
+        throw new NotFoundException('User not found.');
       }
     }
   }

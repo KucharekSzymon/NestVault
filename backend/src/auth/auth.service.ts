@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
@@ -26,7 +27,7 @@ export class AuthService {
     // Check if user exists
     const userExists = await this.usersService.findByEmail(createUserDto.email);
     if (userExists) {
-      throw new BadRequestException('User already exists');
+      throw new ForbiddenException('User already exists');
     }
 
     // Hash password
@@ -47,7 +48,7 @@ export class AuthService {
   async signIn(data: AuthDto) {
     // Check if user exists
     const user = await this.usersService.findByEmail(data.email);
-    if (!user) throw new BadRequestException('User does not exist');
+    if (!user) throw new NotFoundException('User does not exist');
     const passwordMatches = await argon2.verify(user.password, data.password);
     if (!passwordMatches)
       throw new BadRequestException('Password is incorrect');
