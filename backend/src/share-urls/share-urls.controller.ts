@@ -25,7 +25,7 @@ export class ShareUrlsController {
   create(@Body() createShareUrlDto: CreateShareUrlDto, @Req() req) {
     createShareUrlDto.owner = req.user._id;
 
-    return this.shareUrlsService.create(createShareUrlDto);
+    return this.shareUrlsService.create(createShareUrlDto, req.user._id);
   }
 
   @UseGuards(AccessTokenGuard)
