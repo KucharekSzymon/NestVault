@@ -17,4 +17,8 @@ export class ShareUrlsService {
     const createdShareUrl = new this.shareUrlModel(createFileDto);
     return createdShareUrl.save();
   }
+
+  async findByOwner(owner: string) {
+    return this.shareUrlModel.find({ owner }).exec();
+  }
 }

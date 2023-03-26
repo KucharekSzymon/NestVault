@@ -31,7 +31,7 @@ export class ShareUrlsController {
   @UseGuards(AccessTokenGuard)
   @Get('mine')
   findOnlyMine(@Req() req) {
-    // return this.shareUrlsService.findById(req.user['sub']);
+    return this.shareUrlsService.findByOwner(req.user._id);
   }
 
   @UseGuards(AccessTokenGuard)
