@@ -1,6 +1,11 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { FilesService } from 'src/files/files.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateShareUrlDto } from './dto/create-share-url.dto';
@@ -28,11 +33,14 @@ export class ShareUrlsService {
     return this.shareUrlModel.find({ owner }).exec();
   }
 
-  async showUses(linkId: string, owner: string) {
-    return await await this.shareUrlModel
-      .find({ owner })
-      .populate('usedBy')
-      .exec();
+  async showUses(linkId: string, userId: string) {
+    const link = await this.shareUrlModel.findById(linkId);
+    if (link === null) throw new NotFoundException('Link not found.');
+
+    if (link.owner._id.toString() != userId)
+      throw new UnauthorizedException('You dont have access to this resource.');
+
+    return link.populate('usedBy');
   }
 
   async activate(urlId: string, userId: string) {
@@ -45,13 +53,13 @@ export class ShareUrlsService {
       throw new ForbiddenException(
         'Sorry, this link has expired and is no longer valid',
       );
-    url.usedBy.push(user);
 
     await this.fileService.fileShare(
       file.owner._id.toString(),
       userId,
       file._id.toString(),
     );
+    url.usedBy.push(user);
     return this.shareUrlModel
       .findByIdAndUpdate(urlId, url)
       .setOptions({ overwrite: true, new: true });
