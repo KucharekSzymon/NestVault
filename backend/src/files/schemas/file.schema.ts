@@ -16,6 +16,9 @@ export class File {
   })
   owner: User;
 
+  @Prop({ type: Date, default: Date.now })
+  createTime: Date;
+
   @Prop({ required: true })
   path: string;
 
