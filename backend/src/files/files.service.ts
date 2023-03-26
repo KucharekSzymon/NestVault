@@ -24,9 +24,8 @@ export class FilesService {
     return createdFile.save();
   }
 
-  async findById(fileId: string, userId) {
-    if (await this.checkFile(fileId, userId))
-      return this.fileModel.findById(fileId);
+  async findById(fileId: string) {
+    return this.fileModel.findById(fileId);
   }
 
   async findByOwner(owner: string) {
@@ -76,7 +75,7 @@ export class FilesService {
         }
       } else {
         throw new BadRequestException(
-          'This user already have acces to this resoure.',
+          'This user already have access to this resoure.',
         );
       }
     }
