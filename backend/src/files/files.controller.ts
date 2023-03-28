@@ -15,7 +15,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { multerOptions } from './common/multer-options';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { Response } from 'express';
-import path from 'path';
 
 @ApiTags('files')
 @Controller('files')
