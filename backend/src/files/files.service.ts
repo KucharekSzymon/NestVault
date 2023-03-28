@@ -131,10 +131,10 @@ export class FilesService {
   }
 
   async remove(fileId: string, reqId: string) {
-    const user = await this.userService.findById(reqId);
     const file = await this.fileModel.findById(fileId);
 
     if (await this.checkFileForOwner(fileId, reqId)) {
+      this.userService.removalOfFile(reqId, file.size);
       this.deleteFile(`./upload/${file.path}/${file.name}`);
       return this.fileModel.findByIdAndDelete(fileId).exec();
     }
