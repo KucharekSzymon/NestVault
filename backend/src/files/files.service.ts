@@ -10,6 +10,7 @@ import { File, FileDocument } from './schemas/file.schema';
 import { createReadStream, readFileSync } from 'fs';
 import { join } from 'path';
 import { UsersService } from 'src/users/users.service';
+import * as fs from 'fs';
 
 @Injectable()
 export class FilesService {
@@ -127,5 +128,22 @@ export class FilesService {
     await this.checkFile(fileId, userId);
 
     return readFileSync(join(process.cwd(), 'upload', file.path, file.name));
+  }
+
+  async remove(fileId: string, reqId: string) {
+    const user = await this.userService.findById(reqId);
+    const file = await this.fileModel.findById(fileId);
+
+    if (await this.checkFileForOwner(fileId, reqId)) {
+      this.deleteFile(`./upload/${file.path}/${file.name}`);
+      return this.fileModel.findByIdAndDelete(fileId).exec();
+    }
+  }
+  deleteFile(filePath: string): void {
+    try {
+      fs.unlinkSync(filePath);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
