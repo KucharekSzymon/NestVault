@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -57,5 +57,22 @@ export class UsersService {
    */
   async remove(id: string): Promise<UserDocument> {
     return this.userModel.findByIdAndDelete(id).exec();
+  }
+
+  /**
+   * Updates an amount of data user has stored on his account
+   * @param userId user idectyficator
+   * @param fileSize file size in bytes
+   */
+  async uploadOfFile(userId, fileSize) {
+    const user = await this.userModel.findById(userId);
+    user.storedData += fileSize;
+    if (user.storageLimit <= user.storedData)
+      throw new ForbiddenException(
+        'Sorry, you have reached your storage limit. You have used up all the available space in your account. Free up some space by deleting files or asking administrator for more space.',
+      );
+    return this.userModel
+      .findByIdAndUpdate(userId, user)
+      .setOptions({ overwrite: true, new: true });
   }
 }

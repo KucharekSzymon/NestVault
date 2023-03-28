@@ -1,7 +1,6 @@
 import {
   Controller,
   Post,
-  Body,
   UseInterceptors,
   UploadedFile,
   UseGuards,
@@ -11,12 +10,12 @@ import {
   Param,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
-import { CreateFileDto } from './dto/create-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { multerOptions } from './common/multer-options';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { Response } from 'express';
+import path from 'path';
 
 @ApiTags('files')
 @Controller('files')
@@ -26,16 +25,16 @@ export class FilesController {
   @UseGuards(AccessTokenGuard)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', multerOptions))
-  uploadfile(
-    @Body() createFileDto: CreateFileDto,
-    @UploadedFile() file: Express.Multer.File,
-    @Req() req,
-  ) {
-    createFileDto.name = file.originalname;
-    createFileDto.owner = req.user._id;
-    createFileDto.path = req.user._id;
+  uploadfile(@UploadedFile() file: Express.Multer.File, @Req() req) {
+    const data = {
+      name: file.originalname,
+      owner: req.user._id,
+      path: req.user._id,
+      type: file.mimetype,
+      size: file.size,
+    };
 
-    return this.filesService.create(createFileDto);
+    return this.filesService.create(data);
   }
 
   @UseGuards(AccessTokenGuard)

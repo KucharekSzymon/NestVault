@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { min } from 'class-validator';
 import mongoose from 'mongoose';
 import { User } from 'src/users/schemas/user.schema';
 
@@ -15,6 +16,12 @@ export class File {
     ref: 'User',
   })
   owner: User;
+
+  @Prop()
+  type: string;
+
+  @Prop({ default: 0 })
+  size: number;
 
   @Prop({ type: Date, default: Date.now })
   createTime: Date;
