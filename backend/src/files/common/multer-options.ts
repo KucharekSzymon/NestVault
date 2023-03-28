@@ -44,9 +44,18 @@ export const multerOptions = {
       cb(null, uploadPath);
     },
     // File modification details
-    filename: (req: any, file: any, cb: any) => {
-      //ToDo Add hadnling when file exist in case of override or adding new index (n)
-      cb(null, file.originalname);
+    filename: (req: any, file, cb) => {
+      const name = file.originalname.split('.')[0];
+      const fileExt = extname(file.originalname);
+      let i = 0;
+      let fileName = `${name}${fileExt}`;
+
+      while (existsSync(`./upload/${req.user._id}/${fileName}`)) {
+        i++;
+        fileName = `${name}(${i})${fileExt}`;
+      }
+
+      cb(null, fileName);
     },
   }),
 };

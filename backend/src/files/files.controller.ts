@@ -26,7 +26,7 @@ export class FilesController {
   @UseInterceptors(FileInterceptor('file', multerOptions))
   uploadfile(@UploadedFile() file: Express.Multer.File, @Req() req) {
     const data = {
-      name: file.originalname,
+      name: file.filename,
       owner: req.user._id,
       path: req.user._id,
       type: file.mimetype,
