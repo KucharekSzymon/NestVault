@@ -55,8 +55,10 @@ export class UsersService {
    * @param id User unique id
    * @returns Request to remove user from database
    */
-  async remove(id: string): Promise<UserDocument> {
-    return this.userModel.findByIdAndDelete(id).exec();
+  async remove(id: string, reqId: string): Promise<UserDocument> {
+    const user = await this.userModel.findById(reqId);
+    if (user.isAdmin || user._id == id)
+      return this.userModel.findByIdAndDelete(id).exec();
   }
 
   /**
@@ -71,6 +73,16 @@ export class UsersService {
       throw new ForbiddenException(
         'Sorry, you have reached your storage limit. You have used up all the available space in your account. Free up some space by deleting files or asking administrator for more space.',
       );
+    return this.userModel
+      .findByIdAndUpdate(userId, user)
+      .setOptions({ overwrite: true, new: true });
+  }
+
+  async removalOfFile(userId, fileSize) {
+    const user = await this.userModel.findById(userId);
+
+    user.storedData -= fileSize;
+    if (user.storedData < 0) user.storedData = 0;
     return this.userModel
       .findByIdAndUpdate(userId, user)
       .setOptions({ overwrite: true, new: true });
