@@ -22,7 +22,10 @@ export class ShareUrlsService {
 
   async create(createFileDto: CreateShareUrlDto, userId: string) {
     if (
-      await this.fileService.checkFile(createFileDto.file.toString(), userId)
+      await this.fileService.checkFileForOwner(
+        createFileDto.file.toString(),
+        userId,
+      )
     ) {
       const createdShareUrl = new this.shareUrlModel(createFileDto);
       return createdShareUrl.save();

@@ -55,36 +55,42 @@ export class FilesService {
   async checkFile(fileId: string, userId: string) {
     const file = await this.fileModel.findById(fileId);
     const user = await this.userService.findById(userId);
-    if (file) {
-      if (file.owner._id.toString() === user._id.toString()) return true;
-      else if (file.authorizedUsers.includes(user._id)) return true;
-      else
-        throw new UnauthorizedException(
-          'You dont have acces to this resource.',
-        );
-    } else {
-      throw new NotFoundException('File not found.');
-    }
+
+    if (file == null) throw new NotFoundException('File not found.');
+    if (user == null) throw new NotFoundException('User not found.');
+
+    if (file.owner._id.toString() === user._id.toString()) return true;
+    else if (file.authorizedUsers.includes(user._id)) return true;
+    else
+      throw new UnauthorizedException('You dont have acces to this resource.');
+  }
+  async checkFileForOwner(fileId: string, userId: string) {
+    const file = await this.fileModel.findById(fileId);
+    const user = await this.userService.findById(userId);
+
+    if (file == null) throw new NotFoundException('File not found.');
+    if (user == null) throw new NotFoundException('User not found.');
+
+    if (file.owner._id.toString() === user._id.toString()) return true;
+    else
+      throw new UnauthorizedException(
+        'Only owner of file can use this function.',
+      );
   }
 
   async fileShare(fileOwnerId: string, shareToId: string, fileId: string) {
     const file = await this.fileModel.findById(fileId);
-    if (await this.checkFile(fileId, fileOwnerId)) {
+    if (await this.checkFileForOwner(fileId, fileOwnerId)) {
       const user = await this.userService.findById(shareToId);
-      if (!file.authorizedUsers.includes(user._id)) {
-        if (user) {
-          file.authorizedUsers.push(user);
-          return this.fileModel
-            .findByIdAndUpdate(fileId, file)
-            .setOptions({ overwrite: true, new: true });
-        } else {
-          throw new NotFoundException('User not found.');
-        }
-      } else {
+      if (user == null) throw new NotFoundException('User not found.');
+      if (file.authorizedUsers.includes(user._id))
         throw new ForbiddenException(
           'This user already have access to this resoure.',
         );
-      }
+      file.authorizedUsers.push(user);
+      return this.fileModel
+        .findByIdAndUpdate(fileId, file)
+        .setOptions({ overwrite: true, new: true });
     }
   }
   async fileAccessRevoke(
@@ -93,19 +99,17 @@ export class FilesService {
     fileId: string,
   ) {
     const file = await this.fileModel.findById(fileId);
-    if (await this.checkFile(fileId, fileOwnerId)) {
+    if (await this.checkFileForOwner(fileId, fileOwnerId)) {
       const user = await this.userService.findById(shareToId);
-      if (user) {
-        file.authorizedUsers = file.authorizedUsers.filter(
-          (obj) => !user._id.equals(obj),
-        );
+      if (user == null) throw new NotFoundException('User not found.');
 
-        return this.fileModel
-          .findByIdAndUpdate(fileId, file)
-          .setOptions({ overwrite: true, new: true });
-      } else {
-        throw new NotFoundException('User not found.');
-      }
+      file.authorizedUsers = file.authorizedUsers.filter(
+        (obj) => !user._id.equals(obj),
+      );
+
+      return this.fileModel
+        .findByIdAndUpdate(fileId, file)
+        .setOptions({ overwrite: true, new: true });
     }
   }
 
