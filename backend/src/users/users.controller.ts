@@ -38,6 +38,16 @@ export class UsersController {
   }
 
   @UseGuards(AccessTokenGuard)
+  @Post('storage')
+  updateStorageLimit(@Req() req) {
+    return this.usersService.updateStoragelimit(
+      req.body.userId,
+      req.user._id,
+      req.body.newStorageLimit,
+    );
+  }
+
+  @UseGuards(AccessTokenGuard)
   @Delete(':id')
   remove(@Param('id') id: string, @Req() req) {
     return this.usersService.remove(id, req.user._id);

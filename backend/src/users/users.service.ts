@@ -1,9 +1,12 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { isNumberString } from 'class-validator';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -88,6 +91,29 @@ export class UsersService {
 
     user.storedData -= fileSize;
     if (user.storedData < 0) user.storedData = 0;
+    return this.userModel
+      .findByIdAndUpdate(userId, user)
+      .setOptions({ overwrite: true, new: true });
+  }
+
+  /**
+   * Admin function to change storage limit of user
+   * @param userId user id
+   * @param reqId administrator id
+   * @param newStorageLimit newly set limit
+   * @returns updated user object with new set limits
+   */
+  async updateStoragelimit(userId, reqId, newStorageLimit: number) {
+    const user = await this.userModel.findById(userId);
+    const requestor = await this.userModel.findById(reqId);
+    if (user == null || requestor == null)
+      throw new NotFoundException('User not found');
+    if (!requestor.isAdmin)
+      throw new ForbiddenException('You dont have permission to do that!');
+    if (!isNumberString(newStorageLimit))
+      throw new BadRequestException('Provided value is not an number');
+
+    user.storageLimit = newStorageLimit;
     return this.userModel
       .findByIdAndUpdate(userId, user)
       .setOptions({ overwrite: true, new: true });
