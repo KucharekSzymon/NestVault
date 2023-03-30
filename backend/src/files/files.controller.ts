@@ -8,6 +8,7 @@ import {
   Get,
   Res,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -63,7 +64,7 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('sharedToSomeone')
+  @Get('shared')
   findShared(@Req() req) {
     return this.filesService.findShared(req.user._id);
   }
@@ -94,5 +95,11 @@ export class FilesController {
   ) {
     const file = await this.filesService.imageBuffer(fileId, req.user._id);
     response.send(file);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Delete(':id')
+  remove(@Param('id') id: string, @Req() req) {
+    return this.filesService.remove(id, req.user._id);
   }
 }
