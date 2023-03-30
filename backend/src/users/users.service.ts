@@ -20,6 +20,7 @@ export class UsersService {
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
+
   /**
    * Returns all users
    * @returns Array of all registered users
@@ -27,6 +28,7 @@ export class UsersService {
   async findAll(): Promise<UserDocument[]> {
     return this.userModel.find().exec();
   }
+
   /**
    * Finding one specific user in database
    * @param id User unique id
@@ -35,6 +37,7 @@ export class UsersService {
   async findById(id: string): Promise<UserDocument> {
     return this.userModel.findById(id);
   }
+
   /**
    * Finding one specific user in database
    * @param email User unique email address
@@ -43,6 +46,7 @@ export class UsersService {
   async findByEmail(email: string): Promise<UserDocument> {
     return this.userModel.findOne({ email }).exec();
   }
+
   /**
    * Finds a specyfic user and replace his data with provided one
    * @param id User unique id
@@ -57,6 +61,7 @@ export class UsersService {
       .findByIdAndUpdate(id, updateUserDto, { new: true })
       .exec();
   }
+
   /**
    * Remove one user witch id matches provided one
    * @param id User unique id
@@ -87,6 +92,11 @@ export class UsersService {
       .setOptions({ overwrite: true, new: true });
   }
 
+  /**
+   * Updates an amount of data user has stored on his account after file deletion
+   * @param userId user idectyficator
+   * @param fileSize file size in bytes
+   */
   async removalOfFile(userId, fileSize) {
     const user = await this.userModel.findById(userId);
 
