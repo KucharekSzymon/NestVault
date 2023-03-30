@@ -40,6 +40,11 @@ export class FilesService {
     return await this.fileModel.find({ owner }).exec();
   }
 
+  async checkSpace(userId: string) {
+    const user = await this.userService.findById(userId);
+    return user.storageLimit - user.storedData;
+  }
+
   async findShared(owner: string) {
     const files = await this.fileModel.find({ owner }).exec();
     const sharedFiles = [];

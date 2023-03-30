@@ -64,6 +64,11 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
+  @Get('space')
+  checkUsedSpace(@Req() req) {
+    return this.filesService.checkSpace(req.user._id);
+  }
+  @UseGuards(AccessTokenGuard)
   @Get('shared')
   findShared(@Req() req) {
     return this.filesService.findShared(req.user._id);
