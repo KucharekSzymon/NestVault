@@ -35,4 +35,10 @@ export class AuthController {
     const refreshToken = req.user['refreshToken'];
     return this.authService.refreshTokens(userId, refreshToken);
   }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('role')
+  roleCheck(@Req() req) {
+    return this.authService.checkRole(req.user._id);
+  }
 }

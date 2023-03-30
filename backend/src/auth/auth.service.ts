@@ -146,4 +146,9 @@ export class AuthService {
       refreshToken,
     };
   }
+  async checkRole(userId: string) {
+    const user = await this.usersService.findById(userId);
+    const data = { isAdmin: user.isAdmin };
+    return data;
+  }
 }

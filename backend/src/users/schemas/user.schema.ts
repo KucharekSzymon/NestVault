@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, Model } from 'mongoose';
 
 export type UserDocument = User & Document;
 
@@ -55,3 +55,15 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+/**
+ * Sets first created user as an admin
+ */
+UserSchema.pre('save', async function (next) {
+  const model = this.constructor as Model<UserDocument>;
+  const count = await model.countDocuments();
+  if (count === 0) {
+    this.isAdmin = true;
+  }
+  next();
+});
