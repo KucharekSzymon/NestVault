@@ -40,6 +40,7 @@ export class AuthService {
     await this.updateRefreshToken(newUser._id, tokens.refreshToken);
     return { message: 'Registered successfully!' };
   }
+
   /**
    * Logging as user that returns valid user data bundled with JWT tokens
    * @param data Object containing user creditentials
@@ -57,13 +58,13 @@ export class AuthService {
     const bundle = {
       name: user.name,
       email: user.email,
-      admin: user.isAdmin,
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
     };
 
     return bundle;
   }
+
   /**
    * Logout as user thats remove refresh token
    * @param userId User unique id
@@ -72,6 +73,7 @@ export class AuthService {
     this.usersService.update(userId, { refreshToken: null });
     return 'User logged out';
   }
+
   /**
    * Refreshing user tokens after checking provided token
    * @param userId User unique id
@@ -91,6 +93,7 @@ export class AuthService {
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
   }
+
   /**
    * Hashing data with argon algorythm
    * @param data Plain data
@@ -99,6 +102,7 @@ export class AuthService {
   hashData(data: string) {
     return argon2.hash(data);
   }
+
   /**
    * Replacing Old user token with new refreshed one
    * @param userId User unique id
@@ -110,6 +114,7 @@ export class AuthService {
       refreshToken: hashedRefreshToken,
     });
   }
+
   /**
    * JWT service that's return valid tokens
    * @param userId User unique id
@@ -146,9 +151,14 @@ export class AuthService {
       refreshToken,
     };
   }
+
+  /**
+   * Checks if user has a amin role
+   * @param userId User identification for role check
+   * @returns Boolean of admin status
+   */
   async checkRole(userId: string) {
     const user = await this.usersService.findById(userId);
-    const data = { isAdmin: user.isAdmin };
-    return data;
+    return user.isAdmin;
   }
 }
