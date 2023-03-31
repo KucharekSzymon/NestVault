@@ -1,16 +1,5 @@
 <template>
-  <v-app id="inspire">
-    <!-- <v-system-bar>
-      <v-spacer></v-spacer>
-
-      <v-icon>mdi-square</v-icon>
-
-      <v-icon>mdi-circle</v-icon>
-
-      <v-icon>mdi-triangle</v-icon>
-      <v-icon icon="fas fa-plus" />
-      <v-icon icon="mdi:mdi-minus" />
-    </v-system-bar> -->
+  <v-app id="app">
     <v-navigation-drawer v-model="drawer" expand-on-hover rail>
       <v-list>
         <v-list-item
@@ -64,9 +53,34 @@
         v-model="dataProgress"
         class="me-2"
       ></v-progress-circular>
+
       <v-btn class="" @click="toggleTheme">
         <v-icon icon="fas fa-circle-half-stroke" />
       </v-btn>
+
+      <router-link to="/home"> Home </router-link>
+      <router-link to="/" v-if="showAdminBoard">Admin Board</router-link>
+
+      <router-link v-if="currentUser" to="/user">User</router-link>
+
+      <div v-if="!currentUser" class="flex md:order-2 gap-2">
+        <router-link to="/login">
+          <button>Sign In</button>
+        </router-link>
+        <router-link to="/register">
+          <button>Sign Up</button>
+        </router-link>
+      </div>
+      <div v-if="currentUser" class="flex md:order-2 gap-2">
+        <router-link to="/profile">
+          <div>
+            {{ currentUser.name }}
+          </div>
+        </router-link>
+        <a @click.prevent="logOut">
+          <button>LogOut</button>
+        </a>
+      </div>
     </v-navigation-drawer>
 
     <v-main>
@@ -87,12 +101,14 @@
             multiple
           ></v-autocomplete>
         </v-card>
+        <router-view />
       </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
+import eventBus from "./common/eventBus";
 import { useTheme } from "vuetify";
 
 export default {
@@ -118,6 +134,16 @@ export default {
     };
   },
   computed: {
+    currentUser() {
+      return this.$store.state.auth.user;
+    },
+    showAdminBoard() {
+      if (this.currentUser && this.currentUser.admin) {
+        return this.currentUser.admin;
+      }
+
+      return false;
+    },
     dataUsed() {
       return 2;
     },
@@ -127,6 +153,20 @@ export default {
     dataMaxLimit() {
       return 10;
     },
+  },
+  methods: {
+    logOut() {
+      this.$store.dispatch("auth/logout");
+      this.$router.push("/login");
+    },
+  },
+  mounted() {
+    eventBus.on("logout", () => {
+      this.logOut();
+    });
+  },
+  beforeUnmount() {
+    eventBus.remove("logout");
   },
 };
 </script>
