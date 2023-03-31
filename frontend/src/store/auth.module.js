@@ -38,7 +38,7 @@ export const auth = {
       );
     },
     refreshToken({ commit }, accessToken) {
-      commit("refreshToken", accessToken);
+      commit("accessToken", accessToken);
     },
   },
   mutations: {
