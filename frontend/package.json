@@ -9,7 +9,6 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@mdi/font": "^7.2.96",
     "@mdi/js": "^7.2.96",
     "axios": "^1.2.2",
     "vee-validate": "^4.7.3",
@@ -21,6 +20,7 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.4.0",
+    "@mdi/font": "^7.2.96",
     "@rushstack/eslint-patch": "^1.1.4",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-prettier": "^7.0.0",
