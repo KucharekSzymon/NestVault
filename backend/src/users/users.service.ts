@@ -119,12 +119,26 @@ export class UsersService {
     const requestor = await this.userModel.findById(reqId);
     if (user == null || requestor == null)
       throw new NotFoundException('User not found');
-    if (!requestor.isAdmin)
-      throw new ForbiddenException('You dont have permission to do that!');
     if (!isNumberString(newStorageLimit))
       throw new BadRequestException('Provided value is not an number');
 
     user.storageLimit = newStorageLimit;
+    return this.userModel
+      .findByIdAndUpdate(userId, user)
+      .setOptions({ overwrite: true, new: true });
+  }
+
+  /**
+   * Admin function for promoting / demoting another user to admin role
+   * @param userId User identificator
+   * @param isAdmin Sets user isAdmin property
+   * @returns Updated user object with new set role
+   */
+  async changeRole(userId, isAdmin: boolean) {
+    const user = await this.userModel.findById(userId);
+    if (user == null) throw new NotFoundException('User not found');
+
+    user.isAdmin = isAdmin;
     return this.userModel
       .findByIdAndUpdate(userId, user)
       .setOptions({ overwrite: true, new: true });
