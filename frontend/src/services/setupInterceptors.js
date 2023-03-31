@@ -1,5 +1,6 @@
 import axiosInstance from "./api";
 import TokenService from "./token.service";
+import axios from "axios";
 
 const setup = (store) => {
   axiosInstance.interceptors.request.use(
@@ -14,6 +15,7 @@ const setup = (store) => {
       return Promise.reject(error);
     }
   );
+
   axiosInstance.interceptors.response.use(
     (res) => {
       return res;
@@ -22,26 +24,38 @@ const setup = (store) => {
       const originalConfig = err.config;
 
       if (originalConfig.url !== "/auth/signin" && err.response) {
-        /**
-         * Access Token Expired
-         */
-        if (err.response.status === 401 && !originalConfig.retry) {
-          originalConfig.retry = true;
-
+        // Access Token was expired
+        if (err.response.status === 401 && !originalConfig._retry) {
+          originalConfig._retry = true;
+          const tempConfig = {
+            headers: {
+              Authorization: `Bearer ${TokenService.getLocalRefreshToken()}`,
+            },
+          };
           try {
-            const rs = await axiosInstance.get("/auth/refresh");
-            const refreshToken = rs.data.refreshToken;
+            const rs = await axios.get(
+              "http://localhost:3000/auth/refresh",
+              tempConfig
+            );
+            const { accessToken } = rs.data;
+            const { refreshToken } = rs.data;
 
-            store.dispatch("auth/refreshToken", refreshToken);
-            TokenService.updateLocalAccessToken(refreshToken);
+            store.dispatch("auth/refreshAccessToken", accessToken);
+            TokenService.updateLocalAccessToken(accessToken);
+
+            store.dispatch("auth/refreshRefreshToken", refreshToken);
+            TokenService.updateLocalRefreshToken(refreshToken);
+
             return axiosInstance(originalConfig);
           } catch (_error) {
             return Promise.reject(_error);
           }
         }
       }
+
       return Promise.reject(err);
     }
   );
 };
+
 export default setup;

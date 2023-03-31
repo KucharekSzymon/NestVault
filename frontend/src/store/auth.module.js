@@ -37,8 +37,11 @@ export const auth = {
         }
       );
     },
-    refreshToken({ commit }, accessToken) {
-      commit("accessToken", accessToken);
+    refreshAccessToken({ commit }, accessToken) {
+      commit("refreshAccessToken", accessToken);
+    },
+    refreshRefreshToken({ commit }, accessToken) {
+      commit("refreshAccessToken", accessToken);
     },
   },
   mutations: {
@@ -60,9 +63,13 @@ export const auth = {
     registerFailure(state) {
       state.status.loggedIn = false;
     },
-    refreshToken(state, accessToken) {
+    refreshAccessToken(state, accessToken) {
       state.status.loggedIn = true;
       state.user = { ...state.user, accessToken: accessToken };
+    },
+    refreshRefreshToken(state, refreshToken) {
+      state.status.loggedIn = true;
+      state.user = { ...state.user, refreshToken: refreshToken };
     },
   },
 };
