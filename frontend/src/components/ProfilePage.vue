@@ -6,9 +6,14 @@
       </h3>
     </header>
     <p>
-      <strong>Token:</strong>
+      <strong>Access token:</strong>
       {{ currentUser.accessToken.substring(0, 20) }} ...
       {{ currentUser.accessToken.substr(currentUser.accessToken.length - 20) }}
+    </p>
+    <p>
+      <strong>Refresh token:</strong>
+      {{ currentUser.refreshToken.substring(0, 20) }} ...
+      {{ currentUser.refreshToken.substr(currentUser.accessToken.length - 20) }}
     </p>
     <p>
       <strong>Email:</strong>

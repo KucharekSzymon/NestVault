@@ -82,6 +82,7 @@ export class AuthService {
    */
   async refreshTokens(userId: string, refreshToken: string) {
     const user = await this.usersService.findById(userId);
+
     if (!user || !user.refreshToken)
       throw new ForbiddenException('Access Denied');
     const refreshTokenMatches = await argon2.verify(
@@ -130,8 +131,7 @@ export class AuthService {
         },
         {
           secret: this.configService.get('jwtSecret'),
-          expiresIn: '120m',
-          //expiresIn: '15m',
+          expiresIn: '15m',
         },
       ),
       this.jwtService.signAsync(
