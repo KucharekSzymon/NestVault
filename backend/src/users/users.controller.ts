@@ -14,6 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -37,7 +38,19 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
-  @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Post('promote/:id')
+  promote(@Param('id') id: string) {
+    return this.usersService.changeRole(id, true);
+  }
+
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Post('demote/:id')
+  demote(@Param('id') id: string) {
+    return this.usersService.changeRole(id, false);
+  }
+
+  @UseGuards(AccessTokenGuard, RolesGuard)
   @Post('storage')
   updateStorageLimit(@Req() req) {
     return this.usersService.updateStoragelimit(
