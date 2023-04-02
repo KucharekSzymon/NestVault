@@ -51,13 +51,31 @@ export class UsersController {
   }
 
   @UseGuards(AccessTokenGuard, RolesGuard)
-  @Post('storage')
+  @Post('storageLimit')
   updateStorageLimit(@Req() req) {
     return this.usersService.updateStoragelimit(
       req.body.userId,
       req.user._id,
       req.body.newStorageLimit,
     );
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('storageLimit')
+  getStorageLimit(@Req() req) {
+    return this.usersService.storage(req.user._id, 1);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('storedData')
+  getStoredData(@Req() req) {
+    return this.usersService.storage(req.user._id, 2);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('spaceLeft')
+  getSpaceLeft(@Req() req) {
+    return this.usersService.storage(req.user._id, 3);
   }
 
   @UseGuards(AccessTokenGuard)
