@@ -40,7 +40,7 @@ export class FilesService {
     return await this.fileModel.find({ owner }).exec();
   }
 
-  async checkSpace(userId: string) {
+  async spaceLeft(userId: string) {
     const user = await this.userService.findById(userId);
     return user.storageLimit - user.storedData;
   }

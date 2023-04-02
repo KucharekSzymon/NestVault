@@ -129,6 +129,24 @@ export class UsersService {
   }
 
   /**
+   * Function for checking user storage limits / how much user store / space left
+   * @param userId User id
+   * @param option 1 - Storage limit, 2 - Stored data, 3 - Space left
+   * @returns
+   */
+  async storage(userId: string, option: 1 | 2 | 3) {
+    const user = await this.userModel.findById(userId);
+    switch (option) {
+      case 1:
+        return user.storageLimit;
+      case 2:
+        return user.storedData;
+      case 3:
+        return user.storageLimit - user.storedData;
+    }
+  }
+
+  /**
    * Admin function for promoting / demoting another user to admin role
    * @param userId User identificator
    * @param isAdmin Sets user isAdmin property
