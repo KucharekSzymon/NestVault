@@ -1,5 +1,21 @@
 <template>
   <div class="container">
+    <v-card>
+      <v-autocomplete
+        clearable
+        chips
+        label="Autocomplete"
+        :items="[
+          'California',
+          'Colorado',
+          'Florida',
+          'Georgia',
+          'Texas',
+          'Wyoming',
+        ]"
+        multiple
+      ></v-autocomplete>
+    </v-card>
     <header>
       <pre>
         {{ content }}

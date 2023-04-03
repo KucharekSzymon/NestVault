@@ -1,15 +1,30 @@
 <template>
   <v-app id="app">
     <v-navigation-drawer v-model="drawer" expand-on-hover rail>
-      <v-list>
+      <v-list v-if="currentUser">
         <v-list-item
           prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-          title="Sandra Adams"
-          subtitle="sandra_a88@gmailcom"
+          :title="currentUser.name"
+          :subtitle="currentUser.email"
         ></v-list-item>
       </v-list>
 
-      <v-divider></v-divider>
+      <v-list v-if="!currentUser" density="compact" nav>
+        <router-link class="text-decoration-none" to="/login">
+          <v-list-item
+            prepend-icon="fa-regular fa-star"
+            title="Sign in"
+            value="Sign in"
+          />
+        </router-link>
+        <router-link class="text-decoration-none" to="/register">
+          <v-list-item
+            prepend-icon="fa-solid fa-star"
+            title="Sign Up"
+            value="Sign Up"
+          />
+        </router-link>
+      </v-list>
 
       <v-list density="compact" nav>
         <v-list-item
@@ -18,6 +33,8 @@
           title="My Files"
           value="myfiles"
         ></v-list-item>
+        <v-list-item> </v-list-item>
+
         <v-list-item
           class="rounded-shaped"
           prepend-icon="fas fa-share"
@@ -54,8 +71,11 @@
         class="me-2"
       ></v-progress-circular>
 
-      <v-btn class="" @click="toggleTheme">
-        <v-icon icon="fas fa-circle-half-stroke" />
+      <v-btn
+        density="default"
+        icon="fa fa-circle-half-stroke"
+        @click="toggleTheme"
+      >
       </v-btn>
 
       <router-link to="/home"> Home </router-link>
@@ -63,14 +83,6 @@
 
       <router-link v-if="currentUser" to="/user">User</router-link>
 
-      <div v-if="!currentUser" class="flex md:order-2 gap-2">
-        <router-link to="/login">
-          <button>Sign In</button>
-        </router-link>
-        <router-link to="/register">
-          <button>Sign Up</button>
-        </router-link>
-      </div>
       <div v-if="currentUser" class="flex md:order-2 gap-2">
         <router-link to="/profile">
           <div>
@@ -84,24 +96,10 @@
     </v-navigation-drawer>
 
     <v-main>
-      <v-container class="py-8 px-6" fluid
-        ><v-card>
-          <v-autocomplete
-            clearable
-            chips
-            label="Autocomplete"
-            :items="[
-              'California',
-              'Colorado',
-              'Florida',
-              'Georgia',
-              'Texas',
-              'Wyoming',
-            ]"
-            multiple
-          ></v-autocomplete>
+      <v-container class="py-8 px-6" loading>
+        <v-card loading>
+          <router-view />
         </v-card>
-        <router-view />
       </v-container>
     </v-main>
   </v-app>
@@ -110,6 +108,7 @@
 <script>
 import eventBus from "./common/eventBus";
 import { useTheme } from "vuetify";
+import UsersService from "./services/user.service";
 
 export default {
   data: () => ({
@@ -145,13 +144,14 @@ export default {
       return false;
     },
     dataUsed() {
-      return 2;
+      return UsersService.getSpaceUsed();
     },
     dataProgress() {
+      console.log(this.dataMaxLimit);
       return (this.dataUsed / this.dataMaxLimit) * 100;
     },
     dataMaxLimit() {
-      return 10;
+      return UsersService.getSpaceLeft();
     },
   },
   methods: {
