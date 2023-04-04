@@ -1,6 +1,9 @@
 import api from "./api";
 
 class UserService {
+  checkAdminPerrmissions() {
+    return api.get("/auth/role");
+  }
   getPublicContent() {
     return api.get("/users/me");
   }
@@ -13,13 +16,13 @@ class UserService {
     return api.get("/users/me");
   }
   getSpaceLeft() {
-    return api.get("/users/spaceleft");
+    return 8; //api.get("/users/spaceleft");
   }
   getSpaceLimit() {
-    return api.get("/users/spacelimit");
+    return 10; //api.get("/users/spacelimit");
   }
   getSpaceUsed() {
-    return api.get("/users/spaceused");
+    return 2; //api.get("/users/spaceused");
   }
 }
 

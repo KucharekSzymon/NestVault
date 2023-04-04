@@ -37,8 +37,8 @@ export default {
   },
   async mounted() {
     try {
-      const data = await UserService.getAdminBoard();
-      this.content = data.data;
+      const res = await UserService.getAdminBoard();
+      this.content = res.data;
       this.loading = false;
     } catch (e) {
       console.log(e);
