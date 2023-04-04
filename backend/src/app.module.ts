@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './files/files.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ShareUrlsModule } from './share-urls/share-urls.module';
+import { DelayMiddleware } from './common/guards/sleep.guard';
 
 @Module({
   imports: [
@@ -26,4 +27,8 @@ import { ShareUrlsModule } from './share-urls/share-urls.module';
     ShareUrlsModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(DelayMiddleware).forRoutes('*');
+  }
+}
