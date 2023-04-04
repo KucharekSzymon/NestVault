@@ -96,8 +96,8 @@
     </v-navigation-drawer>
 
     <v-main>
-      <v-container class="py-8 px-6" loading>
-        <v-card loading>
+      <v-container class="py-8 px-6">
+        <v-card>
           <router-view />
         </v-card>
       </v-container>

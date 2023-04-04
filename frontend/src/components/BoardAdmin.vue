@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <v-card>
+    <v-card :loading="loading">
       <v-autocomplete
         clearable
         chips
@@ -31,23 +31,18 @@ export default {
   name: "Admin",
   data() {
     return {
+      loading: true,
       content: "AdminBoard",
     };
   },
-  mounted() {
-    UserService.getAdminBoard().then(
-      (response) => {
-        this.content = response.data;
-      },
-      (error) => {
-        this.content =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-      }
-    );
+  async mounted() {
+    try {
+      const data = await UserService.getAdminBoard();
+      this.content = data.data;
+      this.loading = false;
+    } catch (e) {
+      console.log(e);
+    }
   },
 };
 </script>
