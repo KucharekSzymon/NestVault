@@ -24,6 +24,9 @@ class AuthService {
     });
     return response.data;
   }
+  async getRole() {
+    return await api.get("/auth/role");
+  }
 }
 
 export default new AuthService();

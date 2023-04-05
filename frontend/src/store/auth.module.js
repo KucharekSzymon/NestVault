@@ -2,8 +2,8 @@ import AuthService from "../services/auth.service";
 
 const user = JSON.parse(localStorage.getItem("user"));
 const initialState = user
-  ? { status: { loggedIn: true }, user }
-  : { status: { loggedIn: false }, user: null };
+  ? { status: { loggedIn: true }, user, isAdmin: false }
+  : { status: { loggedIn: false }, user: null, isAdmin: false };
 
 export const auth = {
   namespaced: true,
@@ -24,6 +24,15 @@ export const auth = {
       const response = await AuthService.register(user);
       commit("registerSuccess");
       return response;
+    },
+
+    async fetchAdminRole({ commit }) {
+      try {
+        const isAdmin = await AuthService.getRole();
+        commit("setAdminRole", isAdmin);
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     refreshAccessToken({ commit }, accessToken) {
@@ -57,6 +66,10 @@ export const auth = {
     refreshAccessToken(state, accessToken) {
       state.status.loggedIn = true;
       state.user = { ...state.user, accessToken: accessToken };
+    },
+
+    setAdminRole(state, isAdmin) {
+      state.isAdmin = isAdmin;
     },
   },
 };
