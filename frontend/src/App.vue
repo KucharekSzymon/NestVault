@@ -107,7 +107,6 @@ export default {
     return {
       drawer: null,
       loading: true,
-      admin: false,
     };
   },
   setup() {
@@ -141,19 +140,8 @@ export default {
       this.$store.dispatch("auth/logout");
       this.$router.push("/login");
     },
-    checkAdminRole() {
-      return true;
-    },
   },
   async mounted() {
-    try {
-      if (this.currentUser) {
-        const res = await UserService.checkAdminPerrmissions();
-        this.admin = res.data;
-      }
-    } catch (e) {
-      console.log(e);
-    }
     eventBus.on("logout", () => {
       this.logOut();
     });
