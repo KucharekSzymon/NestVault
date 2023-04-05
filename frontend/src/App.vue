@@ -147,8 +147,10 @@ export default {
   },
   async mounted() {
     try {
-      const res = await UserService.checkAdminPerrmissions();
-      this.admin = res.data;
+      if (this.currentUser) {
+        const res = await UserService.checkAdminPerrmissions();
+        this.admin = res.data;
+      }
     } catch (e) {
       console.log(e);
     }

@@ -32,11 +32,19 @@
         </div>
       </Form>
 
-      <div
-        v-if="message"
-        :class="successful ? 'alert-success' : 'alert-danger'"
-      >
-        {{ message }}
+      <div v-if="messages" role="alert">
+        <template v-if="Array.isArray(messages)">
+          <v-alert
+            :type="successful ? 'success' : 'error'"
+            v-for="(message, index) in messages"
+            :key="index"
+          >
+            {{ message }}
+          </v-alert>
+        </template>
+        <template v-else>
+          {{ messages }}
+        </template>
       </div>
     </div>
   </div>
@@ -49,6 +57,7 @@ import * as yup from "yup";
 export default {
   name: "SignUp",
   components: {
+    // eslint-disable-next-line vue/no-reserved-component-names
     Form,
     Field,
     ErrorMessage,
@@ -75,7 +84,7 @@ export default {
     return {
       successful: false,
       loading: false,
-      message: "",
+      messages: [],
       schema,
     };
   },
@@ -90,28 +99,27 @@ export default {
     }
   },
   methods: {
-    handleRegister(user) {
-      this.message = "";
+    async handleRegister(user) {
+      this.messages = [];
       this.successful = false;
       this.loading = true;
 
-      this.$store.dispatch("auth/register", user).then(
-        (data) => {
-          this.message = data.message;
-          this.successful = true;
-          this.loading = false;
-        },
-        (error) => {
-          this.message =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-          this.successful = false;
-          this.loading = false;
-        }
-      );
+      try {
+        const data = await this.$store.dispatch("auth/register", user);
+        this.messages = [data.message];
+        this.successful = true;
+      } catch (error) {
+        this.messages = (error.response &&
+        error.response.data &&
+        Array.isArray(error.response.data.message)
+          ? error.response.data.message
+          : [error.response.data.message]) || [error.message] || [
+            error.toString(),
+          ];
+        this.successful = false;
+      } finally {
+        this.loading = false;
+      }
     },
   },
 };

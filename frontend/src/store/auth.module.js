@@ -9,34 +9,23 @@ export const auth = {
   namespaced: true,
   state: initialState,
   actions: {
-    login({ commit }, user) {
-      return AuthService.login(user).then(
-        (user) => {
-          commit("loginSuccess", user);
-          return Promise.resolve(user);
-        },
-        (error) => {
-          commit("loginFailure");
-          return Promise.reject(error);
-        }
-      );
+    async login({ commit }, user) {
+      const loggedInUser = await AuthService.login(user);
+      commit("loginSuccess", loggedInUser);
+      return loggedInUser;
     },
+
     logout({ commit }) {
       AuthService.logout();
       commit("logout");
     },
-    register({ commit }, user) {
-      return AuthService.register(user).then(
-        (response) => {
-          commit("registerSuccess");
-          return Promise.resolve(response.data);
-        },
-        (error) => {
-          commit("registerFailure");
-          return Promise.reject(error);
-        }
-      );
+
+    async register({ commit }, user) {
+      const response = await AuthService.register(user);
+      commit("registerSuccess");
+      return response;
     },
+
     refreshAccessToken({ commit }, accessToken) {
       commit("refreshAccessToken", accessToken);
     },
@@ -46,20 +35,25 @@ export const auth = {
       state.status.loggedIn = true;
       state.user = user;
     },
+
     loginFailure(state) {
       state.status.loggedIn = false;
       state.user = null;
     },
+
     logout(state) {
       state.status.loggedIn = false;
       state.user = null;
     },
+
     registerSuccess(state) {
       state.status.loggedIn = false;
     },
+
     registerFailure(state) {
       state.status.loggedIn = false;
     },
+
     refreshAccessToken(state, accessToken) {
       state.status.loggedIn = true;
       state.user = { ...state.user, accessToken: accessToken };
