@@ -45,7 +45,7 @@
         ></v-list-item>
         <v-divider />
 
-        <router-link class="text-decoration-none" to="/admin">
+        <router-link v-if="isAdmin" class="text-decoration-none" to="/admin">
           <v-list-item
             prepend-icon="fa-solid fa-screwdriver-wrench"
             title="Admin board"
@@ -62,7 +62,7 @@
         </router-link>
         <v-divider />
 
-        <a @click.prevent="logOut">
+        <a v-if="currentUser" @click.prevent="logOut">
           <v-list-item
             prepend-icon="fa fa-right-from-bracket "
             title="Logout"
@@ -101,12 +101,14 @@
 import eventBus from "./common/eventBus";
 import { useTheme } from "vuetify";
 import UserService from "./services/user.service";
+import AuthService from "./services/auth.service";
 
 export default {
   data() {
     return {
       drawer: null,
       loading: true,
+      isAdmin: false,
     };
   },
   setup() {
@@ -136,18 +138,42 @@ export default {
     },
   },
   methods: {
+    async checkAdminRole() {
+      console.log("Role check");
+      if (this.currentUser)
+        try {
+          this.isAdmin = await AuthService.checkRole();
+        } catch (error) {
+          console.log(error);
+        }
+    },
     logOut() {
       this.$store.dispatch("auth/logout");
+      this.isAdmin = false;
       this.$router.push("/login");
     },
   },
   async mounted() {
+    try {
+      this.checkAdminRole;
+    } catch (error) {
+      console.log(error);
+    }
     eventBus.on("logout", () => {
       this.logOut();
     });
   },
   beforeUnmount() {
     eventBus.remove("logout");
+  },
+  watch: {
+    currentUser: async function (newUser) {
+      if (newUser) {
+        await this.checkAdminRole();
+      } else {
+        this.isAdmin = false;
+      }
+    },
   },
 };
 </script>
