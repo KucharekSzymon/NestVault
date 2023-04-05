@@ -139,7 +139,6 @@ export default {
   },
   methods: {
     async checkAdminRole() {
-      console.log("Role check");
       if (this.currentUser)
         try {
           this.isAdmin = await AuthService.checkRole();

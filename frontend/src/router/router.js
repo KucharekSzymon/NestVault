@@ -68,13 +68,16 @@ router.beforeEach(async (to, from, next) => {
 
   if (authRequired) {
     // check if user is admin
-    const isAdmin = await AuthService.checkRole();
-
-    if (adminPaths.includes(to.path) && !isAdmin) {
-      // trying to access an admin page without being an admin
-      // redirect to home page
-      next("/");
-      return;
+    try {
+      const isAdmin = await AuthService.checkRole();
+      if (adminPaths.includes(to.path) && !isAdmin) {
+        // trying to access an admin page without being an admin
+        // redirect to home page
+        next("/");
+        return;
+      }
+    } catch (err) {
+      console.log(err);
     }
   }
 
