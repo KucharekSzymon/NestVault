@@ -26,15 +26,6 @@ export const auth = {
       return response;
     },
 
-    async fetchAdminRole({ commit }) {
-      try {
-        const isAdmin = await AuthService.getRole();
-        commit("setAdminRole", isAdmin);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
     refreshAccessToken({ commit }, accessToken) {
       commit("refreshAccessToken", accessToken);
     },
@@ -66,10 +57,6 @@ export const auth = {
     refreshAccessToken(state, accessToken) {
       state.status.loggedIn = true;
       state.user = { ...state.user, accessToken: accessToken };
-    },
-
-    setAdminRole(state, isAdmin) {
-      state.isAdmin = isAdmin;
     },
   },
 };

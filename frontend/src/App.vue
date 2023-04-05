@@ -47,7 +47,6 @@
 
         <router-link class="text-decoration-none" to="/admin">
           <v-list-item
-            v-if="checkRole"
             prepend-icon="fa-solid fa-screwdriver-wrench"
             title="Admin board"
             value="admin"
@@ -124,9 +123,6 @@ export default {
   computed: {
     currentUser() {
       return this.$store.state.auth.user;
-    },
-    checkRole() {
-      return this.$store.state.auth.isAdmin;
     },
     dataUsed() {
       return UserService.getSpaceUsed();
