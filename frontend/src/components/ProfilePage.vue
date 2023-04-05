@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div v-if="currentUser" class="container">
     <header>
       <h3>
         <strong>{{ currentUser.name }}</strong> Profile

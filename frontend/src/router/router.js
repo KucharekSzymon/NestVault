@@ -1,4 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router";
+
+import AuthService from "../services/auth.service";
+
 import HomePage from "../components/HomePage.vue";
 import SignIn from "../components/SignIn.vue";
 import SignUp from "../components/SignUp.vue";
@@ -50,18 +53,35 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const publicPages = ["/login", "/register", "/home"];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem("user");
+  const adminPaths = ["/admin", "/admin2"];
 
   // trying to access a restricted page + not logged in
   // redirect to login page
   if (authRequired && !loggedIn) {
     next("/login");
-  } else {
-    next();
+    return;
   }
+
+  if (authRequired) {
+    // check if user is admin
+    try {
+      const isAdmin = await AuthService.checkRole();
+      if (adminPaths.includes(to.path) && !isAdmin) {
+        // trying to access an admin page without being an admin
+        // redirect to home page
+        next("/");
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  next();
 });
 
 export default router;

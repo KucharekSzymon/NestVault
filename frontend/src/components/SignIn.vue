@@ -13,7 +13,6 @@
           <Field name="password" type="password" />
           <ErrorMessage name="password" />
         </div>
-
         <div>
           <button
             :disabled="loading"
@@ -24,16 +23,24 @@
           </button>
         </div>
 
-        <div>
-          <div v-if="message" role="alert">
-            {{ message }}
-          </div>
+        <div v-if="messages" role="alert">
+          <template v-if="Array.isArray(messages)">
+            <v-alert
+              type="error"
+              v-for="(message, index) in messages"
+              :key="index"
+            >
+              {{ message }}
+            </v-alert>
+          </template>
+          <template v-else>
+            {{ messages }}
+          </template>
         </div>
       </Form>
     </div>
   </div>
 </template>
-
 <script>
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
@@ -41,19 +48,23 @@ import * as yup from "yup";
 export default {
   name: "SignIn",
   components: {
+    // eslint-disable-next-line vue/no-reserved-component-names
     Form,
     Field,
     ErrorMessage,
   },
   data() {
     const schema = yup.object().shape({
-      email: yup.string().required("Email is required!"),
+      email: yup
+        .string()
+        .required("Email is required!")
+        .email("Email is invalid!"),
       password: yup.string().required("Password is required!"),
     });
 
     return {
       loading: false,
-      message: "",
+      messages: [],
       schema,
     };
   },
@@ -68,23 +79,22 @@ export default {
     }
   },
   methods: {
-    handleLogin(user) {
+    async handleLogin(user) {
       this.loading = true;
 
-      this.$store.dispatch("auth/login", user).then(
-        () => {
-          this.$router.push("/profile");
-        },
-        (error) => {
-          this.loading = false;
-          this.message =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-        }
-      );
+      try {
+        await this.$store.dispatch("auth/login", user);
+        this.$router.push("/profile");
+      } catch (error) {
+        this.loading = false;
+        this.messages = (error.response &&
+        error.response.data &&
+        Array.isArray(error.response.data.message)
+          ? error.response.data.message
+          : [error.response.data.message]) || [error.message] || [
+            error.toString(),
+          ];
+      }
     },
   },
 };

@@ -1,9 +1,6 @@
 import api from "./api";
 
 class UserService {
-  checkAdminPerrmissions() {
-    return api.get("/auth/role");
-  }
   getPublicContent() {
     return api.get("/users/me");
   }
