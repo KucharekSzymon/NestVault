@@ -1,107 +1,97 @@
 <template>
   <v-app id="app">
     <v-navigation-drawer v-model="drawer" expand-on-hover rail>
-      <v-list>
-        <v-list-item
-          prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-          title="Sandra Adams"
-          subtitle="sandra_a88@gmailcom"
-        ></v-list-item>
+      <v-list v-if="!currentUser" nav>
+        <router-link class="text-decoration-none" to="/login">
+          <v-list-item
+            prepend-icon="fa-regular fa-star"
+            title="Sign in"
+            value="login"
+          />
+        </router-link>
+        <router-link class="text-decoration-none" to="/register">
+          <v-list-item
+            prepend-icon="fa-solid fa-star"
+            title="Sign Up"
+            value="register"
+          />
+        </router-link>
       </v-list>
-
-      <v-divider></v-divider>
-
-      <v-list density="compact" nav>
+      <v-list v-if="currentUser" nav>
+        <router-link class="text-decoration-none" to="/profile">
+          <v-list-item
+            prepend-icon="fa fa-user"
+            :title="currentUser.name"
+            :subtitle="currentUser.email"
+            value=""
+          ></v-list-item>
+        </router-link>
+        <v-divider />
         <v-list-item
-          class="rounded-shaped"
           prepend-icon="fa:fas fa-folder"
           title="My Files"
           value="myfiles"
         ></v-list-item>
+
         <v-list-item
-          class="rounded-shaped"
           prepend-icon="fas fa-share"
           title="Shared with me"
           value="shared"
         ></v-list-item>
         <v-list-item
-          class="rounded-shaped"
           prepend-icon="fas fa-star"
           title="Starred"
           value="starred"
         ></v-list-item>
-      </v-list>
+        <v-divider />
 
-      <v-divider></v-divider>
+        <router-link class="text-decoration-none" to="/admin">
+          <v-list-item
+            prepend-icon="fa-solid fa-screwdriver-wrench"
+            title="Admin board"
+            value="admin"
+          />
+        </router-link>
+        <router-link class="text-decoration-none" to="/user">
+          <v-list-item
+            prepend-icon="fa-solid fa-info"
+            title="User panel"
+            value="user"
+          >
+          </v-list-item>
+        </router-link>
+        <v-divider />
 
-      <v-list density="compact" nav>
+        <a @click.prevent="logOut">
+          <v-list-item
+            prepend-icon="fa fa-right-from-bracket "
+            title="Logout"
+            value="Logout"
+          ></v-list-item>
+        </a>
+        <v-divider></v-divider>
+        <v-list-item>
+          <v-progress-circular
+            v-model="dataProgress"
+            class="me-2"
+          ></v-progress-circular>
+        </v-list-item>
         <v-list-item
-          class="rounded-shaped"
-          v-for="[icon, text] in links"
-          :key="icon"
-          link
+          :prepend-icon="
+            theme.global.current.value.dark ? 'fa fa-sun' : 'fa fa-moon'
+          "
+          @click="toggleTheme"
+          title="Change theme"
         >
-          <template v-slot:prepend>
-            <v-icon>{{ icon }}</v-icon>
-          </template>
-
-          <v-list-item-title>{{ text }}</v-list-item-title>
         </v-list-item>
       </v-list>
-      <v-divider></v-divider>
-      <v-progress-circular
-        v-model="dataProgress"
-        class="me-2"
-      ></v-progress-circular>
-
-      <v-btn class="" @click="toggleTheme">
-        <v-icon icon="fas fa-circle-half-stroke" />
-      </v-btn>
-
-      <router-link to="/home"> Home </router-link>
-      <router-link to="/" v-if="showAdminBoard">Admin Board</router-link>
-
-      <router-link v-if="currentUser" to="/user">User</router-link>
-
-      <div v-if="!currentUser" class="flex md:order-2 gap-2">
-        <router-link to="/login">
-          <button>Sign In</button>
-        </router-link>
-        <router-link to="/register">
-          <button>Sign Up</button>
-        </router-link>
-      </div>
-      <div v-if="currentUser" class="flex md:order-2 gap-2">
-        <router-link to="/profile">
-          <div>
-            {{ currentUser.name }}
-          </div>
-        </router-link>
-        <a @click.prevent="logOut">
-          <button>LogOut</button>
-        </a>
-      </div>
     </v-navigation-drawer>
 
     <v-main>
-      <v-container class="py-8 px-6" fluid
-        ><v-card>
-          <v-autocomplete
-            clearable
-            chips
-            label="Autocomplete"
-            :items="[
-              'California',
-              'Colorado',
-              'Florida',
-              'Georgia',
-              'Texas',
-              'Wyoming',
-            ]"
-            multiple
-          ></v-autocomplete>
+      <v-container>
+        <v-card>
+          <router-view />
         </v-card>
-        <router-view />
       </v-container>
     </v-main>
   </v-app>
@@ -110,18 +100,16 @@
 <script>
 import eventBus from "./common/eventBus";
 import { useTheme } from "vuetify";
+import UserService from "./services/user.service";
 
 export default {
-  data: () => ({
-    cards: ["Today", "Yesterday"],
-    drawer: null,
-    links: [
-      ["mdi:mdi-inbox-arrow-down", "Inbox"],
-      ["mdi:mdi-send", "Send"],
-      ["mdi:mdi-delete", "Trash"],
-      ["mdi:mdi-alert-octagon", "Spam"],
-    ],
-  }),
+  data() {
+    return {
+      drawer: null,
+      loading: true,
+      admin: false,
+    };
+  },
   setup() {
     const theme = useTheme();
 
@@ -137,21 +125,15 @@ export default {
     currentUser() {
       return this.$store.state.auth.user;
     },
-    showAdminBoard() {
-      if (this.currentUser && this.currentUser.admin) {
-        return this.currentUser.admin;
-      }
-
-      return false;
-    },
     dataUsed() {
-      return 2;
+      return UserService.getSpaceUsed();
     },
     dataProgress() {
+      // console.log(this.dataMaxLimit);
       return (this.dataUsed / this.dataMaxLimit) * 100;
     },
     dataMaxLimit() {
-      return 10;
+      return UserService.getSpaceLeft();
     },
   },
   methods: {
@@ -159,8 +141,17 @@ export default {
       this.$store.dispatch("auth/logout");
       this.$router.push("/login");
     },
+    checkAdminRole() {
+      return true;
+    },
   },
-  mounted() {
+  async mounted() {
+    try {
+      const res = await UserService.checkAdminPerrmissions();
+      this.admin = res.data;
+    } catch (e) {
+      console.log(e);
+    }
     eventBus.on("logout", () => {
       this.logOut();
     });

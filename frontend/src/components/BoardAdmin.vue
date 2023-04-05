@@ -1,5 +1,21 @@
 <template>
   <div class="container">
+    <v-card :loading="loading">
+      <v-autocomplete
+        clearable
+        chips
+        label="Autocomplete"
+        :items="[
+          'California',
+          'Colorado',
+          'Florida',
+          'Georgia',
+          'Texas',
+          'Wyoming',
+        ]"
+        multiple
+      ></v-autocomplete>
+    </v-card>
     <header>
       <pre>
         {{ content }}
@@ -15,23 +31,18 @@ export default {
   name: "Admin",
   data() {
     return {
+      loading: true,
       content: "AdminBoard",
     };
   },
-  mounted() {
-    UserService.getAdminBoard().then(
-      (response) => {
-        this.content = response.data;
-      },
-      (error) => {
-        this.content =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-      }
-    );
+  async mounted() {
+    try {
+      const res = await UserService.getAdminBoard();
+      this.content = res.data;
+      this.loading = false;
+    } catch (e) {
+      console.log(e);
+    }
   },
 };
 </script>

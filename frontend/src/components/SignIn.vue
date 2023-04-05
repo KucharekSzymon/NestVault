@@ -1,5 +1,4 @@
 <template>
-  <v-btn> Button vuetify </v-btn>
   <div>
     <div>
       <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
