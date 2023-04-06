@@ -11,7 +11,7 @@ import UserService from "../services/user.service";
 import eventBus from "../common/eventBus";
 
 export default {
-  name: "User",
+  name: "UserBoard",
   data() {
     return {
       content: "",

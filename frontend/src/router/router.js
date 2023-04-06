@@ -9,6 +9,7 @@ import SignUp from "../components/SignUp.vue";
 const ProfilePage = () => import("../components/ProfilePage.vue");
 const BoardAdmin = () => import("../components/BoardAdmin.vue");
 const BoardUser = () => import("../components/BoardUser.vue");
+const MyFilesPage = () => import("../components/MyFilesPage.vue");
 
 const routes = [
   {
@@ -45,6 +46,11 @@ const routes = [
     name: "user",
     // lazy-loaded
     component: BoardUser,
+  },
+  {
+    path: "/myfiles",
+    name: "myFiles",
+    component: MyFilesPage,
   },
 ];
 

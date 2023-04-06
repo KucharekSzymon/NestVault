@@ -18,8 +18,9 @@
     </v-card>
     <header>
       <pre>
-        {{ content }}
-      </pre>
+          {{ content }}
+        </pre
+      >
     </header>
   </div>
 </template>
