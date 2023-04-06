@@ -2,14 +2,14 @@ import { createWebHistory, createRouter } from "vue-router";
 
 import AuthService from "../services/auth.service";
 
-import HomePage from "../components/HomePage.vue";
-import SignIn from "../components/SignIn.vue";
-import SignUp from "../components/SignUp.vue";
+import HomePage from "../components/Public/HomePage.vue";
+import SignIn from "../components/Public/SignIn.vue";
+import SignUp from "../components/Public/SignUp.vue";
 // lazy-loaded
-const ProfilePage = () => import("../components/ProfilePage.vue");
-const BoardAdmin = () => import("../components/BoardAdmin.vue");
-const BoardUser = () => import("../components/BoardUser.vue");
-const MyFilesPage = () => import("../components/MyFilesPage.vue");
+const ProfilePage = () => import("../components/Users/ProfilePage.vue");
+const BoardAdmin = () => import("../components/Admin/BoardAdmin.vue");
+const BoardUser = () => import("../components/Users/BoardUser.vue");
+const MyFilesPage = () => import("../components/Files/MyFilesPage.vue");
 
 const routes = [
   {

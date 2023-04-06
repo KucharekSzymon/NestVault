@@ -5,7 +5,7 @@
         <h1>My Files</h1>
         <div></div>
         <div>
-          <RouterLink to="newfile">
+          <RouterLink to="/">
             <v-btn> </v-btn>
           </RouterLink>
         </div>
@@ -37,7 +37,7 @@
 </template>
 
 <script lang="js">
-import filesService from "../services/files.service";
+import filesService from "../../services/files.service";
 
 export default {
   name: "AdminBoard",
@@ -50,7 +50,6 @@ export default {
   async mounted() {
     try {
       const res = await filesService.getMyFiles()
-      console.log(res);
       this.files = res.data;
       this.loading = false;
     } catch (e) {
