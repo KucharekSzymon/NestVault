@@ -10,9 +10,8 @@
           </RouterLink>
         </div>
       </div>
-      <!-- <v-row>
+      <v-row>
         <v-col
-          v-if="files.length > 0"
           v-for="(file, index) in files"
           :key="index"
           cols="12"
@@ -30,8 +29,7 @@
             </v-card-actions>
           </v-card>
         </v-col>
-      </v-row> -->
-      {{ files }}
+      </v-row>
     </v-card>
   </div>
 </template>

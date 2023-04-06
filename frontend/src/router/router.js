@@ -10,6 +10,7 @@ const ProfilePage = () => import("../components/Users/ProfilePage.vue");
 const BoardAdmin = () => import("../components/Admin/BoardAdmin.vue");
 const BoardUser = () => import("../components/Users/BoardUser.vue");
 const MyFilesPage = () => import("../components/Files/MyFilesPage.vue");
+const UploadFilePage = () => import("../components/Files/UploadFilePage.vue");
 
 const routes = [
   {
@@ -51,6 +52,11 @@ const routes = [
     path: "/myfiles",
     name: "myFiles",
     component: MyFilesPage,
+  },
+  {
+    path: "/upload",
+    name: "newFile",
+    component: UploadFilePage,
   },
 ];
 
