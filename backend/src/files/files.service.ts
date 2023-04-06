@@ -20,7 +20,7 @@ export class FilesService {
     private userService: UsersService,
   ) {}
 
-  async create(data: any): Promise<FileDocument> {
+  async create(data: any) {
     const createdFile = new this.fileModel();
     createdFile.name = data.name;
     createdFile.owner = data.owner;
@@ -29,7 +29,8 @@ export class FilesService {
     createdFile.size = data.size;
 
     await this.userService.uploadOfFile(data.owner, data.size);
-    return createdFile.save();
+    createdFile.save();
+    return 'File uploaded';
   }
 
   async findById(fileId: string) {

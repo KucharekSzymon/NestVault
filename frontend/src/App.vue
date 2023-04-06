@@ -27,11 +27,13 @@
           ></v-list-item>
         </router-link>
         <v-divider />
-        <v-list-item
-          prepend-icon="fa:fas fa-folder"
-          title="My Files"
-          value="myfiles"
-        ></v-list-item>
+        <router-link class="text-decoration-none" to="/myfiles">
+          <v-list-item
+            prepend-icon="fa:fas fa-folder"
+            title="My Files"
+            value="myfiles"
+          ></v-list-item>
+        </router-link>
 
         <v-list-item
           prepend-icon="fas fa-share"

@@ -25,10 +25,10 @@
 </template>
 
 <script>
-import UserService from "../services/user.service";
+import UserService from "../../services/user.service";
 
 export default {
-  name: "Admin",
+  name: "AdminBoard",
   data() {
     return {
       loading: true,
