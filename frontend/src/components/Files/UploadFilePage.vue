@@ -45,13 +45,14 @@ export default {
   },
   methods: {
     async uploadFile() {
+      this.successful = false;
+
       if (!this.file) {
         this.messages = ["Select a file to upload."];
         return;
       }
 
       const formData = new FormData();
-      this.successful = false;
       this.loading = true;
 
       formData.append("file", this.file[0]);
