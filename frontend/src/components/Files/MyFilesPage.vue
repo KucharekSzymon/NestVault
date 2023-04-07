@@ -48,18 +48,22 @@ export default {
     try {
       const res = await filesService.getMyFiles()
       this.files = res.data;
+      this.updateSpaceUsage();
       this.loading = false;
     } catch (e) {
       console.log(e);
     }
   },
   methods: {
+    async updateSpaceUsage() {
+      await this.$store.dispatch("files/fetchStorageUsage");
+    },
     convertSize(size) {
       var fileSizeInMb = size / (1024 * 1024);
       var fileSizeInGb = size / (1024 * 1024 * 1024);
 
       return (fileSizeInGb >=1)? fileSizeInGb.toFixed(2)+ "Gb": fileSizeInMb.toFixed(2)+ "Mb"
-    }
+    },
   }
 };
 </script>
