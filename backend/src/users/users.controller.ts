@@ -61,21 +61,9 @@ export class UsersController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('spacelimit')
+  @Get('storage')
   getStorageLimit(@Req() req) {
-    return this.usersService.storage(req.user._id, 1);
-  }
-
-  @UseGuards(AccessTokenGuard)
-  @Get('spaceused')
-  getStoredData(@Req() req) {
-    return this.usersService.storage(req.user._id, 2);
-  }
-
-  @UseGuards(AccessTokenGuard)
-  @Get('spaceleft')
-  getSpaceLeft(@Req() req) {
-    return this.usersService.storage(req.user._id, 3);
+    return this.usersService.storage(req.user._id);
   }
 
   @UseGuards(AccessTokenGuard)

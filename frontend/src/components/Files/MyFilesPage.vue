@@ -20,7 +20,7 @@
         >
           <v-card>
             <v-card-title>{{ file.name }}</v-card-title>
-            <v-card-text>{{ file.description }}</v-card-text>
+            <v-card-text>{{ convertSize(file.size) }}</v-card-text>
             <v-card-actions>
               <v-btn :href="file.url" target="_blank" color="primary"
                 >Download</v-btn
@@ -53,5 +53,13 @@ export default {
       console.log(e);
     }
   },
+  methods: {
+    convertSize(size) {
+      var fileSizeInMb = size / (1024 * 1024);
+      var fileSizeInGb = size / (1024 * 1024 * 1024);
+
+      return (fileSizeInGb >=1)? fileSizeInGb.toFixed(2)+ "Gb": fileSizeInMb.toFixed(2)+ "Mb"
+    }
+  }
 };
 </script>

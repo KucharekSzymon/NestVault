@@ -42,9 +42,9 @@ export class User {
 
   /**
    * Maximum amount of data that user can have stored in app
-   * 20GB * 1024 (MB/GB) * 1024 (KB/MB) * 1024 (B/KB) * 8 (bits/B) = 17179869184 bytes
+   * 20GB * 1024 (MB/GB) * 1024 (KB/MB) * 1024 (B/KB)  = 21474836480 bytes
    */
-  @Prop({ default: 20 * 1024 * 1024 * 1024 * 8 })
+  @Prop({ default: 20 * 1024 * 1024 * 1024 })
   storageLimit: number;
 
   /**

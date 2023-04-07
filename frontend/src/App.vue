@@ -72,11 +72,13 @@
           ></v-list-item>
         </a>
         <v-divider></v-divider>
-        <v-list-item>
-          <v-progress-circular
-            v-model="dataProgress"
-            class="me-2"
-          ></v-progress-circular>
+        <v-list-item
+          prepend-icon="fa-regular fa-hard-drive"
+          :title="
+            'Used ' + convertSize(spaceUsed) + ' / ' + convertSize(spaceLimit)
+          "
+          v-if="currentUser"
+        >
         </v-list-item>
         <v-list-item
           :prepend-icon="
@@ -102,8 +104,8 @@
 <script>
 import eventBus from "./common/eventBus";
 import { useTheme } from "vuetify";
-import UserService from "./services/user.service";
 import AuthService from "./services/auth.service";
+import userService from "./services/user.service";
 
 export default {
   data() {
@@ -111,6 +113,8 @@ export default {
       drawer: null,
       loading: true,
       isAdmin: false,
+      spaceUsed: 0,
+      spaceLimit: 0,
     };
   },
   setup() {
@@ -128,15 +132,8 @@ export default {
     currentUser() {
       return this.$store.state.auth.user;
     },
-    dataUsed() {
-      return UserService.getSpaceUsed();
-    },
-    dataProgress() {
-      // console.log(this.dataMaxLimit);
-      return (this.dataUsed / this.dataMaxLimit) * 100;
-    },
-    dataMaxLimit() {
-      return UserService.getSpaceLeft();
+    dataUsagePercentage() {
+      return (this.spaceUsed / this.spaceLimit) * 100;
     },
   },
   methods: {
@@ -148,18 +145,35 @@ export default {
           console.log(error);
         }
     },
+    async getSpaceUsage() {
+      if (this.currentUser)
+        try {
+          const response = await userService.getStorageData();
+          this.spaceUsed = response.data.spaceUsed;
+          this.spaceLimit = response.data.spaceLimit;
+        } catch (error) {
+          console.error(error);
+        }
+    },
+    convertSize(size) {
+      var fileSizeInMb = size / (1024 * 1024);
+      var fileSizeInGb = size / (1024 * 1024 * 1024);
+
+      return fileSizeInGb >= 1
+        ? fileSizeInGb.toFixed(2) + "Gb"
+        : fileSizeInMb.toFixed(2) + "Mb";
+    },
+
     logOut() {
       this.$store.dispatch("auth/logout");
       this.isAdmin = false;
       this.$router.push("/login");
     },
   },
-  async mounted() {
-    try {
-      this.checkAdminRole;
-    } catch (error) {
-      console.log(error);
-    }
+  mounted() {
+    this.checkAdminRole;
+    this.getSpaceUsage();
+
     eventBus.on("logout", () => {
       this.logOut();
     });
@@ -171,6 +185,7 @@ export default {
     currentUser: async function (newUser) {
       if (newUser) {
         await this.checkAdminRole();
+        await this.getSpaceUsage();
       } else {
         this.isAdmin = false;
       }

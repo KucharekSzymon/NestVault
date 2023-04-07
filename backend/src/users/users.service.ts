@@ -134,16 +134,14 @@ export class UsersService {
    * @param option 1 - Storage limit, 2 - Stored data, 3 - Space left
    * @returns
    */
-  async storage(userId: string, option: 1 | 2 | 3) {
+  async storage(userId: string) {
     const user = await this.userModel.findById(userId);
-    switch (option) {
-      case 1:
-        return user.storageLimit;
-      case 2:
-        return user.storedData;
-      case 3:
-        return user.storageLimit - user.storedData;
-    }
+    const data = {
+      spaceLimit: user.storageLimit,
+      spaceUsed: user.storedData,
+      spaceLeft: user.storageLimit - user.storedData,
+    };
+    return data;
   }
 
   /**
