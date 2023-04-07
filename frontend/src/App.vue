@@ -105,7 +105,6 @@
 import eventBus from "./common/eventBus";
 import { useTheme } from "vuetify";
 import AuthService from "./services/auth.service";
-import userService from "./services/user.service";
 
 export default {
   data() {
@@ -113,8 +112,6 @@ export default {
       drawer: null,
       loading: true,
       isAdmin: false,
-      spaceUsed: 0,
-      spaceLimit: 0,
     };
   },
   setup() {
@@ -132,8 +129,14 @@ export default {
     currentUser() {
       return this.$store.state.auth.user;
     },
+    spaceUsed() {
+      return this.$store.state.files.spaceUsed;
+    },
+    spaceLimit() {
+      return this.$store.state.files.spaceLimit;
+    },
     dataUsagePercentage() {
-      return (this.spaceUsed / this.spaceLimit) * 100;
+      return (this.spaceUsed() / this.spaceLimit) * 100;
     },
   },
   methods: {
@@ -145,15 +148,8 @@ export default {
           console.log(error);
         }
     },
-    async getSpaceUsage() {
-      if (this.currentUser)
-        try {
-          const response = await userService.getStorageData();
-          this.spaceUsed = response.data.spaceUsed;
-          this.spaceLimit = response.data.spaceLimit;
-        } catch (error) {
-          console.error(error);
-        }
+    async updateSpaceUsage() {
+      await this.$store.dispatch("files/fetchStorageUsage");
     },
     convertSize(size) {
       var fileSizeInMb = size / (1024 * 1024);
@@ -172,7 +168,7 @@ export default {
   },
   mounted() {
     this.checkAdminRole;
-    this.getSpaceUsage();
+    this.updateSpaceUsage();
 
     eventBus.on("logout", () => {
       this.logOut();
@@ -185,7 +181,7 @@ export default {
     currentUser: async function (newUser) {
       if (newUser) {
         await this.checkAdminRole();
-        await this.getSpaceUsage();
+        await this.updateSpaceUsage();
       } else {
         this.isAdmin = false;
       }
