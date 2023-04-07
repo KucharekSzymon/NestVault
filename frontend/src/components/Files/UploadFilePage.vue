@@ -43,6 +43,9 @@ export default {
       file: null,
     };
   },
+  mounted() {
+    this.updateSpaceUsage();
+  },
   methods: {
     async uploadFile() {
       this.successful = false;
@@ -59,6 +62,7 @@ export default {
 
       try {
         const response = await filesService.uploadFile(formData);
+        this.updateSpaceUsage();
         this.loading = false;
         this.messages = [response.data];
         this.successful = true;
@@ -72,6 +76,9 @@ export default {
             error.toString(),
           ];
       }
+    },
+    async updateSpaceUsage() {
+      await this.$store.dispatch("files/fetchStorageUsage");
     },
   },
 };
