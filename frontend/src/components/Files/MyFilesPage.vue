@@ -4,7 +4,7 @@
       <v-row class="d-flex justify-space-between align-center py-2">
         <v-col class="subtitle-1 font-weight-bold">My files</v-col>
         <v-col>
-          <Router-Link to="/upload">
+          <Router-Link to="/files/upload">
             <v-btn color="primary" dark>Upload file</v-btn>
           </Router-Link>
         </v-col>
@@ -59,10 +59,7 @@ export default {
       await this.$store.dispatch("files/fetchStorageUsage");
     },
     convertSize(size) {
-      var fileSizeInMb = size / (1024 * 1024);
-      var fileSizeInGb = size / (1024 * 1024 * 1024);
-
-      return (fileSizeInGb >=1)? fileSizeInGb.toFixed(2)+ "Gb": fileSizeInMb.toFixed(2)+ "Mb"
+    return filesService.convertSize(size);
     },
   }
 };

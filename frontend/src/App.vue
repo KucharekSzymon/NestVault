@@ -18,7 +18,7 @@
         </router-link>
       </v-list>
       <v-list v-if="currentUser" nav>
-        <router-link class="text-decoration-none" to="/profile">
+        <router-link class="text-decoration-none" to="/user/profile">
           <v-list-item
             prepend-icon="fa fa-user"
             :title="currentUser.name"
@@ -27,7 +27,7 @@
           ></v-list-item>
         </router-link>
         <v-divider />
-        <router-link class="text-decoration-none" to="/myfiles">
+        <router-link class="text-decoration-none" to="/files/mine">
           <v-list-item
             prepend-icon="fa:fas fa-folder"
             title="My Files"
@@ -47,14 +47,18 @@
         ></v-list-item>
         <v-divider />
 
-        <router-link v-if="isAdmin" class="text-decoration-none" to="/admin">
+        <router-link
+          v-if="currentRole"
+          class="text-decoration-none"
+          to="/admin/dashboard/"
+        >
           <v-list-item
             prepend-icon="fa-solid fa-screwdriver-wrench"
             title="Admin board"
             value="admin"
           />
         </router-link>
-        <router-link class="text-decoration-none" to="/user">
+        <router-link class="text-decoration-none" to="/user/dashboard">
           <v-list-item
             prepend-icon="fa-solid fa-info"
             title="User panel"
@@ -92,6 +96,7 @@
     </v-navigation-drawer>
 
     <v-main>
+      <BreadcrumbsList />
       <v-container>
         <v-card>
           <router-view />
@@ -104,19 +109,18 @@
 <script>
 import eventBus from "./common/eventBus";
 import { useTheme } from "vuetify";
-import AuthService from "./services/auth.service";
+import filesService from "./services/files.service";
+import BreadcrumbsList from "./components/Common/BreadcrumbsList.vue";
 
 export default {
   data() {
     return {
       drawer: null,
       loading: true,
-      isAdmin: false,
     };
   },
   setup() {
     const theme = useTheme();
-
     return {
       theme,
       toggleTheme: () =>
@@ -129,6 +133,9 @@ export default {
     currentUser() {
       return this.$store.state.auth.user;
     },
+    currentRole() {
+      return this.$store.state.role.isAdmin;
+    },
     spaceUsed() {
       return this.$store.state.files.spaceUsed;
     },
@@ -136,40 +143,28 @@ export default {
       return this.$store.state.files.spaceLimit;
     },
     dataUsagePercentage() {
-      return (this.spaceUsed() / this.spaceLimit) * 100;
+      return this.currentUser ? (this.spaceUsed() / this.spaceLimit) * 100 : 0;
     },
   },
   methods: {
-    async checkAdminRole() {
-      if (this.currentUser)
-        try {
-          this.isAdmin = await AuthService.checkRole();
-        } catch (error) {
-          console.log(error);
-        }
-    },
     async updateSpaceUsage() {
-      await this.$store.dispatch("files/fetchStorageUsage");
+      if (this.currentUser)
+        await this.$store.dispatch("files/fetchStorageUsage");
+    },
+    async updateRole() {
+      if (this.currentUser) await this.$store.dispatch("role/fetchRole");
     },
     convertSize(size) {
-      var fileSizeInMb = size / (1024 * 1024);
-      var fileSizeInGb = size / (1024 * 1024 * 1024);
-
-      return fileSizeInGb >= 1
-        ? fileSizeInGb.toFixed(2) + "Gb"
-        : fileSizeInMb.toFixed(2) + "Mb";
+      return filesService.convertSize(size);
     },
-
     logOut() {
       this.$store.dispatch("auth/logout");
-      this.isAdmin = false;
       this.$router.push("/login");
     },
   },
   mounted() {
-    this.checkAdminRole;
+    this.updateRole();
     this.updateSpaceUsage();
-
     eventBus.on("logout", () => {
       this.logOut();
     });
@@ -180,12 +175,13 @@ export default {
   watch: {
     currentUser: async function (newUser) {
       if (newUser) {
-        await this.checkAdminRole();
+        await this.updateRole();
         await this.updateSpaceUsage();
       } else {
         this.isAdmin = false;
       }
     },
   },
+  components: { BreadcrumbsList },
 };
 </script>

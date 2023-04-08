@@ -17,46 +17,92 @@ const routes = [
     path: "/",
     name: "home",
     component: HomePage,
-  },
-  {
-    path: "/home",
-    component: HomePage,
+    meta: {
+      breadcrumbText: "Home",
+    },
   },
   {
     path: "/login",
+    name: "login",
     component: SignIn,
+    meta: {
+      breadcrumbText: "Login",
+    },
   },
   {
     path: "/register",
+    name: "register",
     component: SignUp,
-  },
-  {
-    path: "/profile",
-    name: "profile",
-    // lazy-loaded
-    component: ProfilePage,
-  },
-  {
-    path: "/admin",
-    name: "admin",
-    // lazy-loaded
-    component: BoardAdmin,
+    meta: {
+      breadcrumbText: "Register",
+    },
   },
   {
     path: "/user",
     name: "user",
-    // lazy-loaded
-    component: BoardUser,
+    meta: {
+      breadcrumbText: "User",
+    },
+    children: [
+      {
+        path: "profile",
+        name: "userProfile",
+        component: ProfilePage,
+        meta: {
+          breadcrumbText: "User Profile",
+        },
+      },
+      {
+        path: "dashboard",
+        name: "userDashboard",
+        component: BoardUser,
+        meta: {
+          breadcrumbText: "User Dashboard",
+        },
+      },
+    ],
   },
   {
-    path: "/myfiles",
-    name: "myFiles",
-    component: MyFilesPage,
+    path: "/admin",
+    name: "admin",
+    meta: {
+      breadcrumbText: "Admin Dashboard",
+    },
+    children: [
+      {
+        path: "dashboard",
+        name: "adminDashboard",
+        component: BoardAdmin,
+        meta: {
+          breadcrumbText: "Admin Dashboard",
+        },
+      },
+    ],
   },
   {
-    path: "/upload",
-    name: "newFile",
-    component: UploadFilePage,
+    path: "/files",
+    name: "files",
+    meta: {
+      breadcrumbText: "Files",
+    },
+    children: [
+      {
+        path: "mine",
+        name: "myFiles",
+        component: MyFilesPage,
+        meta: {
+          breadcrumbText: "My Files",
+        },
+      },
+      {
+        path: "upload",
+        name: "newFile",
+        component: UploadFilePage,
+        meta: {
+          breadcrumbText: "Upload File",
+        },
+      },
+    ],
   },
 ];
 
