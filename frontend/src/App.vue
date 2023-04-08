@@ -96,6 +96,7 @@
     </v-navigation-drawer>
 
     <v-main>
+      <BreadcrumbsList />
       <v-container>
         <v-card>
           <router-view />
@@ -109,6 +110,7 @@
 import eventBus from "./common/eventBus";
 import { useTheme } from "vuetify";
 import filesService from "./services/files.service";
+import BreadcrumbsList from "./components/Common/BreadcrumbsList.vue";
 
 export default {
   data() {
@@ -119,7 +121,6 @@ export default {
   },
   setup() {
     const theme = useTheme();
-
     return {
       theme,
       toggleTheme: () =>
@@ -156,7 +157,6 @@ export default {
     convertSize(size) {
       return filesService.convertSize(size);
     },
-
     logOut() {
       this.$store.dispatch("auth/logout");
       this.$router.push("/login");
@@ -165,7 +165,6 @@ export default {
   mounted() {
     this.updateRole();
     this.updateSpaceUsage();
-
     eventBus.on("logout", () => {
       this.logOut();
     });
@@ -183,5 +182,6 @@ export default {
       }
     },
   },
+  components: { BreadcrumbsList },
 };
 </script>

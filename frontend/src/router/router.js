@@ -65,7 +65,6 @@ const routes = [
   {
     path: "/admin",
     name: "admin",
-    component: BoardAdmin,
     meta: {
       breadcrumbText: "Admin Dashboard",
     },
