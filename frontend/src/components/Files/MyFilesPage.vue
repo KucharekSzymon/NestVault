@@ -4,7 +4,7 @@
       <v-row class="d-flex justify-space-between align-center py-2">
         <v-col class="subtitle-1 font-weight-bold">My files</v-col>
         <v-col>
-          <Router-Link to="/upload">
+          <Router-Link to="/files/upload">
             <v-btn color="primary" dark>Upload file</v-btn>
           </Router-Link>
         </v-col>
