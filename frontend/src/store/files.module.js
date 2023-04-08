@@ -25,9 +25,4 @@ export const files = {
       }
     },
   },
-  getters: {
-    spaceUsed: (state) => state.spaceUsed,
-    spaceLimit: (state) => state.spaceLimit,
-    spaceLeft: (state) => state.spaceLeft,
-  },
 };

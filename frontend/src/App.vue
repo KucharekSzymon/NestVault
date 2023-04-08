@@ -48,7 +48,7 @@
         <v-divider />
 
         <router-link
-          v-if="isAdmin"
+          v-if="currentRole"
           class="text-decoration-none"
           to="/admin/dashboard/"
         >
@@ -108,14 +108,12 @@
 <script>
 import eventBus from "./common/eventBus";
 import { useTheme } from "vuetify";
-import AuthService from "./services/auth.service";
 
 export default {
   data() {
     return {
       drawer: null,
       loading: true,
-      isAdmin: false,
     };
   },
   setup() {
@@ -133,6 +131,9 @@ export default {
     currentUser() {
       return this.$store.state.auth.user;
     },
+    currentRole() {
+      return this.$store.state.role.isAdmin;
+    },
     spaceUsed() {
       return this.$store.state.files.spaceUsed;
     },
@@ -140,20 +141,16 @@ export default {
       return this.$store.state.files.spaceLimit;
     },
     dataUsagePercentage() {
-      return (this.spaceUsed() / this.spaceLimit) * 100;
+      return this.currentUser ? (this.spaceUsed() / this.spaceLimit) * 100 : 0;
     },
   },
   methods: {
-    async checkAdminRole() {
-      if (this.currentUser)
-        try {
-          this.isAdmin = await AuthService.checkRole();
-        } catch (error) {
-          console.log(error);
-        }
-    },
     async updateSpaceUsage() {
-      await this.$store.dispatch("files/fetchStorageUsage");
+      if (this.currentUser)
+        await this.$store.dispatch("files/fetchStorageUsage");
+    },
+    async updateRole() {
+      if (this.currentUser) await this.$store.dispatch("role/fetchRole");
     },
     convertSize(size) {
       var fileSizeInMb = size / (1024 * 1024);
@@ -166,12 +163,11 @@ export default {
 
     logOut() {
       this.$store.dispatch("auth/logout");
-      this.isAdmin = false;
       this.$router.push("/login");
     },
   },
   mounted() {
-    this.checkAdminRole;
+    this.updateRole();
     this.updateSpaceUsage();
 
     eventBus.on("logout", () => {
@@ -184,7 +180,7 @@ export default {
   watch: {
     currentUser: async function (newUser) {
       if (newUser) {
-        await this.checkAdminRole();
+        await this.updateRole();
         await this.updateSpaceUsage();
       } else {
         this.isAdmin = false;
