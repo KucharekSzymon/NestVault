@@ -18,7 +18,7 @@
         </router-link>
       </v-list>
       <v-list v-if="currentUser" nav>
-        <router-link class="text-decoration-none" to="/profile">
+        <router-link class="text-decoration-none" to="/user/profile">
           <v-list-item
             prepend-icon="fa fa-user"
             :title="currentUser.name"
@@ -27,7 +27,7 @@
           ></v-list-item>
         </router-link>
         <v-divider />
-        <router-link class="text-decoration-none" to="/myfiles">
+        <router-link class="text-decoration-none" to="/files/mine">
           <v-list-item
             prepend-icon="fa:fas fa-folder"
             title="My Files"
@@ -47,14 +47,18 @@
         ></v-list-item>
         <v-divider />
 
-        <router-link v-if="isAdmin" class="text-decoration-none" to="/admin">
+        <router-link
+          v-if="isAdmin"
+          class="text-decoration-none"
+          to="/admin/dashboard/"
+        >
           <v-list-item
             prepend-icon="fa-solid fa-screwdriver-wrench"
             title="Admin board"
             value="admin"
           />
         </router-link>
-        <router-link class="text-decoration-none" to="/user">
+        <router-link class="text-decoration-none" to="/user/dashboard">
           <v-list-item
             prepend-icon="fa-solid fa-info"
             title="User panel"
