@@ -5,7 +5,7 @@
     </template>
   </v-breadcrumbs>
 </template>
-<script>
+<script lang="js">
 export default {
   data: () => ({
     items: [
