@@ -11,6 +11,9 @@ class FilesService {
       },
     });
   }
+  async previewFile(fileId) {
+    return api.get("/files/preview/" + fileId);
+  }
   convertSize(size) {
     var fileSizeInMb = size / (1024 * 1024);
     var fileSizeInGb = size / (1024 * 1024 * 1024);
