@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card :loading="loading">
-      <v-row class="d-flex justify-space-between align-center py-2">
+      <v-row class="d-flex justify-space-between align-center pa-2">
         <v-col class="subtitle-1 font-weight-bold">My files</v-col>
         <v-col>
           <v-btn variant="outlined" href="/files/upload" color="primary" dark
@@ -35,6 +35,7 @@
                 :href="file.url"
                 target="_blank"
                 color="primary"
+                @click="setCurrentFile(file)"
                 >Show</v-btn
               >
             </v-card-actions>
@@ -51,20 +52,25 @@
       :scrim="false"
       transition="dialog-bottom-transition"
     >
-      <template v-slot:activator="{ props }">
+      <!-- <template v-slot:activator="{ props }">
         <v-btn color="primary" dark v-bind="props"> Open Dialog </v-btn>
-      </template>
+      </template> -->
       <v-card>
         <v-toolbar dark color="primary">
-          <v-btn icon dark @click="dialog = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-toolbar-title>Settings</v-toolbar-title>
+          <v-toolbar-title
+            >{{ currentFile.name }} -
+            <v-span>{{ convertSize(currentFile.size) }}</v-span>
+          </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn variant="text" @click="dialog = false"> Save </v-btn>
+            <v-btn
+              icon="fa fa-xmark"
+              size="large"
+              @click="dialog = false"
+            ></v-btn>
           </v-toolbar-items>
         </v-toolbar>
+        <v-divider></v-divider>
       </v-card>
     </v-dialog>
   </v-row>
@@ -80,7 +86,7 @@ export default {
       loading: true,
       files: [],
       dialog: false,
-
+      currentFile: null,
     };
   },
   async mounted() {
@@ -96,6 +102,14 @@ export default {
   methods: {
     async updateSpaceUsage() {
       await this.$store.dispatch("files/fetchStorageUsage");
+    },
+    setCurrentFile(file){
+      this.currentFile = file;
+      this.dialog = true;
+      this.fetchFilePreview(file._id)
+    },
+    async fetchFilePreview(fileId){
+      // console.log( filesService.previewFile(fileId));
     },
     convertSize(size) {
     return filesService.convertSize(size);
