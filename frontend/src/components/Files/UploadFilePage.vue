@@ -34,7 +34,7 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="js">
 import filesService from "../../services/files.service";
 
 export default {
