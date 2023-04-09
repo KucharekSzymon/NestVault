@@ -97,7 +97,7 @@
 
     <v-main>
       <BreadcrumbsList />
-      <v-container>
+      <v-container fluid>
         <v-card>
           <router-view />
         </v-card>

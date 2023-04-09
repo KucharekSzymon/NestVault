@@ -18,16 +18,24 @@
           md="4"
           lg="3"
         >
-          <v-card>
-            <v-card-title>{{ file.name }}</v-card-title>
-            <v-card-text>{{ convertSize(file.size) }}</v-card-text>
-            <v-card-actions>
+          <v-card
+            class="pa-5 h-100 d-flex flex-column justify-center align-center"
+            variant="tonal"
+          >
+            <v-icon size="x-large" :icon="getIcon(file.type)"></v-icon>
+            <v-card-title style="white-space: pre-line" class="text-center">{{
+              file.name
+            }}</v-card-title>
+            <v-card-text class="text-center">{{
+              convertSize(file.size)
+            }}</v-card-text>
+            <v-card-actions class="text-center">
               <v-btn
                 variant="outlined"
                 :href="file.url"
                 target="_blank"
                 color="primary"
-                >Download</v-btn
+                >Show</v-btn
               >
             </v-card-actions>
           </v-card>
@@ -65,6 +73,33 @@ export default {
     convertSize(size) {
     return filesService.convertSize(size);
     },
+    getIcon(type){
+      switch (type) {
+        case 'text/plain':
+          return 'fa-regular fa-file';
+        case 'application/msword':
+        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+          return 'fa-regular fa-file-word';
+        case 'application/pdf':
+          return 'fa-regular fa-file-pdf';
+        case 'application/zip':
+        case 'application/x-rar-compressed':
+        case 'application/x-tar':
+          return 'fa-regular fa-file-zipper';
+        case 'image/jpeg':
+        case 'image/png':
+        case 'image/gif':
+          return 'fa-regular fa-file-image';
+        case 'audio/mpeg':
+        case 'audio/wav':
+          return 'fa-regular fa-ile-music';
+        case 'video/mp4':
+        case 'video/mpeg':
+          return 'fa-regular fa-file-video';
+        default:
+        return 'fa-regular fa-file';
+      }
+    }
   }
 };
 </script>
