@@ -1,7 +1,7 @@
 <template>
   <v-breadcrumbs :items="breadcrumbs">
     <template v-slot:prepend>
-      <v-icon size="small" icon="mdi-vuetify"></v-icon>
+      <v-icon size="small" icon="fa-solid fa-home-user"></v-icon>
     </template>
   </v-breadcrumbs>
 </template>
@@ -23,12 +23,16 @@ export default {
       /**
        * Looping through path for breadcrubs
        */
-      this.breadcrumbs = paths.map((path, index) => {
-        return {
-          text: path,
-          href: "/" + paths.slice(0, index + 1).join("/"),
-        };
-      });
+      const homeElement = { text: "Home", href: "/" };
+      this.breadcrumbs = [
+        homeElement,
+        ...paths.map((path, index) => {
+          return {
+            text: path,
+            href: "/" + paths.slice(0, index + 1).join("/"),
+          };
+        }),
+      ];
     },
   },
   mounted() {

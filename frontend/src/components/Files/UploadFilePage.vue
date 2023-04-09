@@ -6,7 +6,12 @@
           <v-file-input v-model="file" label="Select a file"></v-file-input>
         </div>
         <div>
-          <v-btn :disabled="loading" :loading="loading" type="submit">
+          <v-btn
+            variant="outlined"
+            :disabled="loading"
+            :loading="loading"
+            type="submit"
+          >
             Upload
           </v-btn>
         </div>

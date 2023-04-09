@@ -4,9 +4,9 @@
       <v-row class="d-flex justify-space-between align-center py-2">
         <v-col class="subtitle-1 font-weight-bold">My files</v-col>
         <v-col>
-          <Router-Link to="/files/upload">
-            <v-btn color="primary" dark>Upload file</v-btn>
-          </Router-Link>
+          <v-btn variant="outlined" href="/files/upload" color="primary" dark
+            >Upload file</v-btn
+          >
         </v-col>
       </v-row>
       <v-row>
@@ -22,7 +22,11 @@
             <v-card-title>{{ file.name }}</v-card-title>
             <v-card-text>{{ convertSize(file.size) }}</v-card-text>
             <v-card-actions>
-              <v-btn :href="file.url" target="_blank" color="primary"
+              <v-btn
+                variant="outlined"
+                :href="file.url"
+                target="_blank"
+                color="primary"
                 >Download</v-btn
               >
             </v-card-actions>
