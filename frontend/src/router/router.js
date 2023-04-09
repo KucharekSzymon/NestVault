@@ -17,9 +17,6 @@ const routes = [
     path: "/",
     name: "home",
     component: HomePage,
-    meta: {
-      breadcrumbText: "Home",
-    },
   },
   {
     path: "/login",
@@ -40,67 +37,43 @@ const routes = [
   {
     path: "/user",
     name: "user",
-    meta: {
-      breadcrumbText: "User",
-    },
     children: [
       {
         path: "profile",
         name: "userProfile",
         component: ProfilePage,
-        meta: {
-          breadcrumbText: "User Profile",
-        },
       },
       {
         path: "dashboard",
         name: "userDashboard",
         component: BoardUser,
-        meta: {
-          breadcrumbText: "User Dashboard",
-        },
       },
     ],
   },
   {
     path: "/admin",
     name: "admin",
-    meta: {
-      breadcrumbText: "Admin Dashboard",
-    },
     children: [
       {
         path: "dashboard",
         name: "adminDashboard",
         component: BoardAdmin,
-        meta: {
-          breadcrumbText: "Admin Dashboard",
-        },
       },
     ],
   },
   {
     path: "/files",
     name: "files",
-    meta: {
-      breadcrumbText: "Files",
-    },
     children: [
       {
         path: "mine",
         name: "myFiles",
         component: MyFilesPage,
-        meta: {
-          breadcrumbText: "My Files",
-        },
       },
       {
         path: "upload",
         name: "newFile",
         component: UploadFilePage,
-        meta: {
-          breadcrumbText: "Upload File",
-        },
       },
     ],
   },
