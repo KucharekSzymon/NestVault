@@ -10,17 +10,25 @@
       >
         <v-card>
           <v-toolbar dark color="primary">
-            <v-toolbar-title>
-              {{ currentFile.name }} -
-              <span>{{ convertSize(currentFile.size) }}</span>
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
             <v-toolbar-items>
               <v-btn
                 icon="fa fa-xmark"
                 size="large"
                 @click="closeDialog"
               ></v-btn>
+            </v-toolbar-items>
+            <v-toolbar-title>
+              {{ currentFile.name }} -
+              <span>{{ convertSize(currentFile.size) }}</span>
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <v-btn-group>
+                <v-btn size="large" color="success" prepend-icon="fa fa-share">
+                  Share
+                </v-btn>
+                <v-btn size="large" color="error" icon="fa fa-trash" />
+              </v-btn-group>
             </v-toolbar-items>
           </v-toolbar>
           <v-divider></v-divider>
@@ -78,7 +86,7 @@ export default {
     await this.fetchFilePreview(this.currentFile._id);
   },
   methods: {
-    async fetchFilePreview(fileId){
+    async fetchFilePreview(fileId) {
       this.previewLoading = true;
       const response = await filesService.previewFile(fileId)
       const file = response.data;
@@ -92,14 +100,14 @@ export default {
       this.$emit('close');
     },
     getFileType(type) {
-      const partType =  type.split('/')[0];
+      const partType = type.split('/')[0];
       if (partType == 'image') {
         return 'image';
       } else if (partType == 'video') {
-        return 'video';}
-      else if (partType == 'audio'){
-          return 'audio'
-      }else if (type == 'application/pdf') {
+        return 'video';
+      } else if (partType == 'audio') {
+        return 'audio'
+      } else if (type == 'application/pdf') {
         return 'pdf';
       } else {
         return null;
