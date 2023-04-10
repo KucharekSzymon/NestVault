@@ -46,7 +46,7 @@
     <file-preview-dialog
       v-if="dialog"
       :current-file="currentFile"
-      @close="dialog = false"
+      @close="this.dialog = false"
     />
   </div>
 </template>
@@ -85,6 +85,9 @@ export default {
     },
     convertSize(size) {
       return filesService.convertSize(size);
+    },
+    closeDialog() {
+      this.dialog = false;
     },
     getIcon(type) {
       switch (type) {

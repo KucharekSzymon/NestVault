@@ -4,6 +4,7 @@
       <v-dialog
         v-model="dialog"
         fullscreen
+        persistent
         :scrim="false"
         transition="dialog-bottom-transition"
       >
@@ -18,7 +19,7 @@
               <v-btn
                 icon="fa fa-xmark"
                 size="large"
-                @click="dialog = false"
+                @click="closeDialog"
               ></v-btn>
             </v-toolbar-items>
           </v-toolbar>
@@ -86,6 +87,9 @@ export default {
       this.fileUrl = fileUrl;
       this.fileType = fileType;
       this.previewLoading = false;
+    },
+    closeDialog() {
+      this.$emit('close');
     },
     getFileType(type) {
       const partType =  type.split('/')[0];
