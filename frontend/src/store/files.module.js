@@ -13,10 +13,13 @@ export const files = {
       state.spaceUsed = data.spaceUsed;
       state.spaceLimit = data.spaceLimit;
       state.spaceLeft = data.spaceLeft;
-      if (state.spaceLeft < 30) state.storageColor = "";
-      else if (state.spaceLeft < 50) state.storageColor = "green";
-      else if (state.spaceLeft < 75) state.storageColor = "amber";
-      else if (state.spaceLeft < 90) state.storageColor = "red";
+      if (state.spaceLeft > 95) state.storageColor = "red-accent-4 93";
+      else if (state.spaceLeft > 80) state.storageColor = "amber-darken-4 84";
+      else if (state.spaceLeft > 65) state.storageColor = "amber";
+      else if (state.spaceLeft > 50) state.storageColor = "yellow";
+      else if (state.spaceLeft > 30) state.storageColor = "yellow";
+      else if (state.spaceLeft > 15) state.storageColor = "yellow";
+      else state.storageColor = "";
     },
   },
   actions: {
@@ -31,3 +34,11 @@ export const files = {
     },
   },
 };
+/**
+ * light-green 15
+lime 30
+yellow 50
+amber 65
+amber-darken-4 84 80
+red-accent-4 93 95
+ */
