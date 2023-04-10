@@ -92,13 +92,13 @@
         </v-list-item>
         <v-list-item height="3">
           <v-progress-linear
-            v-model="storageLeft"
+            v-model="dataUsagePercentage"
             :indeterminate="storageLoading"
             absolute
             bottom
             rounded
             height="3"
-            :color="storageLeftColor"
+            :color="storageColor"
           ></v-progress-linear>
         </v-list-item>
       </v-list>
@@ -127,8 +127,6 @@ export default {
       drawer: null,
       loading: true,
       storageLoading: true,
-      storageLeft: 0,
-      storageLeftColor: "",
     };
   },
   setup() {
@@ -155,7 +153,10 @@ export default {
       return this.$store.state.files.spaceLimit;
     },
     dataUsagePercentage() {
-      return this.currentUser ? (this.spaceUsed / this.spaceLimit) * 100 : 0;
+      return this.$store.state.files.spaceLeft;
+    },
+    storageColor() {
+      return this.$store.state.files.storageColor;
     },
   },
   methods: {
@@ -163,16 +164,9 @@ export default {
       this.storageLoading = true;
       if (this.currentUser)
         await this.$store.dispatch("files/fetchStorageUsage");
-      this.storageLeft = this.dataUsagePercentage;
-      this.storageColor(this.storageLeft);
       this.storageLoading = false;
     },
-    storageColor(progress) {
-      if (progress < 30) this.storageLeftColor = "";
-      else if (progress < 50) this.storageLeftColor = "green";
-      else if (progress < 75) this.storageLeftColor = "amber";
-      else if (progress < 90) this.storageLeftColor = "red";
-    },
+
     async updateRole() {
       if (this.currentUser) await this.$store.dispatch("role/fetchRole");
     },

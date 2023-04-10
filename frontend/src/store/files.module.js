@@ -6,12 +6,17 @@ export const files = {
     spaceUsed: null,
     spaceLimit: null,
     spaceLeft: null,
+    storageColor: "",
   },
   mutations: {
     setSpaceUsage(state, data) {
       state.spaceUsed = data.spaceUsed;
       state.spaceLimit = data.spaceLimit;
       state.spaceLeft = data.spaceLeft;
+      if (state.spaceLeft < 30) state.storageColor = "";
+      else if (state.spaceLeft < 50) state.storageColor = "green";
+      else if (state.spaceLeft < 75) state.storageColor = "amber";
+      else if (state.spaceLeft < 90) state.storageColor = "red";
     },
   },
   actions: {
