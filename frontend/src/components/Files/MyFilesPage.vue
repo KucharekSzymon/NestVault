@@ -79,16 +79,16 @@
         <v-card v-if="!previewLoading">
           <div>
             <div v-if="fileType === 'image'">
-              <img :src="fileUrl" alt="Image preview" />
+              <img style="max-width: 100%" :src="fileUrl" alt="Image preview" />
             </div>
             <div v-else-if="fileType === 'video'">
-              <video :src="fileUrl" controls></video>
+              <video style="max-width: 100%" :src="fileUrl" controls></video>
             </div>
             <!-- <div v-else-if="fileType === 'pdf'">
             <iframe :src="fileUrl" frameborder="0"></iframe>
           </div> -->
             <div v-else-if="fileType === 'audio'">
-              <audio :src="fileUrl" controls></audio>
+              <audio style="max-width: 100%" :src="fileUrl" controls></audio>
             </div>
             <div v-else>Unsupported file type</div>
           </div>
