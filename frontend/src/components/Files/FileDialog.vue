@@ -24,8 +24,15 @@
             <v-spacer></v-spacer>
             <v-toolbar-items>
               <v-btn-group>
-                <v-btn size="large" color="success" prepend-icon="fa fa-share">
+                <v-btn size="large" color="info" prepend-icon="fa fa-share">
                   Share
+                </v-btn>
+                <v-btn
+                  size="large"
+                  color="success"
+                  prepend-icon="fa fa-floppy-disk"
+                >
+                  Download
                 </v-btn>
                 <v-btn size="large" color="error" icon="fa fa-trash" />
               </v-btn-group>
