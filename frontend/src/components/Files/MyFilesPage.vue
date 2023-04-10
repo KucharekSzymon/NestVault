@@ -52,14 +52,11 @@
       :scrim="false"
       transition="dialog-bottom-transition"
     >
-      <!-- <template v-slot:activator="{ props }">
-        <v-btn color="primary" dark v-bind="props"> Open Dialog </v-btn>
-      </template> -->
       <v-card>
         <v-toolbar dark color="primary">
           <v-toolbar-title
             >{{ currentFile.name }} -
-            <v-span>{{ convertSize(currentFile.size) }}</v-span>
+            <span>{{ convertSize(currentFile.size) }}</span>
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
@@ -71,6 +68,31 @@
           </v-toolbar-items>
         </v-toolbar>
         <v-divider></v-divider>
+        <v-card v-if="previewLoading">
+          <v-progress-circular
+            color="primary"
+            indeterminate
+            size="64"
+          ></v-progress-circular>
+          <span>Loading preview</span>
+        </v-card>
+        <v-card v-if="!previewLoading">
+          <div>
+            <div v-if="fileType === 'image'">
+              <img :src="fileUrl" alt="Image preview" />
+            </div>
+            <div v-else-if="fileType === 'video'">
+              <video :src="fileUrl" controls></video>
+            </div>
+            <!-- <div v-else-if="fileType === 'pdf'">
+            <iframe :src="fileUrl" frameborder="0"></iframe>
+          </div> -->
+            <div v-else-if="fileType === 'audio'">
+              <audio :src="fileUrl" controls></audio>
+            </div>
+            <div v-else>Unsupported file type</div>
+          </div>
+        </v-card>
       </v-card>
     </v-dialog>
   </v-row>
@@ -87,6 +109,10 @@ export default {
       files: [],
       dialog: false,
       currentFile: null,
+      fileUrl: null,
+      fileType: null,
+      loadingFile: false,
+      previewLoading: true,
     };
   },
   async mounted() {
@@ -103,16 +129,37 @@ export default {
     async updateSpaceUsage() {
       await this.$store.dispatch("files/fetchStorageUsage");
     },
+    async fetchFilePreview(fileId){
+      this.previewLoading = true;
+      const response = await filesService.previewFile(fileId)
+      const file = response.data;
+      const fileUrl = URL.createObjectURL(file);
+      const fileType = this.getFileType(this.currentFile.type);
+      this.fileUrl = fileUrl;
+      this.fileType = fileType;
+      this.previewLoading = false;
+    },
     setCurrentFile(file){
       this.currentFile = file;
       this.dialog = true;
       this.fetchFilePreview(file._id)
     },
-    async fetchFilePreview(fileId){
-      // console.log( filesService.previewFile(fileId));
-    },
     convertSize(size) {
     return filesService.convertSize(size);
+    },
+    getFileType(type) {
+      const partType =  type.split('/')[0];
+      if (partType == 'image') {
+        return 'image';
+      } else if (partType == 'video') {
+        return 'video';}
+      else if (partType == 'audio'){
+          return 'audio'
+      }else if (type == 'application/pdf') {
+        return 'pdf';
+      } else {
+        return null;
+      }
     },
     getIcon(type){
       switch (type) {
@@ -140,7 +187,10 @@ export default {
         default:
         return 'fa-regular fa-file';
       }
-    }
+    },
+    beforeUnmount() {
+    URL.revokeObjectURL(this.fileUrl);
+  },
   }
 };
 </script>

@@ -12,7 +12,7 @@ class FilesService {
     });
   }
   async previewFile(fileId) {
-    return api.get("/files/preview/" + fileId);
+    return api.get("/files/preview/" + fileId, { responseType: "blob" });
   }
   convertSize(size) {
     var fileSizeInMb = size / (1024 * 1024);
