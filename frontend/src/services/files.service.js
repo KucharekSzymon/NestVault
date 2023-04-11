@@ -14,6 +14,9 @@ class FilesService {
   async previewFile(fileId) {
     return api.get("/files/preview/" + fileId, { responseType: "blob" });
   }
+  async downloadFile(fileId) {
+    return api.get("/files/download/" + fileId, { responseType: "blob" });
+  }
   convertSize(size) {
     const units = ["B", "KB", "MB", "GB", "TB"];
     let index = 0;
