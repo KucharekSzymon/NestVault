@@ -48,8 +48,7 @@
                   color="error"
                   icon="fa fa-trash"
                   @click="
-                    (nestedDialog = true),
-                      (nestedDialogTitle = 'Remove file pernamently')
+                    (nestedDialog = true), (nestedDialogTitle = 'Are you sure?')
                   "
                 />
               </v-btn-group>
@@ -101,25 +100,28 @@
                   {{ nestedDialogTitle }}
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
-                <!-- <v-toolbar-items> </v-toolbar-items> -->
               </v-toolbar>
-              <!-- <v-card-actions> </v-card-actions> -->
-              <v-btn-group>
-                <v-btn
-                  v-if="nestedDialogTitle != 'Share'"
-                  prepend-icon="fa fa-floppy-disk"
-                  @click="fileRemoval"
-                  :disabled="removalClicked"
-                  :loading="removeLoading"
-                  >Remove</v-btn
-                >
-                <v-btn href="/files/mine" prepend-icon="fa fa-back"
-                  >Return to my files</v-btn
-                >
-              </v-btn-group>
               <v-alert v-if="removalMessage" type="success">
                 {{ removalMessage }}
               </v-alert>
+              <v-btn-group>
+                <v-btn
+                  href="/files/mine"
+                  color="info"
+                  prepend-icon="fa fa-share"
+                >
+                  Return to my files
+                </v-btn>
+                <v-btn
+                  v-if="nestedDialogTitle != 'Share'"
+                  color="error"
+                  prepend-icon="fa fa-trash"
+                  @click="fileRemoval"
+                  :disabled="removalClicked"
+                  :loading="removeLoading"
+                  >Remove pernamently
+                </v-btn>
+              </v-btn-group>
             </v-card>
           </v-dialog>
         </v-card>
@@ -160,14 +162,13 @@ export default {
   methods: {
     async fetchFilePreview() {
       const response = await filesService.previewFile(this.currentFile._id)
-      this.fileUrl = URL.createObjectURL(response.data);;
+      this.fileUrl = URL.createObjectURL(response.data);
       this.fileType = this.getFileType(this.currentFile.type);;
       this.previewLoading = false;
     },
     async fetchDownload() {
       const response = await filesService.downloadFile(this.currentFile._id)
       const link = window.URL.createObjectURL(new Blob([response.data]));
-      //link.setAttribute('download', 'file.txt'); // replace with your file name
       this.downloadLink = link
       this.downloadBtnLoading = false;
     },
