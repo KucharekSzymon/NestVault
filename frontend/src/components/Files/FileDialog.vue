@@ -130,7 +130,6 @@
 
 <script lang="js">
 import filesService from "../../services/files.service";
-import { useRouter } from 'vue-router'
 
 export default {
   name: "FilePreviewDialog",
