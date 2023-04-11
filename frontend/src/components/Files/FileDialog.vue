@@ -83,14 +83,43 @@
           </v-card>
           <v-dialog
             v-model="nestedDialog"
-            max-width="50vw"
+            persistent
+            max-width="40vw"
             transition="dialog-bottom-transition"
           >
             <v-card>
-              <v-card-title> {{ nestedDialogTitle }} </v-card-title>
-              <v-card-actions>
-                <v-btn @click="nestedDialog = false">Cancel</v-btn>
-              </v-card-actions>
+              <v-toolbar>
+                <v-toolbar-items>
+                  <v-btn
+                    icon="fa fa-xmark"
+                    size="large"
+                    :disabled="removalClicked"
+                    @click="nestedDialog = false"
+                  ></v-btn>
+                </v-toolbar-items>
+                <v-toolbar-title>
+                  {{ nestedDialogTitle }}
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
+                <!-- <v-toolbar-items> </v-toolbar-items> -->
+              </v-toolbar>
+              <!-- <v-card-actions> </v-card-actions> -->
+              <v-btn-group>
+                <v-btn
+                  v-if="nestedDialogTitle != 'Share'"
+                  prepend-icon="fa fa-floppy-disk"
+                  @click="fileRemoval"
+                  :disabled="removalClicked"
+                  :loading="removeLoading"
+                  >Remove</v-btn
+                >
+                <v-btn href="/files/mine" prepend-icon="fa fa-back"
+                  >Return to my files</v-btn
+                >
+              </v-btn-group>
+              <v-alert v-if="removalMessage" type="success">
+                {{ removalMessage }}
+              </v-alert>
             </v-card>
           </v-dialog>
         </v-card>
@@ -101,6 +130,7 @@
 
 <script lang="js">
 import filesService from "../../services/files.service";
+import { useRouter } from 'vue-router'
 
 export default {
   name: "FilePreviewDialog",
@@ -116,28 +146,43 @@ export default {
       nestedDialogTitle: "",
       downloadLink: null,
       downloadBtnLoading: false,
+      removeLoading: false,
+      removalMessage: null,
+      removalClicked: false
     };
   },
   async mounted() {
     this.previewLoading = true;
     this.downloadBtnLoading = true;
 
-    await this.fetchFilePreview(this.currentFile._id);
-    await this.fetchDownload(this.currentFile._id)
+    await this.fetchFilePreview();
+    await this.fetchDownload()
   },
   methods: {
-    async fetchFilePreview(fileId) {
-      const response = await filesService.previewFile(fileId)
+    async fetchFilePreview() {
+      const response = await filesService.previewFile(this.currentFile._id)
       this.fileUrl = URL.createObjectURL(response.data);;
       this.fileType = this.getFileType(this.currentFile.type);;
       this.previewLoading = false;
     },
-    async fetchDownload(fileId) {
-      const response = await filesService.downloadFile(fileId)
-      const link  =window.URL.createObjectURL(new Blob([response.data]));
+    async fetchDownload() {
+      const response = await filesService.downloadFile(this.currentFile._id)
+      const link = window.URL.createObjectURL(new Blob([response.data]));
       //link.setAttribute('download', 'file.txt'); // replace with your file name
       this.downloadLink = link
       this.downloadBtnLoading = false;
+    },
+    async fileRemoval() {
+      this.removeLoading = true
+      this.removalMessage = null
+      this.removalClicked = true
+      const response = await filesService.removFile(this.currentFile._id)
+      this.updateSpaceUsage()
+      this.removalMessage = response.data
+      this.removeLoading = false
+    },
+    async updateSpaceUsage() {
+      await this.$store.dispatch("files/fetchStorageUsage");
     },
     closeDialog() {
       this.$emit('close');

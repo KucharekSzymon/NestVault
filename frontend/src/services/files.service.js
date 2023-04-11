@@ -17,6 +17,9 @@ class FilesService {
   async downloadFile(fileId) {
     return api.get("/files/download/" + fileId, { responseType: "blob" });
   }
+  async removFile(fileId) {
+    return api.delete("/files/" + fileId);
+  }
   convertSize(size) {
     const units = ["B", "KB", "MB", "GB", "TB"];
     let index = 0;
