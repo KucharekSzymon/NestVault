@@ -50,20 +50,16 @@
           <v-card v-else>
             <div>
               <div v-if="fileType === 'image'">
-                <img
-                  style="max-width: 100%"
-                  :src="fileUrl"
-                  alt="Image preview"
-                />
+                <img class="previewFile" :src="fileUrl" alt="Image preview" />
               </div>
               <div v-else-if="fileType === 'video'">
-                <video style="max-width: 100%" :src="fileUrl" controls></video>
+                <video class="previewFile" :src="fileUrl" controls></video>
               </div>
               <!-- <div v-else-if="fileType === 'pdf'">
                 <iframe :src="fileUrl" frameborder="0"></iframe>
               </div> -->
               <div v-else-if="fileType === 'audio'">
-                <audio style="max-width: 100%" :src="fileUrl" controls></audio>
+                <audio class="previewFile" :src="fileUrl" controls></audio>
               </div>
               <div v-else>Unsupported file type</div>
             </div>
@@ -126,3 +122,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.previewFile {
+  max-width: 100%;
+  max-height: 90vh;
+}
+</style>
