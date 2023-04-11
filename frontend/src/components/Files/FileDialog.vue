@@ -176,7 +176,7 @@ export default {
       this.removeLoading = true
       this.removalMessage = null
       this.removalClicked = true
-      const response = await filesService.removFile(this.currentFile._id)
+      const response = await filesService.removeFile(this.currentFile._id)
       this.updateSpaceUsage()
       this.removalMessage = response.data
       this.removeLoading = false
