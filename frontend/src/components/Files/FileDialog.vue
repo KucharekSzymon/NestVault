@@ -28,7 +28,7 @@
                   size="large"
                   color="info"
                   prepend-icon="fa fa-share"
-                  @click="(nestedDialog = true), (nestedDialogTitle = 'Share')"
+                  @click="true"
                 >
                   Share
                 </v-btn>
@@ -47,9 +47,7 @@
                   size="large"
                   color="error"
                   icon="fa fa-trash"
-                  @click="
-                    (nestedDialog = true), (nestedDialogTitle = 'Are you sure?')
-                  "
+                  @click="removeNestedDialog = true"
                 />
               </v-btn-group>
             </v-toolbar-items>
@@ -81,9 +79,9 @@
             </div>
           </v-card>
           <v-dialog
-            v-model="nestedDialog"
+            v-model="removeNestedDialog"
             persistent
-            max-width="40vw"
+            width="auto"
             transition="dialog-bottom-transition"
           >
             <v-card>
@@ -93,12 +91,10 @@
                     icon="fa fa-xmark"
                     size="large"
                     :disabled="removalClicked"
-                    @click="nestedDialog = false"
+                    @click="removeNestedDialog = false"
                   ></v-btn>
                 </v-toolbar-items>
-                <v-toolbar-title>
-                  {{ nestedDialogTitle }}
-                </v-toolbar-title>
+                <v-toolbar-title> Are you sure? </v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
               <div v-if="messages" role="alert">
@@ -115,8 +111,9 @@
                   {{ messages }}
                 </template>
               </div>
-              <v-btn-group>
+              <v-btn-group rounded="sm">
                 <v-btn
+                  :width="successful ? '100%' : auto"
                   href="/files/mine"
                   color="info"
                   prepend-icon="fa fa-share"
@@ -124,7 +121,7 @@
                   Return to my files
                 </v-btn>
                 <v-btn
-                  v-if="nestedDialogTitle != 'Share' && !successful"
+                  v-if="!successful"
                   color="error"
                   prepend-icon="fa fa-trash"
                   @click="fileRemoval"
@@ -154,8 +151,7 @@ export default {
       previewLoading: true,
       fileType: null,
       loadingFile: false,
-      nestedDialog: false,
-      nestedDialogTitle: "",
+      removeNestedDialog: false,
       downloadLink: null,
       downloadBtnLoading: false,
       removeLoading: false,
