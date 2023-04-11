@@ -24,17 +24,33 @@
             <v-spacer></v-spacer>
             <v-toolbar-items>
               <v-btn-group>
-                <v-btn size="large" color="info" prepend-icon="fa fa-share">
+                <v-btn
+                  size="large"
+                  color="info"
+                  prepend-icon="fa fa-share"
+                  @click="(nestedDialog = true), (nestedDialogTitle = 'Share')"
+                >
                   Share
                 </v-btn>
                 <v-btn
                   size="large"
                   color="success"
                   prepend-icon="fa fa-floppy-disk"
+                  @click="
+                    (nestedDialog = true), (nestedDialogTitle = 'Download')
+                  "
                 >
                   Download
                 </v-btn>
-                <v-btn size="large" color="error" icon="fa fa-trash" />
+                <v-btn
+                  size="large"
+                  color="error"
+                  icon="fa fa-trash"
+                  @click="
+                    (nestedDialog = true),
+                      (nestedDialogTitle = 'Remve pernamently')
+                  "
+                />
               </v-btn-group>
             </v-toolbar-items>
           </v-toolbar>
@@ -64,6 +80,18 @@
               <div v-else>Unsupported file type</div>
             </div>
           </v-card>
+          <v-dialog
+            v-model="nestedDialog"
+            max-width="50vw"
+            transition="dialog-bottom-transition"
+          >
+            <v-card>
+              <v-card-title> {{ nestedDialogTitle }} </v-card-title>
+              <v-card-actions>
+                <v-btn @click="nestedDialog = false">Cancel</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-card>
       </v-dialog>
     </v-row>
@@ -83,6 +111,8 @@ export default {
       previewLoading: true,
       fileType: null,
       loadingFile: false,
+      nestedDialog: false,
+      nestedDialogTitle: ""
     };
   },
   async mounted() {
