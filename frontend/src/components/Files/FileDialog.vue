@@ -101,9 +101,20 @@
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
-              <v-alert v-if="removalMessage" type="success">
-                {{ removalMessage }}
-              </v-alert>
+              <div v-if="messages" role="alert">
+                <template v-if="Array.isArray(messages)">
+                  <v-alert
+                    :type="successful ? 'success' : 'error'"
+                    v-for="(message, index) in messages"
+                    :key="index"
+                  >
+                    {{ message }}
+                  </v-alert>
+                </template>
+                <template v-else>
+                  {{ messages }}
+                </template>
+              </div>
               <v-btn-group>
                 <v-btn
                   href="/files/mine"
@@ -113,7 +124,7 @@
                   Return to my files
                 </v-btn>
                 <v-btn
-                  v-if="nestedDialogTitle != 'Share'"
+                  v-if="nestedDialogTitle != 'Share' && !successful"
                   color="error"
                   prepend-icon="fa fa-trash"
                   @click="fileRemoval"
@@ -148,8 +159,10 @@ export default {
       downloadLink: null,
       downloadBtnLoading: false,
       removeLoading: false,
-      removalMessage: null,
-      removalClicked: false
+      messages: [],
+      removalClicked: false,
+      successful: false,
+
     };
   },
   async mounted() {
@@ -173,13 +186,29 @@ export default {
       this.downloadBtnLoading = false;
     },
     async fileRemoval() {
+
       this.removeLoading = true
-      this.removalMessage = null
+      this.messages = []
       this.removalClicked = true
+      this.successful = false
+      try{
       const response = await filesService.removeFile(this.currentFile._id)
       this.updateSpaceUsage()
-      this.removalMessage = response.data
+      this.messages = [response.data.message];
       this.removeLoading = false
+      this.successful = true
+      }catch(error){
+        this.successful = false
+        this.removeLoading = false
+        this.removalClicked = false
+        this.messages = (error.response &&
+        error.response.data &&
+        Array.isArray(error.response.data.message)
+          ? error.response.data.message
+          : [error.response.data.message]) || [error.message] || [
+            error.toString(),
+          ];
+      }
     },
     async updateSpaceUsage() {
       await this.$store.dispatch("files/fetchStorageUsage");

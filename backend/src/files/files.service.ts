@@ -142,7 +142,8 @@ export class FilesService {
     if (await this.checkFileForOwner(fileId, reqId)) {
       this.userService.removalOfFile(reqId, file.size);
       this.deleteFile(`./upload/${file.path}/${file.name}`);
-      return this.fileModel.findByIdAndDelete(fileId).exec();
+      this.fileModel.findByIdAndDelete(fileId).exec();
+      return { message: 'File deleted successfully' };
     }
   }
   deleteFile(filePath: string): void {
