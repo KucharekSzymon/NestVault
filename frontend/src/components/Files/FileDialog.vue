@@ -85,12 +85,11 @@
             transition="dialog-bottom-transition"
           >
             <v-card>
-              <v-toolbar>
+              <v-toolbar v-if="!removalClicked">
                 <v-toolbar-items>
                   <v-btn
                     icon="fa fa-xmark"
                     size="large"
-                    :disabled="removalClicked"
                     @click="removeNestedDialog = false"
                   ></v-btn>
                 </v-toolbar-items>
