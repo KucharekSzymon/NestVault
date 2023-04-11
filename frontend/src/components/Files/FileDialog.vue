@@ -36,9 +36,10 @@
                   size="large"
                   color="success"
                   prepend-icon="fa fa-floppy-disk"
-                  @click="
-                    (nestedDialog = true), (nestedDialogTitle = 'Download')
-                  "
+                  :loading="downloadBtnLoading"
+                  :href="downloadLink"
+                  target="_blank"
+                  :download="currentFile.name"
                 >
                   Download
                 </v-btn>
@@ -48,7 +49,7 @@
                   icon="fa fa-trash"
                   @click="
                     (nestedDialog = true),
-                      (nestedDialogTitle = 'Remve pernamently')
+                      (nestedDialogTitle = 'Remove file pernamently')
                   "
                 />
               </v-btn-group>
@@ -112,22 +113,31 @@ export default {
       fileType: null,
       loadingFile: false,
       nestedDialog: false,
-      nestedDialogTitle: ""
+      nestedDialogTitle: "",
+      downloadLink: null,
+      downloadBtnLoading: false,
     };
   },
   async mounted() {
+    this.previewLoading = true;
+    this.downloadBtnLoading = true;
+
     await this.fetchFilePreview(this.currentFile._id);
+    await this.fetchDownload(this.currentFile._id)
   },
   methods: {
     async fetchFilePreview(fileId) {
-      this.previewLoading = true;
       const response = await filesService.previewFile(fileId)
-      const file = response.data;
-      const fileUrl = URL.createObjectURL(file);
-      const fileType = this.getFileType(this.currentFile.type);
-      this.fileUrl = fileUrl;
-      this.fileType = fileType;
+      this.fileUrl = URL.createObjectURL(response.data);;
+      this.fileType = this.getFileType(this.currentFile.type);;
       this.previewLoading = false;
+    },
+    async fetchDownload(fileId) {
+      const response = await filesService.downloadFile(fileId)
+      const link  =window.URL.createObjectURL(new Blob([response.data]));
+      //link.setAttribute('download', 'file.txt'); // replace with your file name
+      this.downloadLink = link
+      this.downloadBtnLoading = false;
     },
     closeDialog() {
       this.$emit('close');
