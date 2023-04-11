@@ -54,6 +54,7 @@ export default {
   methods: {
     async uploadFile() {
       this.successful = false;
+      this.messages = [];
 
       if (!this.file) {
         this.messages = ["Select a file to upload."];
