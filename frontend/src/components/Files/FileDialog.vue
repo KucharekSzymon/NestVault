@@ -169,10 +169,13 @@ export default {
   },
   methods: {
     async fetchFilePreview() {
+      this.fileType = this.getFileType(this.currentFile.type);;
+      if(this.fileType != null){
       const response = await filesService.previewFile(this.currentFile._id)
       this.fileUrl = URL.createObjectURL(response.data);
-      this.fileType = this.getFileType(this.currentFile.type);;
+      }
       this.previewLoading = false;
+
     },
     async fetchDownload() {
       const response = await filesService.downloadFile(this.currentFile._id)
