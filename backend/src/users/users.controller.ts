@@ -60,7 +60,7 @@ export class UsersController {
     );
   }
 
-  @UseGuards(AccessTokenGuard, RolesGuard)
+  @UseGuards(AccessTokenGuard)
   @Get('storage')
   getStorageLimit(@Req() req) {
     return this.usersService.storage(req.user._id);
