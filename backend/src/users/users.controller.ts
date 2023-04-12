@@ -32,7 +32,7 @@ export class UsersController {
     return this.usersService.findById(req.user._id);
   }
 
-  @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard, RolesGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
@@ -60,7 +60,7 @@ export class UsersController {
     );
   }
 
-  @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard, RolesGuard)
   @Get('storage')
   getStorageLimit(@Req() req) {
     return this.usersService.storage(req.user._id);

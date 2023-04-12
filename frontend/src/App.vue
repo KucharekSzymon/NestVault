@@ -77,14 +77,6 @@
         </a>
         <v-divider></v-divider>
         <v-list-item
-          prepend-icon="fa-regular fa-hard-drive"
-          :title="
-            'Used ' + convertSize(spaceUsed) + ' / ' + convertSize(spaceLimit)
-          "
-          v-if="currentUser"
-        >
-        </v-list-item>
-        <v-list-item
           :prepend-icon="
             theme.global.current.value.dark ? 'fa fa-sun' : 'fa fa-moon'
           "
@@ -92,12 +84,29 @@
           title="Change theme"
         >
         </v-list-item>
+        <v-list-item
+          prepend-icon="fa-regular fa-hard-drive"
+          :title="convertSize(spaceUsed) + ' / ' + convertSize(spaceLimit)"
+          v-if="currentUser"
+        >
+        </v-list-item>
+        <v-list-item height="3">
+          <v-progress-linear
+            v-model="dataUsagePercentage"
+            :indeterminate="storageLoading"
+            absolute
+            bottom
+            rounded
+            height="3"
+            :color="storageColor"
+          ></v-progress-linear>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
     <v-main>
       <BreadcrumbsList />
-      <v-container>
+      <v-container fluid>
         <v-card>
           <router-view />
         </v-card>
@@ -117,6 +126,7 @@ export default {
     return {
       drawer: null,
       loading: true,
+      storageLoading: true,
     };
   },
   setup() {
@@ -143,14 +153,20 @@ export default {
       return this.$store.state.files.spaceLimit;
     },
     dataUsagePercentage() {
-      return this.currentUser ? (this.spaceUsed() / this.spaceLimit) * 100 : 0;
+      return this.$store.state.files.spaceLeft;
+    },
+    storageColor() {
+      return this.$store.state.files.storageColor;
     },
   },
   methods: {
     async updateSpaceUsage() {
+      this.storageLoading = true;
       if (this.currentUser)
         await this.$store.dispatch("files/fetchStorageUsage");
+      this.storageLoading = false;
     },
+
     async updateRole() {
       if (this.currentUser) await this.$store.dispatch("role/fetchRole");
     },

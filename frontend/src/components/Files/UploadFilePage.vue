@@ -34,7 +34,7 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="js">
 import filesService from "../../services/files.service";
 
 export default {
@@ -54,6 +54,7 @@ export default {
   methods: {
     async uploadFile() {
       this.successful = false;
+      this.messages = [];
 
       if (!this.file) {
         this.messages = ["Select a file to upload."];

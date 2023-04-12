@@ -69,10 +69,10 @@ export class UsersService {
    */
   async remove(id: string, reqId: string): Promise<UserDocument> {
     const user = await this.userModel.findById(reqId);
-    if (user.isAdmin || user._id == id)
-      return this.userModel.findByIdAndDelete(id).exec();
-    else
+    if (user._id != id)
       throw new UnauthorizedException('You dont have permission to do that!');
+
+    return this.userModel.findByIdAndDelete(id).exec();
   }
 
   /**
@@ -131,7 +131,6 @@ export class UsersService {
   /**
    * Function for checking user storage limits / how much user store / space left
    * @param userId User id
-   * @param option 1 - Storage limit, 2 - Stored data, 3 - Space left
    * @returns
    */
   async storage(userId: string) {
@@ -139,7 +138,7 @@ export class UsersService {
     const data = {
       spaceLimit: user.storageLimit,
       spaceUsed: user.storedData,
-      spaceLeft: user.storageLimit - user.storedData,
+      spaceLeft: (user.storedData / user.storageLimit) * 100,
     };
     return data;
   }

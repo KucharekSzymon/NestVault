@@ -11,13 +11,23 @@ class FilesService {
       },
     });
   }
+  async previewFile(fileId) {
+    return api.get("/files/preview/" + fileId, { responseType: "blob" });
+  }
+  async downloadFile(fileId) {
+    return api.get("/files/download/" + fileId, { responseType: "blob" });
+  }
+  async removeFile(fileId) {
+    return api.delete("/files/" + fileId);
+  }
   convertSize(size) {
-    var fileSizeInMb = size / (1024 * 1024);
-    var fileSizeInGb = size / (1024 * 1024 * 1024);
-
-    return fileSizeInGb >= 1
-      ? fileSizeInGb.toFixed(2) + "Gb"
-      : fileSizeInMb.toFixed(2) + "Mb";
+    const units = ["B", "KB", "MB", "GB", "TB"];
+    let index = 0;
+    while (size > 1024) {
+      size /= 1024;
+      index++;
+    }
+    return size != null ? `${size.toFixed(2)} ${units[index]}` : 0;
   }
 }
 
