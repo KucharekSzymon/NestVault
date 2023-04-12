@@ -69,10 +69,10 @@ export class UsersService {
    */
   async remove(id: string, reqId: string): Promise<UserDocument> {
     const user = await this.userModel.findById(reqId);
-    if (user.isAdmin || user._id == id)
-      return this.userModel.findByIdAndDelete(id).exec();
-    else
+    if (user._id != id)
       throw new UnauthorizedException('You dont have permission to do that!');
+
+    return this.userModel.findByIdAndDelete(id).exec();
   }
 
   /**
