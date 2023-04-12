@@ -112,7 +112,7 @@
               </div>
               <v-btn-group rounded="sm">
                 <v-btn
-                  :width="successful ? '100%' : auto"
+                  :width="successful ? '100%' : 'auto'"
                   href="/files/mine"
                   color="info"
                   prepend-icon="fa fa-share"
