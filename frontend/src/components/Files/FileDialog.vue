@@ -85,7 +85,7 @@
             transition="dialog-bottom-transition"
           >
             <v-card>
-              <v-toolbar v-if="!removalClicked">
+              <v-toolbar v-if="messages.length == 0">
                 <v-toolbar-items>
                   <v-btn
                     icon="fa fa-xmark"
@@ -99,7 +99,7 @@
               <div v-if="messages" role="alert">
                 <template v-if="Array.isArray(messages)">
                   <v-alert
-                    :type="successful ? 'success' : 'error'"
+                    :type="removalSuccess ? 'success' : 'error'"
                     v-for="(message, index) in messages"
                     :key="index"
                   >
@@ -112,7 +112,7 @@
               </div>
               <v-btn-group rounded="sm">
                 <v-btn
-                  :width="successful ? '100%' : 'auto'"
+                  :width="removalSuccess ? '100%' : 'auto'"
                   href="/files/mine"
                   color="info"
                   prepend-icon="fa fa-share"
@@ -120,12 +120,12 @@
                   Return to my files
                 </v-btn>
                 <v-btn
-                  v-if="!successful"
+                  v-if="!removalSuccess"
                   color="error"
                   prepend-icon="fa fa-trash"
                   @click="fileRemoval"
-                  :disabled="removalClicked"
-                  :loading="removeLoading"
+                  :disabled="messages.length !== 0"
+                  :loading="messages.length !== 0"
                   >Remove pernamently
                 </v-btn>
               </v-btn-group>
@@ -148,15 +148,12 @@ export default {
       dialog: true,
       fileUrl: null,
       previewLoading: true,
+      downloadBtnLoading: false,
       fileType: null,
-      loadingFile: false,
       removeNestedDialog: false,
       downloadLink: null,
-      downloadBtnLoading: false,
-      removeLoading: false,
       messages: [],
-      removalClicked: false,
-      successful: false,
+      removalSuccess: false,
 
     };
   },
@@ -185,20 +182,14 @@ export default {
     },
     async fileRemoval() {
 
-      this.removeLoading = true
-      this.messages = []
-      this.removalClicked = true
-      this.successful = false
+      this.removalSuccess = false
       try{
       const response = await filesService.removeFile(this.currentFile._id)
       this.updateSpaceUsage()
       this.messages = [response.data.message];
-      this.removeLoading = false
-      this.successful = true
+      this.removalSuccess = true
       }catch(error){
-        this.successful = false
-        this.removeLoading = false
-        this.removalClicked = false
+        this.removalSuccess = false
         this.messages = (error.response &&
         error.response.data &&
         Array.isArray(error.response.data.message)
