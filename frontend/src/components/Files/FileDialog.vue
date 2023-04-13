@@ -198,14 +198,14 @@
                       clearable
                       label="Autocomplete"
                       :items="[
-                        'California',
-                        'Colorado',
-                        'Florida',
-                        'Georgia',
-                        'Texas',
-                        'Wyoming',
+                        { _id: '1', name: 'Option 1', email: 'asd@wp.pl' },
+                        { _id: '2', name: 'Option 2', email: 'asd2@wp.pl' },
+                        { _id: '3', name: 'Option 3', email: 'asd3@wp.pl' },
                       ]"
-                    ></v-autocomplete>
+                      item-title="name"
+                      item-value="_id"
+                    >
+                    </v-autocomplete>
                   </v-window-item>
                 </v-window>
               </div>
