@@ -213,7 +213,7 @@
                 color="info"
                 prepend-icon="fa fa-share"
                 rounded="sm"
-                :loading="messages.length == 0"
+                :loading="shareLoading"
                 @click="newShare"
               >
                 Share
@@ -251,6 +251,7 @@ export default {
       tooltipText: "Click to copy",
       description: null,
       expireTime: null,
+      shareLoading: false,
       shareSuccess: false,
 
 
@@ -299,16 +300,19 @@ export default {
       }
     },
     async newShare(){
+      this.shareLoading = true;
       if(this.tab == "url"){
         const data = {"file": this.currentFile._id,"description": this.description, "expireTime":this.expireTime}
         this.messages = []
         try {
           const response = await shareUrlService.newUrl(data)
-          this.messages = [response.data]
+          this.messages = [response.data._id]
           this.shareSuccess = true
+          this.shareLoading = false
 
         } catch (error) {
           this.shareSuccess = false
+          this.shareLoading = false
           this.messages = (error.response &&
         error.response.data &&
         Array.isArray(error.response.data.message)
