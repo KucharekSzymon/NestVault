@@ -28,7 +28,7 @@
                   size="large"
                   color="info"
                   prepend-icon="fa fa-share"
-                  @click="true"
+                  @click="shareNestedDialog = true"
                 >
                   Share
                 </v-btn>
@@ -131,6 +131,91 @@
               </v-btn-group>
             </v-card>
           </v-dialog>
+          <v-dialog
+            v-model="shareNestedDialog"
+            width="50vw"
+            transition="dialog-bottom-transition"
+          >
+            <v-card>
+              <v-toolbar>
+                <v-toolbar-items>
+                  <v-btn
+                    icon="fa fa-xmark"
+                    size="large"
+                    @click="shareNestedDialog = false"
+                  ></v-btn>
+                </v-toolbar-items>
+                <v-toolbar-title> Share</v-toolbar-title>
+                <v-spacer></v-spacer>
+              </v-toolbar>
+              <div v-if="messages" role="alert">
+                <template v-if="Array.isArray(messages)">
+                  <v-alert
+                    :type="removalSuccess ? 'success' : 'error'"
+                    v-for="(message, index) in messages"
+                    :key="index"
+                  >
+                    {{ message }}
+                  </v-alert>
+                </template>
+                <template v-else>
+                  {{ messages }}
+                </template>
+              </div>
+              <div class="d-flex flex-row">
+                <v-tabs v-model="tab" direction="vertical" color="primary">
+                  <v-tab prepend-icon="fa fa-link" value="link">
+                    Share URL
+                  </v-tab>
+                  <v-tab prepend-icon="fa fa-user" value="user">
+                    Share to user
+                  </v-tab>
+                </v-tabs>
+                <v-window v-model="tab">
+                  <v-window-item value="link" width="100%">
+                    <v-card flat width="100%" :loading="share == null">
+                      Share link: <br />
+                      <v-tooltip :text="tooltipText">
+                        <template v-slot:activator="{ props }">
+                          <v-card
+                            width="100%"
+                            :loading="share == null"
+                            v-bind="props"
+                          >
+                            {{ share }}
+                          </v-card>
+                        </template>
+                      </v-tooltip>
+                    </v-card>
+                  </v-window-item>
+                  <v-window-item value="user">
+                    <v-autocomplete
+                      clearable
+                      label="Autocomplete"
+                      :items="[
+                        'California',
+                        'Colorado',
+                        'Florida',
+                        'Georgia',
+                        'Texas',
+                        'Wyoming',
+                      ]"
+                      variant="solo"
+                    ></v-autocomplete>
+                  </v-window-item>
+                </v-window>
+              </div>
+              <v-btn
+                href="/files/mine"
+                color="info"
+                prepend-icon="fa fa-share"
+                rounded="sm"
+                :disabled="share == null"
+              >
+                Share
+              </v-btn>
+            </v-card>
+          </v-dialog>
         </v-card>
       </v-dialog>
     </v-row>
@@ -148,12 +233,17 @@ export default {
       dialog: true,
       fileUrl: null,
       previewLoading: true,
+      shareNestedDialog: false,
       downloadBtnLoading: false,
       fileType: null,
       removeNestedDialog: false,
       downloadLink: null,
       messages: [],
       removalSuccess: false,
+      tab: "link",
+      share: null,
+      tooltipText: "Click to copy",
+
 
     };
   },
@@ -199,6 +289,7 @@ export default {
           ];
       }
     },
+
     async updateSpaceUsage() {
       await this.$store.dispatch("files/fetchStorageUsage");
     },
