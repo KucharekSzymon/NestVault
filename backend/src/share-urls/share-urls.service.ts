@@ -20,17 +20,15 @@ export class ShareUrlsService {
   ) {}
 
   async create(data: any, userId: string) {
-    if (
-      await this.fileService.checkFileForOwner(data.file.toString(), userId)
-    ) {
-      const shareUrl = new this.shareUrlModel();
-      shareUrl.file = data.file;
-      shareUrl.description = data.description;
-      shareUrl.owner = data.owner;
-      shareUrl.expireTime = data.expireTime;
-      const createdShareUrl = new this.shareUrlModel(shareUrl);
-      return createdShareUrl.save();
-    }
+    await this.fileService.checkFileForOwner(data.file.toString(), userId);
+    const shareUrl = new this.shareUrlModel();
+    shareUrl.file = data.file;
+    if (data.description != null) shareUrl.description = data.description;
+    shareUrl.owner = data.owner;
+    if (data.expireTime != null) shareUrl.expireTime = data.expireTime;
+    const createdShareUrl = new this.shareUrlModel(shareUrl);
+    const newUrl = createdShareUrl.save();
+    return newUrl;
   }
 
   async findByOwner(owner: string) {

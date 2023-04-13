@@ -2,7 +2,7 @@ import api from "./api";
 
 class ShareUrlService {
   newUrl(formData) {
-    return api.post("/share-urls/upload", formData);
+    return api.post("/share-urls/new", formData);
   }
   getMyUrls() {
     "";

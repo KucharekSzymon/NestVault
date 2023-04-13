@@ -133,7 +133,7 @@
           </v-dialog>
           <v-dialog
             v-model="shareNestedDialog"
-            width="50vw"
+            width="60vw"
             transition="dialog-bottom-transition"
           >
             <v-card>
@@ -151,7 +151,7 @@
               <div v-if="messages" role="alert">
                 <template v-if="Array.isArray(messages)">
                   <v-alert
-                    :type="removalSuccess ? 'success' : 'error'"
+                    :type="shareSuccess ? 'success' : 'error'"
                     v-for="(message, index) in messages"
                     :key="index"
                   >
@@ -163,30 +163,35 @@
                 </template>
               </div>
               <div class="d-flex flex-row">
-                <v-tabs v-model="tab" direction="vertical" color="primary">
-                  <v-tab prepend-icon="fa fa-link" value="link">
+                <v-tabs
+                  class="w-50"
+                  v-model="tab"
+                  direction="vertical"
+                  color="primary"
+                >
+                  <v-tab prepend-icon="fa fa-link" value="url">
                     Share URL
                   </v-tab>
                   <v-tab prepend-icon="fa fa-user" value="user">
                     Share to user
                   </v-tab>
                 </v-tabs>
-                <v-window v-model="tab">
-                  <v-window-item value="link" width="100%">
-                    <v-card flat width="100%" :loading="share == null">
-                      Share link: <br />
-                      <v-tooltip :text="tooltipText">
-                        <template v-slot:activator="{ props }">
-                          <v-card
-                            width="100%"
-                            :loading="share == null"
-                            v-bind="props"
-                          >
-                            {{ share }}
-                          </v-card>
-                        </template>
-                      </v-tooltip>
-                    </v-card>
+                <v-window v-model="tab" class="w-100">
+                  <v-window-item value="url">
+                    <v-form>
+                      <v-container>
+                        <v-text-field
+                          v-model="description"
+                          label="Description"
+                        ></v-text-field>
+
+                        <v-text-field
+                          type="datetime-local"
+                          v-model="expireTime"
+                          label="Expire time"
+                        ></v-text-field>
+                      </v-container>
+                    </v-form>
                   </v-window-item>
                   <v-window-item value="user">
                     <v-autocomplete
@@ -200,17 +205,16 @@
                         'Texas',
                         'Wyoming',
                       ]"
-                      variant="solo"
                     ></v-autocomplete>
                   </v-window-item>
                 </v-window>
               </div>
               <v-btn
-                href="/files/mine"
                 color="info"
                 prepend-icon="fa fa-share"
                 rounded="sm"
-                :disabled="share == null"
+                :loading="messages.length == 0"
+                @click="newShare"
               >
                 Share
               </v-btn>
@@ -224,6 +228,8 @@
 
 <script lang="js">
 import filesService from "../../services/files.service";
+import shareUrlService from "../../services/shareUrl.service";
+
 
 export default {
   name: "FilePreviewDialog",
@@ -240,9 +246,12 @@ export default {
       downloadLink: null,
       messages: [],
       removalSuccess: false,
-      tab: "link",
+      tab: "url",
       share: null,
       tooltipText: "Click to copy",
+      description: null,
+      expireTime: null,
+      shareSuccess: false,
 
 
     };
@@ -289,7 +298,27 @@ export default {
           ];
       }
     },
+    async newShare(){
+      if(this.tab == "url"){
+        const data = {"file": this.currentFile._id,"description": this.description, "expireTime":this.expireTime}
+        this.messages = []
+        try {
+          const response = await shareUrlService.newUrl(data)
+          this.messages = [response.data]
+          this.shareSuccess = true
 
+        } catch (error) {
+          this.shareSuccess = false
+          this.messages = (error.response &&
+        error.response.data &&
+        Array.isArray(error.response.data.message)
+          ? error.response.data.message
+          : [error.response.data.message]) || [error.message] || [
+            error.toString(),
+          ];
+        }
+      }
+    },
     async updateSpaceUsage() {
       await this.$store.dispatch("files/fetchStorageUsage");
     },

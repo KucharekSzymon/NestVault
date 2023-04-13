@@ -8,7 +8,6 @@ export class CreateShareUrlDto {
   file: mongoose.Schema.Types.ObjectId;
 
   @ApiProperty()
-  @IsString()
   description: string;
 
   @ApiProperty()
