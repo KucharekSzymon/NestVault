@@ -5,7 +5,6 @@ class ShareCodesService {
     return api.post("/share-codes/new", formData);
   }
   getMyUrls() {
-    "";
     return api.get("/share-codes/mine");
   }
   urlUses(fileId) {
