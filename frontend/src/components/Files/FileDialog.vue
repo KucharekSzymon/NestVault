@@ -36,7 +36,7 @@
                   size="large"
                   color="success"
                   prepend-icon="fa fa-floppy-disk"
-                  :loading="downloadBtnLoading"
+                  :loading="downloadLink == null"
                   :href="downloadLink"
                   target="_blank"
                   :download="currentFile.name"
@@ -53,7 +53,7 @@
             </v-toolbar-items>
           </v-toolbar>
           <v-divider></v-divider>
-          <v-card v-if="previewLoading">
+          <v-card v-if="fileUrl == null">
             <v-progress-circular
               color="primary"
               indeterminate
@@ -197,11 +197,8 @@
                     <v-autocomplete
                       clearable
                       label="Autocomplete"
-                      :items="[
-                        { _id: '1', name: 'Option 1', email: 'asd@wp.pl' },
-                        { _id: '2', name: 'Option 2', email: 'asd2@wp.pl' },
-                        { _id: '3', name: 'Option 3', email: 'asd3@wp.pl' },
-                      ]"
+                      :loading="users == null"
+                      :items="users"
                       item-title="name"
                       item-value="_id"
                     >
@@ -228,6 +225,7 @@
 
 <script lang="js">
 import filesService from "../../services/files.service";
+import usersService from "../../services/user.service";
 import shareUrlService from "../../services/shareUrl.service";
 
 
@@ -238,9 +236,7 @@ export default {
     return {
       dialog: true,
       fileUrl: null,
-      previewLoading: true,
       shareNestedDialog: false,
-      downloadBtnLoading: false,
       fileType: null,
       removeNestedDialog: false,
       downloadLink: null,
@@ -253,16 +249,16 @@ export default {
       expireTime: null,
       shareLoading: false,
       shareSuccess: false,
-
-
+      users: [],
     };
   },
   async mounted() {
-    this.previewLoading = true;
-    this.downloadBtnLoading = true;
-
-    await this.fetchFilePreview();
+    await this.fetchFilePreview()
     await this.fetchDownload()
+    this.$watch('shareNestedDialog', async () => {
+      if (this.shareNestedDialog)
+        await this.fetchUsers()
+    });
   },
   methods: {
     async fetchFilePreview() {
@@ -271,14 +267,19 @@ export default {
       const response = await filesService.previewFile(this.currentFile._id)
       this.fileUrl = URL.createObjectURL(response.data);
       }
-      this.previewLoading = false;
-
     },
     async fetchDownload() {
       const response = await filesService.downloadFile(this.currentFile._id)
       const link = window.URL.createObjectURL(new Blob([response.data]));
       this.downloadLink = link
-      this.downloadBtnLoading = false;
+    },
+    async fetchUsers(){
+      try {
+        const response = await usersService.getAllUsers()
+        this.users = response.data
+      } catch (error) {
+        console.log(error);
+      }
     },
     async fileRemoval() {
 
