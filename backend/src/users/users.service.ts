@@ -30,6 +30,25 @@ export class UsersService {
   }
 
   /**
+   * Returns all users without one that ask for list
+   * @param userId User id that will be exluded from list
+   * @returns List of all users wihout one proviced
+   */
+  async findAllButMe(userId: string) {
+    let query = this.userModel.find();
+
+    if (userId) {
+      query = query.where('_id').ne(userId);
+    }
+
+    const users = await query.exec();
+    return users.map((user) => ({
+      _id: user._id,
+      name: `${user.name} - ${user.email}`,
+    }));
+  }
+
+  /**
    * Finding one specific user in database
    * @param id User unique id
    * @returns One user object that match provided id
