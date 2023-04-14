@@ -76,9 +76,9 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('sharedToMe')
-  findFilesSharedToMe(@Req() req) {
-    return this.filesService.findFilesSharedToMe(req.user._id);
+  @Get('sharedWithMe')
+  findFilesSharedWithMe(@Req() req) {
+    return this.filesService.findFilesSharedWithMe(req.user._id);
   }
 
   @UseGuards(AccessTokenGuard)

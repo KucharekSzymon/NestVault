@@ -54,7 +54,7 @@ export class FilesService {
     });
     return sharedFiles;
   }
-  async findFilesSharedToMe(owner: string) {
+  async findFilesSharedWithMe(owner: string) {
     const user = await this.userService.findById(owner);
     return await this.fileModel.find({ authorizedUsers: user._id }).exec();
   }

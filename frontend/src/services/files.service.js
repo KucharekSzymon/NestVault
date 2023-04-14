@@ -4,6 +4,12 @@ class FilesService {
   getMyFiles() {
     return api.get("/files/mine");
   }
+  getSharedWithMe() {
+    return api.get("files/sharedwithme");
+  }
+  getSharedByMe() {
+    return api.get("files/shared");
+  }
   uploadFile(formData) {
     return api.post("/files/upload", formData, {
       headers: {
