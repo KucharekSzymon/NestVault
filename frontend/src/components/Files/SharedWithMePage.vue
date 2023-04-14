@@ -5,6 +5,7 @@
         <v-col class="subtitle-1 font-weight-bold">Files shared to me</v-col>
       </v-row>
       <v-autocomplete
+        v-if="files.length !== 0"
         clearable
         v-model="selectedFile"
         label="Find a file"

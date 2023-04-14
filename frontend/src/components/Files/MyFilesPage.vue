@@ -15,6 +15,7 @@
         </v-col>
       </v-row>
       <v-autocomplete
+        v-if="files.length !== 0"
         clearable
         v-model="selectedFile"
         label="Find a file"
