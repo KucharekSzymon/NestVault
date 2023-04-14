@@ -21,6 +21,12 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(AccessTokenGuard)
+  @Get()
+  userList(@Req() req) {
+    return this.usersService.findAllButMe(req.user._id);
+  }
+
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);

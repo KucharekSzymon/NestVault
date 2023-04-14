@@ -95,9 +95,10 @@ export class FilesService {
           'This user already have access to this resoure.',
         );
       file.authorizedUsers.push(user);
-      return this.fileModel
+      await this.fileModel
         .findByIdAndUpdate(fileId, file)
         .setOptions({ overwrite: true, new: true });
+      return { message: 'File shared successfully' };
     }
   }
   async fileAccessRevoke(
@@ -114,9 +115,10 @@ export class FilesService {
         (obj) => !user._id.equals(obj),
       );
 
-      return this.fileModel
+      await this.fileModel
         .findByIdAndUpdate(fileId, file)
         .setOptions({ overwrite: true, new: true });
+      return { message: 'File access revoked' };
     }
   }
 

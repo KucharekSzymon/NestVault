@@ -28,7 +28,7 @@
                   size="large"
                   color="info"
                   prepend-icon="fa fa-share"
-                  @click="true"
+                  @click="shareNestedDialog = true"
                 >
                   Share
                 </v-btn>
@@ -36,7 +36,7 @@
                   size="large"
                   color="success"
                   prepend-icon="fa fa-floppy-disk"
-                  :loading="downloadBtnLoading"
+                  :loading="downloadLink == null"
                   :href="downloadLink"
                   target="_blank"
                   :download="currentFile.name"
@@ -53,7 +53,7 @@
             </v-toolbar-items>
           </v-toolbar>
           <v-divider></v-divider>
-          <v-card v-if="previewLoading">
+          <v-card v-if="fileUrl == null">
             <v-progress-circular
               color="primary"
               indeterminate
@@ -131,6 +131,108 @@
               </v-btn-group>
             </v-card>
           </v-dialog>
+          <v-dialog
+            v-model="shareNestedDialog"
+            width="60vw"
+            transition="dialog-bottom-transition"
+          >
+            <v-card>
+              <v-toolbar>
+                <v-toolbar-items>
+                  <v-btn
+                    icon="fa fa-xmark"
+                    size="large"
+                    @click="shareNestedDialog = false"
+                  ></v-btn>
+                </v-toolbar-items>
+                <v-toolbar-title> Share</v-toolbar-title>
+                <v-spacer></v-spacer>
+              </v-toolbar>
+              <div v-if="messages" role="alert">
+                <template v-if="Array.isArray(messages)">
+                  <v-alert
+                    :type="shareSuccess ? 'success' : 'error'"
+                    v-for="(message, index) in messages"
+                    :key="index"
+                  >
+                    {{ message }}
+                  </v-alert>
+                </template>
+                <template v-else>
+                  {{ messages }}
+                </template>
+              </div>
+              <div class="d-flex flex-row">
+                <v-tabs
+                  class="w-50"
+                  v-model="tab"
+                  direction="vertical"
+                  color="primary"
+                >
+                  <v-tab prepend-icon="fa fa-link" value="url">
+                    Share URL
+                  </v-tab>
+                  <v-tab prepend-icon="fa fa-user" value="user">
+                    Share to user
+                  </v-tab>
+                  <v-tab prepend-icon="fa fa-ban" value="revoke">
+                    Revoke access
+                  </v-tab>
+                </v-tabs>
+                <v-window v-model="tab" class="w-100">
+                  <v-window-item value="url">
+                    <v-form>
+                      <v-container>
+                        <v-text-field
+                          v-model="description"
+                          label="Description"
+                        ></v-text-field>
+
+                        <v-text-field
+                          type="datetime-local"
+                          v-model="expireTime"
+                          label="Expire time"
+                        ></v-text-field>
+                      </v-container>
+                    </v-form>
+                  </v-window-item>
+                  <v-window-item value="user">
+                    <v-autocomplete
+                      clearable
+                      v-model="shareTo"
+                      label="Select user"
+                      :loading="users.length === 0"
+                      :items="users"
+                      item-title="name"
+                      item-value="_id"
+                    >
+                    </v-autocomplete>
+                  </v-window-item>
+                  <v-window-item value="revoke">
+                    <v-autocomplete
+                      clearable
+                      v-model="revokeFrom"
+                      label="Select user"
+                      :loading="users.length === 0"
+                      :items="users"
+                      item-title="name"
+                      item-value="_id"
+                    >
+                    </v-autocomplete>
+                  </v-window-item>
+                </v-window>
+              </div>
+              <v-btn
+                color="info"
+                prepend-icon="fa fa-share"
+                rounded="sm"
+                :loading="shareLoading"
+                @click="newShare"
+              >
+                {{ shareButtonText }}
+              </v-btn>
+            </v-card>
+          </v-dialog>
         </v-card>
       </v-dialog>
     </v-row>
@@ -139,6 +241,8 @@
 
 <script lang="js">
 import filesService from "../../services/files.service";
+import usersService from "../../services/user.service";
+import shareUrlService from "../../services/shareUrl.service";
 
 export default {
   name: "FilePreviewDialog",
@@ -147,22 +251,35 @@ export default {
     return {
       dialog: true,
       fileUrl: null,
-      previewLoading: true,
-      downloadBtnLoading: false,
+      shareNestedDialog: false,
+      shareButtonText: "Share",
       fileType: null,
       removeNestedDialog: false,
       downloadLink: null,
       messages: [],
       removalSuccess: false,
-
+      tab: "url",
+      share: null,
+      tooltipText: "Click to copy",
+      description: null,
+      expireTime: null,
+      shareLoading: false,
+      shareSuccess: false,
+      users: [],
+      shareTo: null,
+      revokeFrom: null,
     };
   },
   async mounted() {
-    this.previewLoading = true;
-    this.downloadBtnLoading = true;
-
-    await this.fetchFilePreview();
+    await this.fetchFilePreview()
     await this.fetchDownload()
+    this.$watch('shareNestedDialog', async () => {
+      if (this.shareNestedDialog)
+        await this.fetchUsers()
+    });
+    this.$watch('tab', () => {
+      (this.tab == 'revoke')? this.shareButtonText = 'Revoke access': this.shareButtonText = 'Share'
+    });
   },
   methods: {
     async fetchFilePreview() {
@@ -171,17 +288,25 @@ export default {
       const response = await filesService.previewFile(this.currentFile._id)
       this.fileUrl = URL.createObjectURL(response.data);
       }
-      this.previewLoading = false;
-
     },
     async fetchDownload() {
+      try{
       const response = await filesService.downloadFile(this.currentFile._id)
       const link = window.URL.createObjectURL(new Blob([response.data]));
       this.downloadLink = link
-      this.downloadBtnLoading = false;
+      }catch(error){
+        console.log(error);
+      }
+    },
+    async fetchUsers(){
+      try {
+        const response = await usersService.getAllUsers()
+        this.users = response.data
+      } catch (error) {
+        console.log(error);
+      }
     },
     async fileRemoval() {
-
       this.removalSuccess = false
       try{
       const response = await filesService.removeFile(this.currentFile._id)
@@ -197,6 +322,67 @@ export default {
           : [error.response.data.message]) || [error.message] || [
             error.toString(),
           ];
+      }
+    },
+    async newShare(){
+      this.shareLoading = true;
+      if(this.tab == "url"){
+        const data = {"file": this.currentFile._id,"description": this.description, "expireTime":this.expireTime}
+        this.messages = []
+        try {
+          const response = await shareUrlService.newUrl(data)
+          this.messages = [response.data._id]
+          this.shareSuccess = true
+          this.shareLoading = false
+
+        } catch (error) {
+          this.shareSuccess = false
+          this.shareLoading = false
+          this.messages = (error.response &&
+        error.response.data &&
+        Array.isArray(error.response.data.message)
+          ? error.response.data.message
+          : [error.response.data.message]) || [error.message] || [
+            error.toString(),
+          ];
+        }
+      }
+      else if(this.tab == "user"){
+        try {
+          const response = await filesService.share({fileId: this.currentFile._id, userId: this.shareTo})
+          this.messages = [response.data.message]
+          this.shareSuccess = true
+          this.shareLoading = false
+
+        } catch (error) {
+          this.shareSuccess = false
+          this.shareLoading = false
+          this.messages = (error.response &&
+          error.response.data &&
+          Array.isArray(error.response.data.message)
+          ? error.response.data.message
+          : [error.response.data.message]) || [error.message] || [
+            error.toString(),
+          ];
+        }
+      }      else if(this.tab == "revoke"){
+        try {
+          const response = await filesService.revoke({fileId: this.currentFile._id, userId: this.revokeFrom})
+          this.messages = [response.data.message]
+          this.shareSuccess = true
+          this.shareLoading = false
+
+        } catch (error) {
+          this.shareSuccess = false
+          this.shareLoading = false
+          this.messages = (error.response &&
+          error.response.data &&
+          Array.isArray(error.response.data.message)
+          ? error.response.data.message
+          : [error.response.data.message]) || [error.message] || [
+            error.toString(),
+          ];
+        }
       }
     },
     async updateSpaceUsage() {

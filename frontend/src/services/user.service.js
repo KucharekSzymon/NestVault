@@ -16,6 +16,9 @@ class UserService {
   getStorageData() {
     return api.get("/users/storage");
   }
+  getAllUsers() {
+    return api.get("/users");
+  }
 }
 
 export default new UserService();
