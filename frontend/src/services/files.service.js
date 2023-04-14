@@ -4,21 +4,27 @@ class FilesService {
   getMyFiles() {
     return api.get("/files/mine");
   }
-  async uploadFile(formData) {
-    return await api.post("/files/upload", formData, {
+  uploadFile(formData) {
+    return api.post("/files/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
   }
-  async previewFile(fileId) {
+  previewFile(fileId) {
     return api.get("/files/preview/" + fileId, { responseType: "blob" });
   }
-  async downloadFile(fileId) {
+  downloadFile(fileId) {
     return api.get("/files/download/" + fileId, { responseType: "blob" });
   }
-  async removeFile(fileId) {
+  removeFile(fileId) {
     return api.delete("/files/" + fileId);
+  }
+  share(data) {
+    return api.post("/files/share", data);
+  }
+  revoke(data) {
+    return api.post("/files/revoke", data);
   }
   convertSize(size) {
     const units = ["B", "KB", "MB", "GB", "TB"];

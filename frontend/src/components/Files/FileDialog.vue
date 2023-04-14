@@ -175,6 +175,9 @@
                   <v-tab prepend-icon="fa fa-user" value="user">
                     Share to user
                   </v-tab>
+                  <v-tab prepend-icon="fa fa-ban" value="revoke">
+                    Revoke access
+                  </v-tab>
                 </v-tabs>
                 <v-window v-model="tab" class="w-100">
                   <v-window-item value="url">
@@ -196,8 +199,21 @@
                   <v-window-item value="user">
                     <v-autocomplete
                       clearable
-                      label="Autocomplete"
-                      :loading="users == null"
+                      v-model="shareTo"
+                      label="Select user"
+                      :loading="users.length === 0"
+                      :items="users"
+                      item-title="name"
+                      item-value="_id"
+                    >
+                    </v-autocomplete>
+                  </v-window-item>
+                  <v-window-item value="revoke">
+                    <v-autocomplete
+                      clearable
+                      v-model="revokeFrom"
+                      label="Select user"
+                      :loading="users.length === 0"
                       :items="users"
                       item-title="name"
                       item-value="_id"
@@ -213,7 +229,7 @@
                 :loading="shareLoading"
                 @click="newShare"
               >
-                Share
+                {{ shareButtonText }}
               </v-btn>
             </v-card>
           </v-dialog>
@@ -228,7 +244,6 @@ import filesService from "../../services/files.service";
 import usersService from "../../services/user.service";
 import shareUrlService from "../../services/shareUrl.service";
 
-
 export default {
   name: "FilePreviewDialog",
   props: ['currentFile'],
@@ -237,6 +252,7 @@ export default {
       dialog: true,
       fileUrl: null,
       shareNestedDialog: false,
+      shareButtonText: "Share",
       fileType: null,
       removeNestedDialog: false,
       downloadLink: null,
@@ -250,6 +266,8 @@ export default {
       shareLoading: false,
       shareSuccess: false,
       users: [],
+      shareTo: null,
+      revokeFrom: null,
     };
   },
   async mounted() {
@@ -258,6 +276,9 @@ export default {
     this.$watch('shareNestedDialog', async () => {
       if (this.shareNestedDialog)
         await this.fetchUsers()
+    });
+    this.$watch('tab', () => {
+      (this.tab == 'revoke')? this.shareButtonText = 'Revoke access': this.shareButtonText = 'Share'
     });
   },
   methods: {
@@ -269,9 +290,13 @@ export default {
       }
     },
     async fetchDownload() {
+      try{
       const response = await filesService.downloadFile(this.currentFile._id)
       const link = window.URL.createObjectURL(new Blob([response.data]));
       this.downloadLink = link
+      }catch(error){
+        console.log(error);
+      }
     },
     async fetchUsers(){
       try {
@@ -282,7 +307,6 @@ export default {
       }
     },
     async fileRemoval() {
-
       this.removalSuccess = false
       try{
       const response = await filesService.removeFile(this.currentFile._id)
@@ -317,6 +341,43 @@ export default {
           this.messages = (error.response &&
         error.response.data &&
         Array.isArray(error.response.data.message)
+          ? error.response.data.message
+          : [error.response.data.message]) || [error.message] || [
+            error.toString(),
+          ];
+        }
+      }
+      else if(this.tab == "user"){
+        try {
+          const response = await filesService.share({fileId: this.currentFile._id, userId: this.shareTo})
+          this.messages = [response.data.message]
+          this.shareSuccess = true
+          this.shareLoading = false
+
+        } catch (error) {
+          this.shareSuccess = false
+          this.shareLoading = false
+          this.messages = (error.response &&
+          error.response.data &&
+          Array.isArray(error.response.data.message)
+          ? error.response.data.message
+          : [error.response.data.message]) || [error.message] || [
+            error.toString(),
+          ];
+        }
+      }      else if(this.tab == "revoke"){
+        try {
+          const response = await filesService.revoke({fileId: this.currentFile._id, userId: this.revokeFrom})
+          this.messages = [response.data.message]
+          this.shareSuccess = true
+          this.shareLoading = false
+
+        } catch (error) {
+          this.shareSuccess = false
+          this.shareLoading = false
+          this.messages = (error.response &&
+          error.response.data &&
+          Array.isArray(error.response.data.message)
           ? error.response.data.message
           : [error.response.data.message]) || [error.message] || [
             error.toString(),
