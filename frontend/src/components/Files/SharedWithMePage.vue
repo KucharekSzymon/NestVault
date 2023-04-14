@@ -4,7 +4,13 @@
       <v-row class="d-flex justify-space-between pa-2">
         <v-col class="subtitle-1 font-weight-bold">Files shared to me</v-col>
         <v-col class="d-flex justify-end">
-          <v-text-field clearable v-model="shareCode" label="Share code">
+          <v-text-field
+            :rules="codeRoles"
+            :counter="24"
+            clearable
+            v-model="shareCode"
+            label="Share code"
+          >
             <template v-slot:append>
               <v-slide-x-reverse-transition mode="out-in">
                 <v-icon
@@ -97,6 +103,13 @@ export default {
       currentFile: null,
       selectedFile: null,
       shareCode: null,
+      codeRoles: [
+        (value) => {
+          if (value?.length == 24) return true;
+
+          return "Code must have 24 characters.";
+        },
+      ],
     };
   },
   async mounted() {
