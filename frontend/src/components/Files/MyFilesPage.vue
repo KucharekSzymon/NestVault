@@ -1,14 +1,39 @@
 <template>
   <div>
-    <v-card :loading="loading">
-      <v-row class="d-flex justify-space-between align-center pa-2">
+    <v-card :loading="loading" class="pa-2">
+      <v-row class="d-flex justify-space-between pa-2">
         <v-col class="subtitle-1 font-weight-bold">My files</v-col>
-        <v-col>
-          <v-btn variant="outlined" href="/files/upload" color="primary" dark
+        <v-col class="d-flex justify-end">
+          <v-btn
+            prepend-icon="fa fa-upload"
+            variant="outlined"
+            href="/files/upload"
+            color="primary"
+            dark
             >Upload file</v-btn
           >
         </v-col>
       </v-row>
+      <v-autocomplete
+        clearable
+        v-model="selectedFile"
+        label="Find a file"
+        :loading="loading"
+        :items="files"
+        item-title="name"
+        item-value="_id"
+      >
+        <template v-slot:append>
+          <v-slide-x-reverse-transition mode="out-in">
+            <v-icon
+              color="primary"
+              v-if="selectedFile"
+              icon="fa fa-angles-right"
+              @click="findFile"
+            ></v-icon>
+          </v-slide-x-reverse-transition>
+        </template>
+      </v-autocomplete>
       <v-row>
         <v-col
           v-for="(file, index) in files"
@@ -66,6 +91,7 @@ export default {
       files: [],
       dialog: false,
       currentFile: null,
+      selectedFile: null,
     };
   },
   async mounted() {
@@ -119,6 +145,10 @@ export default {
     setCurrentFile(file) {
       this.currentFile = file;
       this.dialog = true;
+    },
+    findFile() {
+      const file = this.files.find((obj) => obj._id === this.selectedFile);
+      this.setCurrentFile(file);
     },
   },
 };
