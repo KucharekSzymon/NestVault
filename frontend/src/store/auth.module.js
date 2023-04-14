@@ -27,7 +27,7 @@ export const auth = {
     },
 
     refreshAccessToken({ commit }, accessToken) {
-      commit("refreshAccessToken", accessToken);
+      if (user != null) commit("refreshAccessToken", accessToken);
     },
   },
   mutations: {

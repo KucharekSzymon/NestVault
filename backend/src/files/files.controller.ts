@@ -58,6 +58,12 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
+  @Get('revokeAll/:id')
+  revokeAll(@Req() req, @Param('id') fileId: string) {
+    return this.filesService.fileAccessRevokeAll(req.user._id, fileId);
+  }
+
+  @UseGuards(AccessTokenGuard)
   @Get('mine')
   findOnlyMine(@Req() req) {
     return this.filesService.findByOwner(req.user._id);
@@ -73,6 +79,12 @@ export class FilesController {
   @Get('sharedToMe')
   findFilesSharedToMe(@Req() req) {
     return this.filesService.findFilesSharedToMe(req.user._id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('sharedTo/:id')
+  sharedTo(@Req() req, @Param('id') fileId: string) {
+    return this.filesService.fileSharedTo(req.user._id, fileId);
   }
 
   @UseGuards(AccessTokenGuard)

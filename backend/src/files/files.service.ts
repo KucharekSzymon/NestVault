@@ -20,7 +20,7 @@ export class FilesService {
     private userService: UsersService,
   ) {}
 
-  async create(data: any): Promise<FileDocument> {
+  async create(data: any) {
     const createdFile = new this.fileModel();
     createdFile.name = data.name;
     createdFile.owner = data.owner;
@@ -29,7 +29,8 @@ export class FilesService {
     createdFile.size = data.size;
 
     await this.userService.uploadOfFile(data.owner, data.size);
-    return createdFile.save();
+    createdFile.save();
+    return 'File uploaded';
   }
 
   async findById(fileId: string) {
@@ -94,9 +95,10 @@ export class FilesService {
           'This user already have access to this resoure.',
         );
       file.authorizedUsers.push(user);
-      return this.fileModel
+      await this.fileModel
         .findByIdAndUpdate(fileId, file)
         .setOptions({ overwrite: true, new: true });
+      return { message: 'File shared successfully' };
     }
   }
   async fileAccessRevoke(
@@ -108,17 +110,44 @@ export class FilesService {
     if (await this.checkFileForOwner(fileId, fileOwnerId)) {
       const user = await this.userService.findById(shareToId);
       if (user == null) throw new NotFoundException('User not found.');
-
+      if (!file.authorizedUsers.includes(user._id.toString()))
+        throw new ForbiddenException(
+          'This user does not have acces to this resource.',
+        );
       file.authorizedUsers = file.authorizedUsers.filter(
         (obj) => !user._id.equals(obj),
       );
 
-      return this.fileModel
+      await this.fileModel
         .findByIdAndUpdate(fileId, file)
         .setOptions({ overwrite: true, new: true });
+      return { message: 'File access revoked' };
     }
   }
+  async fileAccessRevokeAll(fileOwnerId: string, fileId: string) {
+    const file = await this.fileModel.findById(fileId);
+    if (await this.checkFileForOwner(fileId, fileOwnerId)) {
+      file.authorizedUsers = [];
 
+      await this.fileModel
+        .findByIdAndUpdate(fileId, file)
+        .setOptions({ overwrite: true, new: true });
+      return { message: 'File access revoked for all users' };
+    }
+  }
+  async fileSharedTo(fileOwnerId: string, fileId: string) {
+    if (await this.checkFileForOwner(fileId, fileOwnerId)) {
+      const file = await this.fileModel
+        .findById(fileId)
+        .populate('authorizedUsers');
+      const users = file.authorizedUsers.map((user) => ({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      }));
+      return users;
+    }
+  }
   async imageStream(fileId: string, userId: string) {
     const file = await this.fileModel.findById(fileId);
     await this.checkFile(fileId, userId);
@@ -141,7 +170,8 @@ export class FilesService {
     if (await this.checkFileForOwner(fileId, reqId)) {
       this.userService.removalOfFile(reqId, file.size);
       this.deleteFile(`./upload/${file.path}/${file.name}`);
-      return this.fileModel.findByIdAndDelete(fileId).exec();
+      this.fileModel.findByIdAndDelete(fileId).exec();
+      return { message: 'File deleted successfully' };
     }
   }
   deleteFile(filePath: string): void {

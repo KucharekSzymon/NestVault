@@ -12,14 +12,12 @@ class UserService {
   getAdminBoard() {
     return api.get("/users/me");
   }
-  getSpaceLeft() {
-    return 8; //api.get("/users/spaceleft");
+
+  getStorageData() {
+    return api.get("/users/storage");
   }
-  getSpaceLimit() {
-    return 10; //api.get("/users/spacelimit");
-  }
-  getSpaceUsed() {
-    return 2; //api.get("/users/spaceused");
+  getAllUsers() {
+    return api.get("/users");
   }
 }
 

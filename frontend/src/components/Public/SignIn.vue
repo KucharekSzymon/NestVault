@@ -75,7 +75,7 @@ export default {
   },
   created() {
     if (this.loggedIn) {
-      this.$router.push("/profile");
+      this.$router.push("/user/dashboard");
     }
   },
   methods: {
@@ -84,7 +84,8 @@ export default {
 
       try {
         await this.$store.dispatch("auth/login", user);
-        this.$router.push("/profile");
+        await this.$store.dispatch("role/fetchRole");
+        this.$router.push("/user/dashboard");
       } catch (error) {
         this.loading = false;
         this.messages = (error.response &&

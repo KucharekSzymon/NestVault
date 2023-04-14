@@ -30,6 +30,25 @@ export class UsersService {
   }
 
   /**
+   * Returns all users without one that ask for list
+   * @param userId User id that will be exluded from list
+   * @returns List of all users wihout one proviced
+   */
+  async findAllButMe(userId: string) {
+    let query = this.userModel.find();
+
+    if (userId) {
+      query = query.where('_id').ne(userId);
+    }
+
+    const users = await query.exec();
+    return users.map((user) => ({
+      _id: user._id,
+      name: `${user.name} - ${user.email}`,
+    }));
+  }
+
+  /**
    * Finding one specific user in database
    * @param id User unique id
    * @returns One user object that match provided id
@@ -69,10 +88,10 @@ export class UsersService {
    */
   async remove(id: string, reqId: string): Promise<UserDocument> {
     const user = await this.userModel.findById(reqId);
-    if (user.isAdmin || user._id == id)
-      return this.userModel.findByIdAndDelete(id).exec();
-    else
+    if (user._id != id)
       throw new UnauthorizedException('You dont have permission to do that!');
+
+    return this.userModel.findByIdAndDelete(id).exec();
   }
 
   /**
@@ -131,19 +150,16 @@ export class UsersService {
   /**
    * Function for checking user storage limits / how much user store / space left
    * @param userId User id
-   * @param option 1 - Storage limit, 2 - Stored data, 3 - Space left
    * @returns
    */
-  async storage(userId: string, option: 1 | 2 | 3) {
+  async storage(userId: string) {
     const user = await this.userModel.findById(userId);
-    switch (option) {
-      case 1:
-        return user.storageLimit;
-      case 2:
-        return user.storedData;
-      case 3:
-        return user.storageLimit - user.storedData;
-    }
+    const data = {
+      spaceLimit: user.storageLimit,
+      spaceUsed: user.storedData,
+      spaceLeft: (user.storedData / user.storageLimit) * 100,
+    };
+    return data;
   }
 
   /**

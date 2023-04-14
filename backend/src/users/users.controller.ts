@@ -21,6 +21,12 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(AccessTokenGuard)
+  @Get()
+  userList(@Req() req) {
+    return this.usersService.findAllButMe(req.user._id);
+  }
+
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
@@ -32,7 +38,7 @@ export class UsersController {
     return this.usersService.findById(req.user._id);
   }
 
-  @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard, RolesGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
@@ -61,21 +67,9 @@ export class UsersController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('spacelimit')
+  @Get('storage')
   getStorageLimit(@Req() req) {
-    return this.usersService.storage(req.user._id, 1);
-  }
-
-  @UseGuards(AccessTokenGuard)
-  @Get('spaceused')
-  getStoredData(@Req() req) {
-    return this.usersService.storage(req.user._id, 2);
-  }
-
-  @UseGuards(AccessTokenGuard)
-  @Get('spaceleft')
-  getSpaceLeft(@Req() req) {
-    return this.usersService.storage(req.user._id, 3);
+    return this.usersService.storage(req.user._id);
   }
 
   @UseGuards(AccessTokenGuard)

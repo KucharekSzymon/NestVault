@@ -2,13 +2,15 @@ import { createWebHistory, createRouter } from "vue-router";
 
 import AuthService from "../services/auth.service";
 
-import HomePage from "../components/HomePage.vue";
-import SignIn from "../components/SignIn.vue";
-import SignUp from "../components/SignUp.vue";
+import HomePage from "../components/Public/HomePage.vue";
+import SignIn from "../components/Public/SignIn.vue";
+import SignUp from "../components/Public/SignUp.vue";
 // lazy-loaded
-const ProfilePage = () => import("../components/ProfilePage.vue");
-const BoardAdmin = () => import("../components/BoardAdmin.vue");
-const BoardUser = () => import("../components/BoardUser.vue");
+const ProfilePage = () => import("../components/Users/ProfilePage.vue");
+const BoardAdmin = () => import("../components/Admin/BoardAdmin.vue");
+const BoardUser = () => import("../components/Users/BoardUser.vue");
+const MyFilesPage = () => import("../components/Files/MyFilesPage.vue");
+const UploadFilePage = () => import("../components/Files/UploadFilePage.vue");
 
 const routes = [
   {
@@ -17,34 +19,63 @@ const routes = [
     component: HomePage,
   },
   {
-    path: "/home",
-    component: HomePage,
-  },
-  {
     path: "/login",
+    name: "login",
     component: SignIn,
+    meta: {
+      breadcrumbText: "Login",
+    },
   },
   {
     path: "/register",
+    name: "register",
     component: SignUp,
-  },
-  {
-    path: "/profile",
-    name: "profile",
-    // lazy-loaded
-    component: ProfilePage,
-  },
-  {
-    path: "/admin",
-    name: "admin",
-    // lazy-loaded
-    component: BoardAdmin,
+    meta: {
+      breadcrumbText: "Register",
+    },
   },
   {
     path: "/user",
     name: "user",
-    // lazy-loaded
-    component: BoardUser,
+    children: [
+      {
+        path: "profile",
+        name: "userProfile",
+        component: ProfilePage,
+      },
+      {
+        path: "dashboard",
+        name: "userDashboard",
+        component: BoardUser,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    name: "admin",
+    children: [
+      {
+        path: "dashboard",
+        name: "adminDashboard",
+        component: BoardAdmin,
+      },
+    ],
+  },
+  {
+    path: "/files",
+    name: "files",
+    children: [
+      {
+        path: "mine",
+        name: "myFiles",
+        component: MyFilesPage,
+      },
+      {
+        path: "upload",
+        name: "newFile",
+        component: UploadFilePage,
+      },
+    ],
   },
 ];
 

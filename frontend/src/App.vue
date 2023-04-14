@@ -18,7 +18,7 @@
         </router-link>
       </v-list>
       <v-list v-if="currentUser" nav>
-        <router-link class="text-decoration-none" to="/profile">
+        <router-link class="text-decoration-none" to="/user/profile">
           <v-list-item
             prepend-icon="fa fa-user"
             :title="currentUser.name"
@@ -27,11 +27,13 @@
           ></v-list-item>
         </router-link>
         <v-divider />
-        <v-list-item
-          prepend-icon="fa:fas fa-folder"
-          title="My Files"
-          value="myfiles"
-        ></v-list-item>
+        <router-link class="text-decoration-none" to="/files/mine">
+          <v-list-item
+            prepend-icon="fa:fas fa-folder"
+            title="My Files"
+            value="myfiles"
+          ></v-list-item>
+        </router-link>
 
         <v-list-item
           prepend-icon="fas fa-share"
@@ -45,14 +47,18 @@
         ></v-list-item>
         <v-divider />
 
-        <router-link v-if="isAdmin" class="text-decoration-none" to="/admin">
+        <router-link
+          v-if="currentRole"
+          class="text-decoration-none"
+          to="/admin/dashboard/"
+        >
           <v-list-item
             prepend-icon="fa-solid fa-screwdriver-wrench"
             title="Admin board"
             value="admin"
           />
         </router-link>
-        <router-link class="text-decoration-none" to="/user">
+        <router-link class="text-decoration-none" to="/user/dashboard">
           <v-list-item
             prepend-icon="fa-solid fa-info"
             title="User panel"
@@ -70,12 +76,6 @@
           ></v-list-item>
         </a>
         <v-divider></v-divider>
-        <v-list-item>
-          <v-progress-circular
-            v-model="dataProgress"
-            class="me-2"
-          ></v-progress-circular>
-        </v-list-item>
         <v-list-item
           :prepend-icon="
             theme.global.current.value.dark ? 'fa fa-sun' : 'fa fa-moon'
@@ -84,11 +84,29 @@
           title="Change theme"
         >
         </v-list-item>
+        <v-list-item
+          prepend-icon="fa-regular fa-hard-drive"
+          :title="convertSize(spaceUsed) + ' / ' + convertSize(spaceLimit)"
+          v-if="currentUser"
+        >
+        </v-list-item>
+        <v-list-item height="3">
+          <v-progress-linear
+            v-model="dataUsagePercentage"
+            :indeterminate="storageLoading"
+            absolute
+            bottom
+            rounded
+            height="3"
+            :color="storageColor"
+          ></v-progress-linear>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
     <v-main>
-      <v-container>
+      <BreadcrumbsList />
+      <v-container fluid>
         <v-card>
           <router-view />
         </v-card>
@@ -100,20 +118,19 @@
 <script>
 import eventBus from "./common/eventBus";
 import { useTheme } from "vuetify";
-import UserService from "./services/user.service";
-import AuthService from "./services/auth.service";
+import filesService from "./services/files.service";
+import BreadcrumbsList from "./components/Common/BreadcrumbsList.vue";
 
 export default {
   data() {
     return {
       drawer: null,
       loading: true,
-      isAdmin: false,
+      storageLoading: true,
     };
   },
   setup() {
     const theme = useTheme();
-
     return {
       theme,
       toggleTheme: () =>
@@ -126,38 +143,44 @@ export default {
     currentUser() {
       return this.$store.state.auth.user;
     },
-    dataUsed() {
-      return UserService.getSpaceUsed();
+    currentRole() {
+      return this.$store.state.role.isAdmin;
     },
-    dataProgress() {
-      // console.log(this.dataMaxLimit);
-      return (this.dataUsed / this.dataMaxLimit) * 100;
+    spaceUsed() {
+      return this.$store.state.files.spaceUsed;
     },
-    dataMaxLimit() {
-      return UserService.getSpaceLeft();
+    spaceLimit() {
+      return this.$store.state.files.spaceLimit;
+    },
+    dataUsagePercentage() {
+      return this.$store.state.files.spaceLeft;
+    },
+    storageColor() {
+      return this.$store.state.files.storageColor;
     },
   },
   methods: {
-    async checkAdminRole() {
+    async updateSpaceUsage() {
+      this.storageLoading = true;
       if (this.currentUser)
-        try {
-          this.isAdmin = await AuthService.checkRole();
-        } catch (error) {
-          console.log(error);
-        }
+        await this.$store.dispatch("files/fetchStorageUsage");
+      this.storageLoading = false;
+    },
+
+    async updateRole() {
+      if (this.currentUser) await this.$store.dispatch("role/fetchRole");
+    },
+    convertSize(size) {
+      return filesService.convertSize(size);
     },
     logOut() {
       this.$store.dispatch("auth/logout");
-      this.isAdmin = false;
       this.$router.push("/login");
     },
   },
-  async mounted() {
-    try {
-      this.checkAdminRole;
-    } catch (error) {
-      console.log(error);
-    }
+  mounted() {
+    this.updateRole();
+    this.updateSpaceUsage();
     eventBus.on("logout", () => {
       this.logOut();
     });
@@ -168,11 +191,13 @@ export default {
   watch: {
     currentUser: async function (newUser) {
       if (newUser) {
-        await this.checkAdminRole();
+        await this.updateRole();
+        await this.updateSpaceUsage();
       } else {
         this.isAdmin = false;
       }
     },
   },
+  components: { BreadcrumbsList },
 };
 </script>

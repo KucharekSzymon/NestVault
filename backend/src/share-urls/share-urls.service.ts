@@ -5,10 +5,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { FilesService } from 'src/files/files.service';
 import { UsersService } from 'src/users/users.service';
-import { CreateShareUrlDto } from './dto/create-share-url.dto';
 import { ShareUrl, ShareUrlDocument } from './schemas/share-url.schema';
 
 @Injectable()
@@ -20,16 +19,16 @@ export class ShareUrlsService {
     private userService: UsersService,
   ) {}
 
-  async create(createFileDto: CreateShareUrlDto, userId: string) {
-    if (
-      await this.fileService.checkFileForOwner(
-        createFileDto.file.toString(),
-        userId,
-      )
-    ) {
-      const createdShareUrl = new this.shareUrlModel(createFileDto);
-      return createdShareUrl.save();
-    }
+  async create(data: any, userId: string) {
+    await this.fileService.checkFileForOwner(data.file.toString(), userId);
+    const shareUrl = new this.shareUrlModel();
+    shareUrl.file = data.file;
+    if (data.description != null) shareUrl.description = data.description;
+    shareUrl.owner = data.owner;
+    if (data.expireTime != null) shareUrl.expireTime = data.expireTime;
+    const createdShareUrl = new this.shareUrlModel(shareUrl);
+    const newUrl = createdShareUrl.save();
+    return newUrl;
   }
 
   async findByOwner(owner: string) {
