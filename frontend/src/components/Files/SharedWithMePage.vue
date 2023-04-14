@@ -3,6 +3,19 @@
     <v-card :loading="loading" class="pa-2">
       <v-row class="d-flex justify-space-between pa-2">
         <v-col class="subtitle-1 font-weight-bold">Files shared to me</v-col>
+        <v-col class="d-flex justify-end">
+          <v-text-field clearable v-model="shareCode" label="Share code">
+            <template v-slot:append>
+              <v-slide-x-reverse-transition mode="out-in">
+                <v-icon
+                  color="primary"
+                  v-if="shareCode"
+                  icon="fa fa-angles-right"
+                  @click="useCode"
+                ></v-icon>
+              </v-slide-x-reverse-transition> </template
+          ></v-text-field>
+        </v-col>
       </v-row>
       <v-autocomplete
         v-if="files.length !== 0"
@@ -83,6 +96,7 @@ export default {
       dialog: false,
       currentFile: null,
       selectedFile: null,
+      shareCode: null,
     };
   },
   async mounted() {
@@ -96,6 +110,17 @@ export default {
     }
   },
   methods: {
+    setCurrentFile(file) {
+      this.currentFile = file;
+      this.dialog = true;
+    },
+    findFile() {
+      const file = this.files.find((obj) => obj._id === this.selectedFile);
+      this.setCurrentFile(file);
+    },
+    useCode() {
+      console.log(this.shareCode);
+    },
     convertSize(size) {
       return filesService.convertSize(size);
     },
@@ -128,14 +153,6 @@ export default {
         default:
           return "fa-regular fa-file";
       }
-    },
-    setCurrentFile(file) {
-      this.currentFile = file;
-      this.dialog = true;
-    },
-    findFile() {
-      const file = this.files.find((obj) => obj._id === this.selectedFile);
-      this.setCurrentFile(file);
     },
   },
 };
