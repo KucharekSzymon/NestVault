@@ -10,6 +10,8 @@ const ProfilePage = () => import("../components/Users/ProfilePage.vue");
 const BoardAdmin = () => import("../components/Admin/BoardAdmin.vue");
 const BoardUser = () => import("../components/Users/BoardUser.vue");
 const MyFilesPage = () => import("../components/Files/MyFilesPage.vue");
+const SharedWithMePage = () =>
+  import("../components/Files/SharedWithMePage.vue");
 const UploadFilePage = () => import("../components/Files/UploadFilePage.vue");
 
 const routes = [
@@ -69,6 +71,11 @@ const routes = [
         path: "mine",
         name: "myFiles",
         component: MyFilesPage,
+      },
+      {
+        path: "sharedwithme",
+        name: "sharedWithMe",
+        component: SharedWithMePage,
       },
       {
         path: "upload",

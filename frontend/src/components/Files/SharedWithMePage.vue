@@ -2,17 +2,7 @@
   <div>
     <v-card :loading="loading" class="pa-2">
       <v-row class="d-flex justify-space-between pa-2">
-        <v-col class="subtitle-1 font-weight-bold">My files</v-col>
-        <v-col class="d-flex justify-end">
-          <v-btn
-            prepend-icon="fa fa-upload"
-            variant="outlined"
-            href="/files/upload"
-            color="primary"
-            dark
-            >Upload file</v-btn
-          >
-        </v-col>
+        <v-col class="subtitle-1 font-weight-bold">Files shared to me</v-col>
       </v-row>
       <v-autocomplete
         v-if="files.length !== 0"
@@ -69,7 +59,7 @@
       </v-row>
     </v-card>
 
-    <file-preview-dialog
+    <basic-file-preview-dialog
       v-if="dialog"
       :current-file="currentFile"
       @close="this.dialog = false"
@@ -79,12 +69,12 @@
 
 <script>
 import filesService from "../../services/files.service";
-import FilePreviewDialog from "./FileDialog.vue";
+import BasicFilePreviewDialog from "./BasicFileDialog.vue";
 
 export default {
-  name: "MyFiles",
+  name: "SharedWithMe",
   components: {
-    FilePreviewDialog,
+    BasicFilePreviewDialog,
   },
   data() {
     return {
@@ -97,9 +87,8 @@ export default {
   },
   async mounted() {
     try {
-      const res = await filesService.getMyFiles();
+      const res = await filesService.getSharedWithMe();
       this.files = res.data;
-      this.updateSpaceUsage();
     } catch (err) {
       console.error(err);
     } finally {
@@ -107,9 +96,6 @@ export default {
     }
   },
   methods: {
-    async updateSpaceUsage() {
-      await this.$store.dispatch("files/fetchStorageUsage");
-    },
     convertSize(size) {
       return filesService.convertSize(size);
     },
