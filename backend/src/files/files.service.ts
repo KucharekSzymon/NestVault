@@ -121,7 +121,30 @@ export class FilesService {
       return { message: 'File access revoked' };
     }
   }
+  async fileAccessRevokeAll(fileOwnerId: string, fileId: string) {
+    const file = await this.fileModel.findById(fileId);
+    if (await this.checkFileForOwner(fileId, fileOwnerId)) {
+      file.authorizedUsers = [];
 
+      await this.fileModel
+        .findByIdAndUpdate(fileId, file)
+        .setOptions({ overwrite: true, new: true });
+      return { message: 'File access revoked for all users' };
+    }
+  }
+  async fileSharedTo(fileOwnerId: string, fileId: string) {
+    if (await this.checkFileForOwner(fileId, fileOwnerId)) {
+      const file = await this.fileModel
+        .findById(fileId)
+        .populate('authorizedUsers');
+      const users = file.authorizedUsers.map((user) => ({
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      }));
+      return users;
+    }
+  }
   async imageStream(fileId: string, userId: string) {
     const file = await this.fileModel.findById(fileId);
     await this.checkFile(fileId, userId);
