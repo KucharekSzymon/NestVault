@@ -169,8 +169,8 @@
                   direction="vertical"
                   color="primary"
                 >
-                  <v-tab prepend-icon="fa fa-link" value="url">
-                    Share URL
+                  <v-tab prepend-icon="fa fa-link" value="code">
+                    Share codes
                   </v-tab>
                   <v-tab prepend-icon="fa fa-user" value="user">
                     Share to user
@@ -183,7 +183,7 @@
                   </v-tab>
                 </v-tabs>
                 <v-window v-model="tab" class="w-100">
-                  <v-window-item value="url">
+                  <v-window-item value="code">
                     <v-form>
                       <v-container>
                         <v-text-field
@@ -291,7 +291,7 @@
 <script lang="js">
 import filesService from "../../services/files.service";
 import usersService from "../../services/user.service";
-import shareUrlService from "../../services/shareUrl.service";
+import shareCodesService from "../../services/shareCode.service";
 
 export default {
   name: "FilePreviewDialog",
@@ -307,7 +307,7 @@ export default {
       downloadLink: null,
       messages: [],
       removalSuccess: false,
-      tab: "url",
+      tab: "code",
       share: null,
       tooltipText: "Click to copy",
       description: null,
@@ -392,11 +392,15 @@ export default {
     },
     async newShare() {
       this.shareLoading = true;
-      if (this.tab == "url") {
-        const data = { "file": this.currentFile._id, "description": this.description, "expireTime": this.expireTime }
+      if (this.tab == "code") {
+        const data = {
+            "file": this.currentFile._id,
+            "description": this.description,
+            "expireTime": this.expireTime
+          }
         this.messages = []
         try {
-          const response = await shareUrlService.newUrl(data)
+          const response = await shareCodesService.newUrl(data)
           this.messages = [response.data._id]
           this.shareSuccess = true
 

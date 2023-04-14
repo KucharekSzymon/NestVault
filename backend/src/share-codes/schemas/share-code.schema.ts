@@ -3,10 +3,10 @@ import mongoose from 'mongoose';
 import { User } from 'src/users/schemas/user.schema';
 import { File } from 'src/files/schemas/file.schema';
 
-export type ShareUrlDocument = ShareUrl & Document;
+export type ShareCodeDocument = ShareCode & Document;
 
 @Schema()
-export class ShareUrl {
+export class ShareCode {
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
@@ -36,4 +36,4 @@ export class ShareUrl {
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
   usedBy: User[];
 }
-export const ShareUrlSchema = SchemaFactory.createForClass(ShareUrl);
+export const ShareCodeSchema = SchemaFactory.createForClass(ShareCode);
