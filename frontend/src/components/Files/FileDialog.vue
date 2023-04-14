@@ -175,6 +175,9 @@
                   <v-tab prepend-icon="fa fa-user" value="user">
                     Share to user
                   </v-tab>
+                  <v-tab prepend-icon="fa fa-list-check" value="accessList">
+                    Access List
+                  </v-tab>
                   <v-tab prepend-icon="fa fa-ban" value="revoke">
                     Revoke access
                   </v-tab>
@@ -208,6 +211,44 @@
                     >
                     </v-autocomplete>
                   </v-window-item>
+                  <v-window-item value="accessList">
+                    <v-progress-linear
+                      v-if="authorizedUsersLoading"
+                      indeterminate
+                      rounded
+                      absolute
+                      bottom
+                    ></v-progress-linear>
+                    <v-list v-if="authorizedUsers.length !== 0">
+                      <v-list-item
+                        v-for="user in authorizedUsers"
+                        :key="user._id"
+                        :title="user.name"
+                        :subtitle="user.email"
+                      >
+                        <template v-slot:append>
+                          <v-tooltip location="start" text="Revoke access">
+                            <template v-slot:activator="{ props }">
+                              <v-btn
+                                v-bind="props"
+                                color="grey-lighten-1"
+                                size="xs"
+                                icon="fa fa-xmark"
+                                @click="revokeAccess(user._id)"
+                              ></v-btn>
+                            </template>
+                          </v-tooltip>
+                        </template>
+                      </v-list-item>
+                    </v-list>
+                    <span
+                      v-if="
+                        authorizedUsers.length === 0 && !authorizedUsersLoading
+                      "
+                    >
+                      No user has been given access to this file
+                    </span>
+                  </v-window-item>
                   <v-window-item value="revoke">
                     <v-autocomplete
                       clearable
@@ -219,6 +260,14 @@
                       item-value="_id"
                     >
                     </v-autocomplete>
+                    <v-btn @click="revokeAccessAll" :disabled="!isChecked"
+                      >Revoke access to all users</v-btn
+                    >
+
+                    <v-checkbox
+                      label="Are you sure? This option remove all users access to this file"
+                      v-model="isChecked"
+                    ></v-checkbox>
                   </v-window-item>
                 </v-window>
               </div>
@@ -266,123 +315,176 @@ export default {
       shareLoading: false,
       shareSuccess: false,
       users: [],
+      authorizedUsers: [],
+      authorizedUsersLoading: false,
       shareTo: null,
       revokeFrom: null,
+      isChecked: false,
     };
   },
   async mounted() {
     await this.fetchFilePreview()
     await this.fetchDownload()
-    this.$watch('shareNestedDialog', async () => {
-      if (this.shareNestedDialog)
-        await this.fetchUsers()
-    });
-    this.$watch('tab', () => {
-      (this.tab == 'revoke')? this.shareButtonText = 'Revoke access': this.shareButtonText = 'Share'
+
+    this.$watch('tab', async () => {
+      this.messages = [];
+      this.isChecked = false;
+      (this.tab == 'revoke') ? this.shareButtonText = 'Revoke access' : this.shareButtonText = 'Share'
+
+      await this.fetchUsers()
+      await this.fecthAuthorized()
     });
   },
   methods: {
     async fetchFilePreview() {
       this.fileType = this.getFileType(this.currentFile.type);;
-      if(this.fileType != null){
-      const response = await filesService.previewFile(this.currentFile._id)
-      this.fileUrl = URL.createObjectURL(response.data);
+      if (this.fileType != null) {
+        const response = await filesService.previewFile(this.currentFile._id)
+        this.fileUrl = URL.createObjectURL(response.data);
       }
     },
     async fetchDownload() {
-      try{
-      const response = await filesService.downloadFile(this.currentFile._id)
-      const link = window.URL.createObjectURL(new Blob([response.data]));
-      this.downloadLink = link
-      }catch(error){
+      try {
+        const response = await filesService.downloadFile(this.currentFile._id)
+        const link = window.URL.createObjectURL(new Blob([response.data]));
+        this.downloadLink = link
+      } catch (error) {
         console.log(error);
       }
     },
-    async fetchUsers(){
+    async fetchUsers() {
       try {
+        this.users = []
         const response = await usersService.getAllUsers()
         this.users = response.data
       } catch (error) {
         console.log(error);
       }
     },
+    async fecthAuthorized() {
+      try {
+        this.authorizedUsersLoading = true;
+        this.authorizedUsers = []
+        const response = await filesService.getAuthorized(this.currentFile._id)
+        this.authorizedUsers = response.data
+      } catch (error) {
+        console.log(error);
+      }
+      this.authorizedUsersLoading = false;
+    },
     async fileRemoval() {
       this.removalSuccess = false
-      try{
-      const response = await filesService.removeFile(this.currentFile._id)
-      this.updateSpaceUsage()
-      this.messages = [response.data.message];
-      this.removalSuccess = true
-      }catch(error){
+      try {
+        const response = await filesService.removeFile(this.currentFile._id)
+        this.updateSpaceUsage()
+        this.messages = [response.data.message];
+        this.removalSuccess = true
+      } catch (error) {
         this.removalSuccess = false
         this.messages = (error.response &&
-        error.response.data &&
-        Array.isArray(error.response.data.message)
+          error.response.data &&
+          Array.isArray(error.response.data.message)
           ? error.response.data.message
           : [error.response.data.message]) || [error.message] || [
             error.toString(),
           ];
       }
     },
-    async newShare(){
+    async newShare() {
       this.shareLoading = true;
-      if(this.tab == "url"){
-        const data = {"file": this.currentFile._id,"description": this.description, "expireTime":this.expireTime}
+      if (this.tab == "url") {
+        const data = { "file": this.currentFile._id, "description": this.description, "expireTime": this.expireTime }
         this.messages = []
         try {
           const response = await shareUrlService.newUrl(data)
           this.messages = [response.data._id]
           this.shareSuccess = true
-          this.shareLoading = false
 
         } catch (error) {
           this.shareSuccess = false
-          this.shareLoading = false
           this.messages = (error.response &&
-        error.response.data &&
-        Array.isArray(error.response.data.message)
-          ? error.response.data.message
-          : [error.response.data.message]) || [error.message] || [
-            error.toString(),
-          ];
+            error.response.data &&
+            Array.isArray(error.response.data.message)
+            ? error.response.data.message
+            : [error.response.data.message]) || [error.message] || [
+              error.toString(),
+            ];
         }
+        this.shareLoading = false
+
       }
-      else if(this.tab == "user"){
+      else if (this.tab == "user") {
         try {
-          const response = await filesService.share({fileId: this.currentFile._id, userId: this.shareTo})
+          const response = await filesService.share({ fileId: this.currentFile._id, userId: this.shareTo })
           this.messages = [response.data.message]
           this.shareSuccess = true
-          this.shareLoading = false
 
         } catch (error) {
           this.shareSuccess = false
-          this.shareLoading = false
           this.messages = (error.response &&
+            error.response.data &&
+            Array.isArray(error.response.data.message)
+            ? error.response.data.message
+            : [error.response.data.message]) || [error.message] || [
+              error.toString(),
+            ];
+        }
+        this.shareLoading = false
+
+      } else if (this.tab == "revoke") {
+        try {
+          const response = await filesService.revoke({ fileId: this.currentFile._id, userId: this.revokeFrom })
+          this.messages = [response.data.message]
+          this.shareSuccess = true
+
+        } catch (error) {
+          this.shareSuccess = false
+          this.messages = (error.response &&
+            error.response.data &&
+            Array.isArray(error.response.data.message)
+            ? error.response.data.message
+            : [error.response.data.message]) || [error.message] || [
+              error.toString(),
+            ];
+        }
+        this.shareLoading = false
+
+      }
+    },
+    async revokeAccess(userId) {
+      this.shareLoading = true
+      try {
+        const response = await filesService.revoke({ fileId: this.currentFile._id, userId: userId })
+        this.messages = [response.data.message]
+        this.shareSuccess = true
+        await this.fecthAuthorized()
+      } catch (error) {
+        this.shareSuccess = false
+        this.messages = (error.response &&
           error.response.data &&
           Array.isArray(error.response.data.message)
           ? error.response.data.message
           : [error.response.data.message]) || [error.message] || [
             error.toString(),
           ];
-        }
-      }      else if(this.tab == "revoke"){
-        try {
-          const response = await filesService.revoke({fileId: this.currentFile._id, userId: this.revokeFrom})
-          this.messages = [response.data.message]
-          this.shareSuccess = true
-          this.shareLoading = false
+      }
+      this.shareLoading = false
 
-        } catch (error) {
-          this.shareSuccess = false
-          this.shareLoading = false
-          this.messages = (error.response &&
+    },
+    async revokeAccessAll(){
+      try {
+        const response = await filesService.revokeAll(this.currentFile._id)
+        this.messages = [response.data.message]
+        this.shareSuccess = true
+      } catch (error) {
+        this.shareSuccess = false
+        this.messages = (error.response &&
           error.response.data &&
           Array.isArray(error.response.data.message)
           ? error.response.data.message
           : [error.response.data.message]) || [error.message] || [
             error.toString(),
           ];
-        }
       }
     },
     async updateSpaceUsage() {

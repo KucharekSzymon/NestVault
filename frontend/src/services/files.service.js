@@ -11,6 +11,9 @@ class FilesService {
       },
     });
   }
+  getAuthorized(fileId) {
+    return api.get("/files/sharedTo/" + fileId);
+  }
   previewFile(fileId) {
     return api.get("/files/preview/" + fileId, { responseType: "blob" });
   }
@@ -25,6 +28,9 @@ class FilesService {
   }
   revoke(data) {
     return api.post("/files/revoke", data);
+  }
+  revokeAll(fileId) {
+    return api.get("/files/revokeAll/" + fileId);
   }
   convertSize(size) {
     const units = ["B", "KB", "MB", "GB", "TB"];
