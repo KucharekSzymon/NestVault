@@ -89,6 +89,7 @@
 <script>
 import filesService from "../../services/files.service";
 import BasicFilePreviewDialog from "./BasicFileDialog.vue";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "SharedWithMe",
@@ -132,7 +133,8 @@ export default {
       this.setCurrentFile(file);
     },
     useCode() {
-      console.log(this.shareCode);
+      const toast = useToast();
+      toast(this.shareCode);
     },
     convertSize(size) {
       return filesService.convertSize(size);
