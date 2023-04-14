@@ -110,7 +110,10 @@ export class FilesService {
     if (await this.checkFileForOwner(fileId, fileOwnerId)) {
       const user = await this.userService.findById(shareToId);
       if (user == null) throw new NotFoundException('User not found.');
-
+      if (!file.authorizedUsers.includes(user._id.toString()))
+        throw new ForbiddenException(
+          'This user does not have acces to this resource.',
+        );
       file.authorizedUsers = file.authorizedUsers.filter(
         (obj) => !user._id.equals(obj),
       );
@@ -138,7 +141,7 @@ export class FilesService {
         .findById(fileId)
         .populate('authorizedUsers');
       const users = file.authorizedUsers.map((user) => ({
-        id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
       }));
