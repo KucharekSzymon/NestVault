@@ -35,16 +35,6 @@ export class ShareCodesService {
     return this.shareCodeModel.find({ owner }).populate('usedBy').exec();
   }
 
-  async showUses(linkId: string, userId: string) {
-    const link = await this.shareCodeModel.findById(linkId);
-    if (link === null) throw new NotFoundException('Link not found.');
-
-    if (link.owner._id.toString() != userId)
-      throw new UnauthorizedException('You dont have access to this resource.');
-
-    return link.populate('usedBy');
-  }
-
   async activate(codeId: string, userId: string) {
     const code = await this.shareCodeModel.findById(codeId);
     if (code == null) throw new NotFoundException('Share code not found');

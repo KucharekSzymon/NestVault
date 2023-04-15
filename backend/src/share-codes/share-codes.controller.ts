@@ -37,12 +37,6 @@ export class ShareCodesController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('uses/:id')
-  findUses(@Param('id') id: string, @Req() req) {
-    return this.shareCodesService.showUses(id, req.user._id);
-  }
-
-  @UseGuards(AccessTokenGuard)
   @Get(':id')
   activate(@Param('id') id: string, @Req() req) {
     return this.shareCodesService.activate(id, req.user._id);
