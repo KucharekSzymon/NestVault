@@ -32,7 +32,7 @@ export class ShareCodesService {
   }
 
   async findByOwner(owner: string) {
-    return this.shareCodeModel.find({ owner }).exec();
+    return this.shareCodeModel.find({ owner }).populate('usedBy').exec();
   }
 
   async showUses(linkId: string, userId: string) {
@@ -62,8 +62,9 @@ export class ShareCodesService {
       userId,
       file._id.toString(),
     );
+
     code.usedBy.push(user);
-    this.shareCodeModel
+    await this.shareCodeModel
       .findByIdAndUpdate(codeId, code)
       .setOptions({ overwrite: true, new: true });
     return code.description
