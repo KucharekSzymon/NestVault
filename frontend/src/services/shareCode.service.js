@@ -13,6 +13,9 @@ class ShareCodesService {
   use(fileId) {
     return api.get("/share-codes/" + fileId);
   }
+  remove(codeID) {
+    return api.delete("share-codes/" + codeID);
+  }
 }
 
 export default new ShareCodesService();

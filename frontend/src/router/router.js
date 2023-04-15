@@ -9,6 +9,7 @@ import SignUp from "../components/Public/SignUp.vue";
 const ProfilePage = () => import("../components/Users/ProfilePage.vue");
 const BoardAdmin = () => import("../components/Admin/BoardAdmin.vue");
 const BoardUser = () => import("../components/Users/BoardUser.vue");
+const ShareCodesList = () => import("../components/Users/ShareCodesList.vue");
 const MyFilesPage = () => import("../components/Files/MyFilesPage.vue");
 const SharedWithMePage = () =>
   import("../components/Files/SharedWithMePage.vue");
@@ -49,6 +50,11 @@ const routes = [
         path: "dashboard",
         name: "userDashboard",
         component: BoardUser,
+      },
+      {
+        path: "share-codes",
+        name: "shareCodesList",
+        component: ShareCodesList,
       },
     ],
   },
