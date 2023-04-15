@@ -1,5 +1,5 @@
 <template>
-  <v-app :theme="theme">
+  <v-app :theme="darkTheme ? 'dark' : 'light'">
     <v-navigation-drawer v-model="drawer" expand-on-hover rail>
       <v-list v-if="!currentUser" nav>
         <router-link class="text-decoration-none" to="/login">
@@ -80,8 +80,8 @@
         </a>
         <v-divider></v-divider>
         <v-list-item
-          :prepend-icon="theme == 'dark' ? 'fa fa-sun' : 'fa fa-moon'"
-          @click="setTheme(theme == 'light' ? 'dark' : 'light')"
+          :prepend-icon="darkTheme ? 'fa fa-sun' : 'fa fa-moon'"
+          @click="setTheme(!darkTheme)"
           title="Change theme"
         >
         </v-list-item>
@@ -127,7 +127,7 @@ export default {
       drawer: null,
       loading: true,
       storageLoading: true,
-      theme: "dark",
+      darkTheme: true,
     };
   },
   computed: {
@@ -158,8 +158,9 @@ export default {
       this.storageLoading = false;
     },
     setTheme(theme) {
-      this.theme = theme;
-      localStorage.setItem("theme", theme);
+      console.log(this.darkTheme);
+      this.darkTheme = theme;
+      localStorage.setItem("darkTheme", theme);
     },
     async updateRole() {
       if (this.currentUser) await this.$store.dispatch("role/fetchRole");
@@ -173,7 +174,7 @@ export default {
     },
   },
   mounted() {
-    const storedTheme = localStorage.getItem("theme");
+    const storedTheme = localStorage.getItem("darkTheme");
     if (storedTheme) {
       this.theme = storedTheme;
     }
