@@ -53,7 +53,7 @@
             </v-toolbar-items>
           </v-toolbar>
           <v-divider></v-divider>
-          <v-card v-if="fileUrl == null">
+          <v-card v-if="previewLoading">
             <v-progress-circular
               color="primary"
               indeterminate
@@ -303,6 +303,7 @@ export default {
       shareNestedDialog: false,
       shareButtonText: "Share",
       fileType: null,
+      previewLoading: false,
       removeNestedDialog: false,
       downloadLink: null,
       messages: [],
@@ -337,10 +338,18 @@ export default {
   },
   methods: {
     async fetchFilePreview() {
-      this.fileType = this.getFileType(this.currentFile.type);;
+      try {
+        this.previewLoading = true
+        this.fileType = this.getFileType(this.currentFile.type);
       if (this.fileType != null) {
         const response = await filesService.previewFile(this.currentFile._id)
         this.fileUrl = URL.createObjectURL(response.data);
+      }
+      } catch (error) {
+        this.addErrors(error)
+      }
+      finally{
+        this.previewLoading = false
       }
     },
     async fetchDownload() {
@@ -381,13 +390,7 @@ export default {
         this.removalSuccess = true
       } catch (error) {
         this.removalSuccess = false
-        this.messages = (error.response &&
-          error.response.data &&
-          Array.isArray(error.response.data.message)
-          ? error.response.data.message
-          : [error.response.data.message]) || [error.message] || [
-            error.toString(),
-          ];
+        this.addErrors(error)
       }
     },
     async newShare() {
@@ -406,13 +409,7 @@ export default {
 
         } catch (error) {
           this.shareSuccess = false
-          this.messages = (error.response &&
-            error.response.data &&
-            Array.isArray(error.response.data.message)
-            ? error.response.data.message
-            : [error.response.data.message]) || [error.message] || [
-              error.toString(),
-            ];
+          this.addErrors(error)
         }
         this.shareLoading = false
 
@@ -425,13 +422,7 @@ export default {
 
         } catch (error) {
           this.shareSuccess = false
-          this.messages = (error.response &&
-            error.response.data &&
-            Array.isArray(error.response.data.message)
-            ? error.response.data.message
-            : [error.response.data.message]) || [error.message] || [
-              error.toString(),
-            ];
+          this.addErrors(error)
         }
         this.shareLoading = false
 
@@ -443,13 +434,7 @@ export default {
 
         } catch (error) {
           this.shareSuccess = false
-          this.messages = (error.response &&
-            error.response.data &&
-            Array.isArray(error.response.data.message)
-            ? error.response.data.message
-            : [error.response.data.message]) || [error.message] || [
-              error.toString(),
-            ];
+          this.addErrors(error)
         }
         this.shareLoading = false
 
@@ -464,13 +449,7 @@ export default {
         await this.fecthAuthorized()
       } catch (error) {
         this.shareSuccess = false
-        this.messages = (error.response &&
-          error.response.data &&
-          Array.isArray(error.response.data.message)
-          ? error.response.data.message
-          : [error.response.data.message]) || [error.message] || [
-            error.toString(),
-          ];
+        this.addErrors(error)
       }
       this.shareLoading = false
 
@@ -482,17 +461,20 @@ export default {
         this.shareSuccess = true
       } catch (error) {
         this.shareSuccess = false
-        this.messages = (error.response &&
+        this.addErrors(error)
+      }
+    },
+    async updateSpaceUsage() {
+      await this.$store.dispatch("files/fetchStorageUsage");
+    },
+    addErrors(error){
+      this.messages = (error.response &&
           error.response.data &&
           Array.isArray(error.response.data.message)
           ? error.response.data.message
           : [error.response.data.message]) || [error.message] || [
             error.toString(),
           ];
-      }
-    },
-    async updateSpaceUsage() {
-      await this.$store.dispatch("files/fetchStorageUsage");
     },
     closeDialog() {
       this.$emit('close');
