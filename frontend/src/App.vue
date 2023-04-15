@@ -1,5 +1,5 @@
 <template>
-  <v-app :theme="darkTheme ? 'dark' : 'light'">
+  <v-app :theme="theme">
     <v-navigation-drawer v-model="drawer" expand-on-hover rail>
       <v-list v-if="!currentUser" nav>
         <router-link class="text-decoration-none" to="/login">
@@ -81,7 +81,7 @@
         <v-divider></v-divider>
         <v-list-item
           :prepend-icon="darkTheme ? 'fa fa-sun' : 'fa fa-moon'"
-          @click="setTheme(!darkTheme)"
+          @click="setDarkTheme(!darkTheme)"
           title="Change theme"
         >
         </v-list-item>
@@ -127,10 +127,13 @@ export default {
       drawer: null,
       loading: true,
       storageLoading: true,
-      darkTheme: true,
+      darkTheme: false,
     };
   },
   computed: {
+    theme() {
+      return this.darkTheme ? "dark" : "light";
+    },
     currentUser() {
       return this.$store.state.auth.user;
     },
@@ -157,10 +160,9 @@ export default {
         await this.$store.dispatch("files/fetchStorageUsage");
       this.storageLoading = false;
     },
-    setTheme(theme) {
-      console.log(this.darkTheme);
-      this.darkTheme = theme;
-      localStorage.setItem("darkTheme", theme);
+    setDarkTheme(darkTheme) {
+      this.darkTheme = darkTheme;
+      localStorage.setItem("darkTheme", darkTheme.toString());
     },
     async updateRole() {
       if (this.currentUser) await this.$store.dispatch("role/fetchRole");
@@ -173,11 +175,13 @@ export default {
       this.$router.push("/login");
     },
   },
-  mounted() {
-    const storedTheme = localStorage.getItem("darkTheme");
-    if (storedTheme) {
-      this.theme = storedTheme;
+  created() {
+    const storedDarkTheme = localStorage.getItem("darkTheme");
+    if (storedDarkTheme !== null) {
+      this.darkTheme = storedDarkTheme === "true";
     }
+  },
+  mounted() {
     this.updateRole();
     this.updateSpaceUsage();
     eventBus.on("logout", () => {
