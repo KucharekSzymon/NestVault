@@ -122,9 +122,12 @@ export default {
       if (this.messages) {
         if (Array.isArray(this.messages)) {
           this.messages.forEach((element) => {
-            this.success ? toast(element) : toast.error(element);
+            this.success ? toast.success(element) : toast.error(element);
           });
-        } else this.success ? toast(this.messages) : toast.error(this.messages);
+        } else
+          this.success
+            ? toast.success(this.messages)
+            : toast.error(this.messages);
       }
     });
     this.fetchFiles();

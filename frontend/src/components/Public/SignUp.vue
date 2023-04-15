@@ -3,7 +3,7 @@
     <div>
       <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
       <Form @submit="handleRegister" :validation-schema="schema">
-        <div v-if="!successful">
+        <div v-if="!success">
           <div>
             <label for="email">Email</label>
             <Field name="email" type="email" />
@@ -31,21 +31,6 @@
           </div>
         </div>
       </Form>
-
-      <div v-if="messages" role="alert">
-        <template v-if="Array.isArray(messages)">
-          <v-alert
-            :type="successful ? 'success' : 'error'"
-            v-for="(message, index) in messages"
-            :key="index"
-          >
-            {{ message }}
-          </v-alert>
-        </template>
-        <template v-else>
-          {{ messages }}
-        </template>
-      </div>
     </div>
   </div>
 </template>
@@ -53,6 +38,7 @@
 <script>
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "SignUp",
@@ -82,7 +68,7 @@ export default {
     });
 
     return {
-      successful: false,
+      success: false,
       loading: false,
       messages: [],
       schema,
@@ -94,6 +80,19 @@ export default {
     },
   },
   mounted() {
+    this.$watch("messages", () => {
+      const toast = useToast();
+      if (this.messages) {
+        if (Array.isArray(this.messages)) {
+          this.messages.forEach((element) => {
+            this.success ? toast.success(element) : toast.error(element);
+          });
+        } else
+          this.success
+            ? toast.success(this.messages)
+            : toast.error(this.messages);
+      }
+    });
     if (this.loggedIn) {
       this.$router.push("/profile");
     }
@@ -101,25 +100,29 @@ export default {
   methods: {
     async handleRegister(user) {
       this.messages = [];
-      this.successful = false;
+      this.success = false;
       this.loading = true;
 
       try {
         const data = await this.$store.dispatch("auth/register", user);
+        this.success = true;
         this.messages = [data.message];
-        this.successful = true;
+        this.$router.push("/signin");
       } catch (error) {
-        this.messages = (error.response &&
-        error.response.data &&
-        Array.isArray(error.response.data.message)
-          ? error.response.data.message
-          : [error.response.data.message]) || [error.message] || [
-            error.toString(),
-          ];
-        this.successful = false;
+        this.success = false;
+        this.addErrors(error);
       } finally {
         this.loading = false;
       }
+    },
+    addErrors(error) {
+      this.messages = (error.response &&
+      error.response.data &&
+      Array.isArray(error.response.data.message)
+        ? error.response.data.message
+        : [error.response.data.message]) || [error.message] || [
+          error.toString(),
+        ];
     },
   },
 };

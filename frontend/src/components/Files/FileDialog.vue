@@ -96,20 +96,6 @@
                 <v-toolbar-title> Are you sure? </v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
-              <div v-if="messages" role="alert">
-                <template v-if="Array.isArray(messages)">
-                  <v-alert
-                    :type="removalSuccess ? 'success' : 'error'"
-                    v-for="(message, index) in messages"
-                    :key="index"
-                  >
-                    {{ message }}
-                  </v-alert>
-                </template>
-                <template v-else>
-                  {{ messages }}
-                </template>
-              </div>
               <v-btn-group rounded="sm">
                 <v-btn
                   :width="removalSuccess ? '100%' : 'auto'"
@@ -148,20 +134,6 @@
                 <v-toolbar-title> Share</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
-              <div v-if="messages" role="alert">
-                <template v-if="Array.isArray(messages)">
-                  <v-alert
-                    :type="shareSuccess ? 'success' : 'error'"
-                    v-for="(message, index) in messages"
-                    :key="index"
-                  >
-                    {{ message }}
-                  </v-alert>
-                </template>
-                <template v-else>
-                  {{ messages }}
-                </template>
-              </div>
               <div class="d-flex flex-row">
                 <v-tabs
                   class="w-50"
@@ -292,6 +264,8 @@
 import filesService from "../../services/files.service";
 import usersService from "../../services/user.service";
 import shareCodesService from "../../services/shareCode.service";
+import { useToast } from "vue-toastification";
+
 
 export default {
   name: "FilePreviewDialog",
@@ -334,6 +308,19 @@ export default {
 
       await this.fetchUsers()
       await this.fecthAuthorized()
+    });
+    this.$watch("messages", () => {
+      const toast = useToast();
+      if (this.messages) {
+        if (Array.isArray(this.messages)) {
+          this.messages.forEach((element) => {
+            this.shareSuccess || this.removalSuccess ? toast.success(element) : toast.error(element);
+          });
+        } else
+          this.success
+            ? toast.success(this.messages)
+            : toast.error(this.messages);
+      }
     });
   },
   methods: {
@@ -404,7 +391,7 @@ export default {
         this.messages = []
         try {
           const response = await shareCodesService.newUrl(data)
-          this.messages = [response.data._id]
+          this.messages = [response.data]
           this.shareSuccess = true
 
         } catch (error) {

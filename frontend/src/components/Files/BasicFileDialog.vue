@@ -67,6 +67,7 @@
 
 <script lang="js">
 import filesService from "../../services/files.service";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "FilePreviewDialog",
@@ -82,6 +83,17 @@ export default {
     };
   },
   async mounted() {
+        this.$watch("messages", () => {
+      const toast = useToast();
+      if (this.messages) {
+        if (Array.isArray(this.messages)) {
+          this.messages.forEach((element) => {
+            toast.error(element);
+          });
+        } else
+            toast.error(this.messages);
+      }
+    });
     await this.fetchFilePreview()
     await this.fetchDownload()
   },

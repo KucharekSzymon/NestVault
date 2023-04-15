@@ -80,6 +80,7 @@
 <script>
 import filesService from "../../services/files.service";
 import FilePreviewDialog from "./FileDialog.vue";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "MyFiles",
@@ -97,6 +98,16 @@ export default {
     };
   },
   async mounted() {
+    this.$watch("messages", () => {
+      const toast = useToast();
+      if (this.messages) {
+        if (Array.isArray(this.messages)) {
+          this.messages.forEach((element) => {
+            toast.error(element);
+          });
+        } else toast.error(this.messages);
+      }
+    });
     try {
       const res = await filesService.getMyFiles();
       this.files = res.data;

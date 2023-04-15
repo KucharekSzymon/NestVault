@@ -22,21 +22,6 @@
             <span>Login</span>
           </button>
         </div>
-
-        <div v-if="messages" role="alert">
-          <template v-if="Array.isArray(messages)">
-            <v-alert
-              type="error"
-              v-for="(message, index) in messages"
-              :key="index"
-            >
-              {{ message }}
-            </v-alert>
-          </template>
-          <template v-else>
-            {{ messages }}
-          </template>
-        </div>
       </Form>
     </div>
   </div>
@@ -44,6 +29,7 @@
 <script>
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "SignIn",
@@ -74,6 +60,19 @@ export default {
     },
   },
   created() {
+    this.$watch("messages", () => {
+      const toast = useToast();
+      if (this.messages) {
+        if (Array.isArray(this.messages)) {
+          this.messages.forEach((element) => {
+            this.success ? toast.success(element) : toast.error(element);
+          });
+        } else
+          this.success
+            ? toast.success(this.messages)
+            : toast.error(this.messages);
+      }
+    });
     if (this.loggedIn) {
       this.$router.push("/user/dashboard");
     }
@@ -88,14 +87,17 @@ export default {
         this.$router.push("/user/dashboard");
       } catch (error) {
         this.loading = false;
-        this.messages = (error.response &&
-        error.response.data &&
-        Array.isArray(error.response.data.message)
-          ? error.response.data.message
-          : [error.response.data.message]) || [error.message] || [
-            error.toString(),
-          ];
+        this.addErrors(error);
       }
+    },
+    addErrors(error) {
+      this.messages = (error.response &&
+      error.response.data &&
+      Array.isArray(error.response.data.message)
+        ? error.response.data.message
+        : [error.response.data.message]) || [error.message] || [
+          error.toString(),
+        ];
     },
   },
 };
