@@ -157,13 +157,7 @@ export default {
           this.fetchFiles();
         } catch (error) {
           this.success = false;
-          this.messages = (error.response &&
-          error.response.data &&
-          Array.isArray(error.response.data.message)
-            ? error.response.data.message
-            : [error.response.data.message]) || [error.message] || [
-              error.toString(),
-            ];
+          this.addErrors(error);
         }
       } else this.messages = ["Share code must be 24 letters!"];
     },
@@ -172,6 +166,15 @@ export default {
     },
     closeDialog() {
       this.dialog = false;
+    },
+    addErrors(error) {
+      this.messages = (error.response &&
+      error.response.data &&
+      Array.isArray(error.response.data.message)
+        ? error.response.data.message
+        : [error.response.data.message]) || [error.message] || [
+          error.toString(),
+        ];
     },
     getIcon(type) {
       switch (type) {

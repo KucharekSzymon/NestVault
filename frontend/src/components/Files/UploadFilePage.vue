@@ -69,19 +69,21 @@ export default {
       try {
         const response = await filesService.uploadFile(formData);
         this.updateSpaceUsage();
-        this.loading = false;
         this.messages = [response.data];
         this.successful = true;
       } catch (error) {
-        this.loading = false;
-        this.messages = (error.response &&
-        error.response.data &&
-        Array.isArray(error.response.data.message)
+        this.addErrors(error)
+      }
+      finally{this.loading = false}
+    },
+    addErrors(error){
+      this.messages = (error.response &&
+          error.response.data &&
+          Array.isArray(error.response.data.message)
           ? error.response.data.message
           : [error.response.data.message]) || [error.message] || [
             error.toString(),
           ];
-      }
     },
     async updateSpaceUsage() {
       await this.$store.dispatch("files/fetchStorageUsage");

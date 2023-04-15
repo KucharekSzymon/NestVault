@@ -93,6 +93,7 @@ export default {
       dialog: false,
       currentFile: null,
       selectedFile: null,
+      messages: [],
     };
   },
   async mounted() {
@@ -101,7 +102,7 @@ export default {
       this.files = res.data;
       this.updateSpaceUsage();
     } catch (err) {
-      console.error(err);
+      this.addErrors(err);
     } finally {
       this.loading = false;
     }
@@ -115,6 +116,15 @@ export default {
     },
     closeDialog() {
       this.dialog = false;
+    },
+    addErrors(error) {
+      this.messages = (error.response &&
+      error.response.data &&
+      Array.isArray(error.response.data.message)
+        ? error.response.data.message
+        : [error.response.data.message]) || [error.message] || [
+          error.toString(),
+        ];
     },
     getIcon(type) {
       switch (type) {
