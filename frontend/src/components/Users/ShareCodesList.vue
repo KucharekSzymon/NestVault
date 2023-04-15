@@ -55,9 +55,9 @@
                 <v-col> Create Time </v-col>
                 <v-col> Expire Time </v-col>
                 <v-divider vertical class="mx-4"></v-divider>
-                <v-col>Uses</v-col>
+                <v-col> Uses</v-col>
                 <v-divider vertical class="mx-4"></v-divider>
-                <v-col> Action </v-col>
+                <v-col> Actions </v-col>
               </v-row>
               <v-row>
                 <v-col class="text--secondary">
@@ -78,14 +78,24 @@
                   </v-row>
                 </v-col>
                 <v-divider vertical class="mx-4"></v-divider>
-                <v-col
-                  ><v-btn
-                    color="error"
-                    :loading="removing"
-                    icon="fa fa-trash"
-                    @click="removeCode(code._id)"
-                  >
-                  </v-btn
+
+                <v-col>
+                  <v-btn-group
+                    ><v-btn
+                      color="primary"
+                      :loading="removing"
+                      prepend-icon="fa-regular fa-clipboard"
+                      @click="copyCode(code._id)"
+                    >
+                      Copy
+                    </v-btn>
+                    <v-btn
+                      color="error"
+                      :loading="removing"
+                      icon="fa fa-trash"
+                      @click="removeCode(code._id)"
+                    >
+                    </v-btn> </v-btn-group
                 ></v-col>
               </v-row>
             </v-expansion-panel-text>
@@ -154,6 +164,11 @@ export default {
       } finally {
         this.removing = false;
       }
+    },
+    copyCode(code) {
+      navigator.clipboard.writeText(code);
+      this.success = true;
+      this.messages = ["Code copied to clipboard"];
     },
     findCode(selectedSearch) {
       const index = this.codes.findIndex((code) => code._id === selectedSearch);
