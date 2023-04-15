@@ -1,5 +1,5 @@
 <template>
-  <v-app id="app">
+  <v-app :theme="theme">
     <v-navigation-drawer v-model="drawer" expand-on-hover rail>
       <v-list v-if="!currentUser" nav>
         <router-link class="text-decoration-none" to="/login">
@@ -80,10 +80,8 @@
         </a>
         <v-divider></v-divider>
         <v-list-item
-          :prepend-icon="
-            theme.global.current.value.dark ? 'fa fa-sun' : 'fa fa-moon'
-          "
-          @click="toggleTheme"
+          :prepend-icon="theme == 'dark' ? 'fa fa-sun' : 'fa fa-moon'"
+          @click="setTheme(theme == 'light' ? 'dark' : 'light')"
           title="Change theme"
         >
         </v-list-item>
@@ -120,7 +118,6 @@
 
 <script>
 import eventBus from "./common/eventBus";
-import { useTheme } from "vuetify";
 import filesService from "./services/files.service";
 import BreadcrumbsList from "./components/Common/BreadcrumbsList.vue";
 
@@ -130,16 +127,7 @@ export default {
       drawer: null,
       loading: true,
       storageLoading: true,
-    };
-  },
-  setup() {
-    const theme = useTheme();
-    return {
-      theme,
-      toggleTheme: () =>
-        (theme.global.name.value = theme.global.current.value.dark
-          ? "light"
-          : "dark"),
+      theme: "dark",
     };
   },
   computed: {
@@ -169,7 +157,10 @@ export default {
         await this.$store.dispatch("files/fetchStorageUsage");
       this.storageLoading = false;
     },
-
+    setTheme(theme) {
+      this.theme = theme;
+      localStorage.setItem("theme", theme);
+    },
     async updateRole() {
       if (this.currentUser) await this.$store.dispatch("role/fetchRole");
     },
@@ -182,6 +173,10 @@ export default {
     },
   },
   mounted() {
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme) {
+      this.theme = storedTheme;
+    }
     this.updateRole();
     this.updateSpaceUsage();
     eventBus.on("logout", () => {
