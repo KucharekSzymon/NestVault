@@ -4,14 +4,16 @@
       <v-row class="d-flex justify-space-between pa-2">
         <v-col class="subtitle-1 font-weight-bold">My files</v-col>
         <v-col class="d-flex justify-end">
-          <v-btn
-            prepend-icon="fa fa-upload"
-            variant="outlined"
-            href="/files/upload"
-            color="primary"
-            dark
-            >Upload file</v-btn
-          >
+          <router-link to="/files/upload">
+            <v-btn
+              prepend-icon="fa fa-upload"
+              variant="outlined"
+              href="/files/upload"
+              color="primary"
+              dark
+              >Upload file</v-btn
+            >
+          </router-link>
         </v-col>
       </v-row>
       <v-autocomplete
