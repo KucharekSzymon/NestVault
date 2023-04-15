@@ -65,4 +65,18 @@ export class ShareCodesService {
           message: 'Share code activated',
         };
   }
+
+  async removeCode(codeId: string, userId: string) {
+    const code = await this.shareCodeModel.findById(codeId);
+    if (code == null) throw new NotFoundException('Share code not found');
+    const user = await this.userService.findById(userId);
+    if (user.isAdmin || code.owner.toString() == user._id.toString()) {
+      try {
+        await this.shareCodeModel.findByIdAndDelete(codeId).exec();
+        return { message: 'Share code removed succesfully' };
+      } catch (error) {
+        return error;
+      }
+    }
+  }
 }

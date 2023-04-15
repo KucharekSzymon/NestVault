@@ -6,6 +6,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { ApiTags } from '@nestjs/swagger';
@@ -40,5 +41,11 @@ export class ShareCodesController {
   @Get(':id')
   activate(@Param('id') id: string, @Req() req) {
     return this.shareCodesService.activate(id, req.user._id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Delete(':id')
+  removeCode(@Param('id') id: string, @Req() req) {
+    return this.shareCodesService.removeCode(id, req.user._id);
   }
 }
