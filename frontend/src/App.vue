@@ -41,11 +41,13 @@
             value="shared"
           ></v-list-item>
         </router-link>
-        <v-list-item
-          prepend-icon="fas fa-star"
-          title="Starred"
-          value="starred"
-        ></v-list-item>
+        <RouterLink class="text-decoration-none" to="/user/share-codes">
+          <v-list-item
+            prepend-icon="fas fa-share-from-square"
+            title="Share Codes"
+            value="shareCodes"
+          ></v-list-item>
+        </RouterLink>
         <v-divider />
 
         <router-link

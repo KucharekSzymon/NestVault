@@ -32,24 +32,15 @@ export class ShareCodesService {
   }
 
   async findByOwner(owner: string) {
-    return this.shareCodeModel.find({ owner }).exec();
+    return this.shareCodeModel.find({ owner }).populate('usedBy').exec();
   }
 
-  async showUses(linkId: string, userId: string) {
-    const link = await this.shareCodeModel.findById(linkId);
-    if (link === null) throw new NotFoundException('Link not found.');
-
-    if (link.owner._id.toString() != userId)
-      throw new UnauthorizedException('You dont have access to this resource.');
-
-    return link.populate('usedBy');
-  }
-
-  async activate(urlId: string, userId: string) {
-    const url = await this.shareCodeModel.findById(urlId);
-    const file = await this.fileService.findById(url.file.toString());
+  async activate(codeId: string, userId: string) {
+    const code = await this.shareCodeModel.findById(codeId);
+    if (code == null) throw new NotFoundException('Share code not found');
+    const file = await this.fileService.findById(code.file.toString());
     const user = await this.userService.findById(userId);
-    const date = new Date(url.expireTime);
+    const date = new Date(code.expireTime);
 
     if (date < new Date())
       throw new ForbiddenException(
@@ -61,9 +52,31 @@ export class ShareCodesService {
       userId,
       file._id.toString(),
     );
-    url.usedBy.push(user);
-    return this.shareCodeModel
-      .findByIdAndUpdate(urlId, url)
+
+    code.usedBy.push(user);
+    await this.shareCodeModel
+      .findByIdAndUpdate(codeId, code)
       .setOptions({ overwrite: true, new: true });
+    return code.description
+      ? {
+          message: `Share code activated, code description - ${code.description}`,
+        }
+      : {
+          message: 'Share code activated',
+        };
+  }
+
+  async removeCode(codeId: string, userId: string) {
+    const code = await this.shareCodeModel.findById(codeId);
+    if (code == null) throw new NotFoundException('Share code not found');
+    const user = await this.userService.findById(userId);
+    if (user.isAdmin || code.owner.toString() == user._id.toString()) {
+      try {
+        await this.shareCodeModel.findByIdAndDelete(codeId).exec();
+        return { message: 'Share code removed succesfully' };
+      } catch (error) {
+        return error;
+      }
+    }
   }
 }

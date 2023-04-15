@@ -3,6 +3,25 @@
     <v-card :loading="loading" class="pa-2">
       <v-row class="d-flex justify-space-between pa-2">
         <v-col class="subtitle-1 font-weight-bold">Files shared to me</v-col>
+        <v-col class="d-flex justify-end">
+          <v-text-field
+            :rules="codeRoles"
+            :counter="24"
+            clearable
+            v-model="shareCode"
+            label="Share code"
+          >
+            <template v-slot:append>
+              <v-slide-x-reverse-transition mode="out-in">
+                <v-icon
+                  color="primary"
+                  v-if="shareCode"
+                  icon="fa fa-angles-right"
+                  @click="useCode"
+                ></v-icon>
+              </v-slide-x-reverse-transition> </template
+          ></v-text-field>
+        </v-col>
       </v-row>
       <v-autocomplete
         v-if="files.length !== 0"
@@ -69,7 +88,9 @@
 
 <script>
 import filesService from "../../services/files.service";
+import shareCodeService from "../../services/shareCode.service";
 import BasicFilePreviewDialog from "./BasicFileDialog.vue";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "SharedWithMe",
@@ -83,24 +104,77 @@ export default {
       dialog: false,
       currentFile: null,
       selectedFile: null,
+      shareCode: null,
+      messages: [],
+      success: false,
+      codeRoles: [
+        (value) => {
+          if (value?.length == 24) return true;
+
+          return "Code must have 24 characters.";
+        },
+      ],
     };
   },
   async mounted() {
-    try {
-      const res = await filesService.getSharedWithMe();
-      this.files = res.data;
-    } catch (err) {
-      console.error(err);
-    } finally {
-      this.loading = false;
-    }
+    this.$watch("messages", () => {
+      const toast = useToast();
+      if (this.messages) {
+        if (Array.isArray(this.messages)) {
+          this.messages.forEach((element) => {
+            this.success ? toast(element) : toast.error(element);
+          });
+        } else this.success ? toast(this.messages) : toast.error(this.messages);
+      }
+    });
+    this.fetchFiles();
   },
   methods: {
+    async fetchFiles() {
+      try {
+        const res = await filesService.getSharedWithMe();
+        this.files = res.data;
+      } catch (err) {
+        console.error(err);
+      } finally {
+        this.loading = false;
+      }
+    },
+    setCurrentFile(file) {
+      this.currentFile = file;
+      this.dialog = true;
+    },
+    findFile() {
+      const file = this.files.find((obj) => obj._id === this.selectedFile);
+      this.setCurrentFile(file);
+    },
+    async useCode() {
+      if (this.shareCode.length === 24) {
+        try {
+          const response = await shareCodeService.use(this.shareCode);
+          this.success = true;
+          this.messages = [response.data.message];
+          this.fetchFiles();
+        } catch (error) {
+          this.success = false;
+          this.addErrors(error);
+        }
+      } else this.messages = ["Share code must be 24 letters!"];
+    },
     convertSize(size) {
       return filesService.convertSize(size);
     },
     closeDialog() {
       this.dialog = false;
+    },
+    addErrors(error) {
+      this.messages = (error.response &&
+      error.response.data &&
+      Array.isArray(error.response.data.message)
+        ? error.response.data.message
+        : [error.response.data.message]) || [error.message] || [
+          error.toString(),
+        ];
     },
     getIcon(type) {
       switch (type) {
@@ -128,14 +202,6 @@ export default {
         default:
           return "fa-regular fa-file";
       }
-    },
-    setCurrentFile(file) {
-      this.currentFile = file;
-      this.dialog = true;
-    },
-    findFile() {
-      const file = this.files.find((obj) => obj._id === this.selectedFile);
-      this.setCurrentFile(file);
     },
   },
 };

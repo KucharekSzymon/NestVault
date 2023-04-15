@@ -77,6 +77,8 @@ export default {
       fileUrl: null,
       fileType: null,
       downloadLink: null,
+      previewLoading: false,
+      messages: [],
     };
   },
   async mounted() {
@@ -85,10 +87,18 @@ export default {
   },
   methods: {
     async fetchFilePreview() {
-      this.fileType = this.getFileType(this.currentFile.type);;
+      try {
+        this.previewLoading = true
+        this.fileType = this.getFileType(this.currentFile.type);
       if (this.fileType != null) {
         const response = await filesService.previewFile(this.currentFile._id)
         this.fileUrl = URL.createObjectURL(response.data);
+      }
+      } catch (error) {
+        this.addErrors(error)
+      }
+      finally{
+        this.previewLoading = false
       }
     },
     async fetchDownload() {
@@ -97,7 +107,7 @@ export default {
         const link = window.URL.createObjectURL(new Blob([response.data]));
         this.downloadLink = link
       } catch (error) {
-        console.log(error);
+        this.addErrors(error)
       }
     },
 
@@ -106,6 +116,15 @@ export default {
     },
     closeDialog() {
       this.$emit('close');
+    },
+    addErrors(error){
+      this.messages = (error.response &&
+          error.response.data &&
+          Array.isArray(error.response.data.message)
+          ? error.response.data.message
+          : [error.response.data.message]) || [error.message] || [
+            error.toString(),
+          ];
     },
     getFileType(type) {
       const partType = type.split('/')[0];
