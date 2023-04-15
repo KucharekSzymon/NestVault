@@ -9,7 +9,10 @@ import SignUp from "../components/Public/SignUp.vue";
 const ProfilePage = () => import("../components/Users/ProfilePage.vue");
 const BoardAdmin = () => import("../components/Admin/BoardAdmin.vue");
 const BoardUser = () => import("../components/Users/BoardUser.vue");
+const ShareCodesList = () => import("../components/Users/ShareCodesList.vue");
 const MyFilesPage = () => import("../components/Files/MyFilesPage.vue");
+const SharedWithMePage = () =>
+  import("../components/Files/SharedWithMePage.vue");
 const UploadFilePage = () => import("../components/Files/UploadFilePage.vue");
 
 const routes = [
@@ -48,6 +51,11 @@ const routes = [
         name: "userDashboard",
         component: BoardUser,
       },
+      {
+        path: "share-codes",
+        name: "shareCodesList",
+        component: ShareCodesList,
+      },
     ],
   },
   {
@@ -71,6 +79,11 @@ const routes = [
         component: MyFilesPage,
       },
       {
+        path: "sharedwithme",
+        name: "sharedWithMe",
+        component: SharedWithMePage,
+      },
+      {
         path: "upload",
         name: "newFile",
         component: UploadFilePage,
@@ -88,7 +101,7 @@ router.beforeEach(async (to, from, next) => {
   const publicPages = ["/login", "/register", "/home"];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem("user");
-  const adminPaths = ["/admin", "/admin2"];
+  const adminPaths = ["/admin/dashboard", "/admin"];
 
   // trying to access a restricted page + not logged in
   // redirect to login page

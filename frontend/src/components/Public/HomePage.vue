@@ -8,6 +8,7 @@
 
 <script>
 import UserService from "../../services/user.service";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "HomePage",
@@ -17,6 +18,19 @@ export default {
     };
   },
   mounted() {
+    this.$watch("messages", () => {
+      const toast = useToast();
+      if (this.messages) {
+        if (Array.isArray(this.messages)) {
+          this.messages.forEach((element) => {
+            this.success ? toast.success(element) : toast.error(element);
+          });
+        } else
+          this.success
+            ? toast.success(this.messages)
+            : toast.error(this.messages);
+      }
+    });
     UserService.getPublicContent().then(
       (response) => {
         this.content = response.data;
@@ -30,6 +44,17 @@ export default {
           error.toString();
       }
     );
+  },
+  methods: {
+    addErrors(error) {
+      this.messages = (error.response &&
+      error.response.data &&
+      Array.isArray(error.response.data.message)
+        ? error.response.data.message
+        : [error.response.data.message]) || [error.message] || [
+          error.toString(),
+        ];
+    },
   },
 };
 </script>

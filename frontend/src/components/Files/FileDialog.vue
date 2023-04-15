@@ -53,7 +53,7 @@
             </v-toolbar-items>
           </v-toolbar>
           <v-divider></v-divider>
-          <v-card v-if="fileUrl == null">
+          <v-card v-if="previewLoading">
             <v-progress-circular
               color="primary"
               indeterminate
@@ -96,20 +96,6 @@
                 <v-toolbar-title> Are you sure? </v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
-              <div v-if="messages" role="alert">
-                <template v-if="Array.isArray(messages)">
-                  <v-alert
-                    :type="removalSuccess ? 'success' : 'error'"
-                    v-for="(message, index) in messages"
-                    :key="index"
-                  >
-                    {{ message }}
-                  </v-alert>
-                </template>
-                <template v-else>
-                  {{ messages }}
-                </template>
-              </div>
               <v-btn-group rounded="sm">
                 <v-btn
                   :width="removalSuccess ? '100%' : 'auto'"
@@ -148,20 +134,6 @@
                 <v-toolbar-title> Share</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
-              <div v-if="messages" role="alert">
-                <template v-if="Array.isArray(messages)">
-                  <v-alert
-                    :type="shareSuccess ? 'success' : 'error'"
-                    v-for="(message, index) in messages"
-                    :key="index"
-                  >
-                    {{ message }}
-                  </v-alert>
-                </template>
-                <template v-else>
-                  {{ messages }}
-                </template>
-              </div>
               <div class="d-flex flex-row">
                 <v-tabs
                   class="w-50"
@@ -169,8 +141,8 @@
                   direction="vertical"
                   color="primary"
                 >
-                  <v-tab prepend-icon="fa fa-link" value="url">
-                    Share URL
+                  <v-tab prepend-icon="fa fa-link" value="code">
+                    Share codes
                   </v-tab>
                   <v-tab prepend-icon="fa fa-user" value="user">
                     Share to user
@@ -183,7 +155,7 @@
                   </v-tab>
                 </v-tabs>
                 <v-window v-model="tab" class="w-100">
-                  <v-window-item value="url">
+                  <v-window-item value="code">
                     <v-form>
                       <v-container>
                         <v-text-field
@@ -291,7 +263,9 @@
 <script lang="js">
 import filesService from "../../services/files.service";
 import usersService from "../../services/user.service";
-import shareUrlService from "../../services/shareUrl.service";
+import shareCodesService from "../../services/shareCode.service";
+import { useToast } from "vue-toastification";
+
 
 export default {
   name: "FilePreviewDialog",
@@ -303,11 +277,12 @@ export default {
       shareNestedDialog: false,
       shareButtonText: "Share",
       fileType: null,
+      previewLoading: false,
       removeNestedDialog: false,
       downloadLink: null,
       messages: [],
       removalSuccess: false,
-      tab: "url",
+      tab: "code",
       share: null,
       tooltipText: "Click to copy",
       description: null,
@@ -334,13 +309,34 @@ export default {
       await this.fetchUsers()
       await this.fecthAuthorized()
     });
+    this.$watch("messages", () => {
+      const toast = useToast();
+      if (this.messages) {
+        if (Array.isArray(this.messages)) {
+          this.messages.forEach((element) => {
+            this.shareSuccess || this.removalSuccess ? toast.success(element) : toast.error(element);
+          });
+        } else
+          this.success
+            ? toast.success(this.messages)
+            : toast.error(this.messages);
+      }
+    });
   },
   methods: {
     async fetchFilePreview() {
-      this.fileType = this.getFileType(this.currentFile.type);;
+      try {
+        this.previewLoading = true
+        this.fileType = this.getFileType(this.currentFile.type);
       if (this.fileType != null) {
         const response = await filesService.previewFile(this.currentFile._id)
         this.fileUrl = URL.createObjectURL(response.data);
+      }
+      } catch (error) {
+        this.addErrors(error)
+      }
+      finally{
+        this.previewLoading = false
       }
     },
     async fetchDownload() {
@@ -381,34 +377,26 @@ export default {
         this.removalSuccess = true
       } catch (error) {
         this.removalSuccess = false
-        this.messages = (error.response &&
-          error.response.data &&
-          Array.isArray(error.response.data.message)
-          ? error.response.data.message
-          : [error.response.data.message]) || [error.message] || [
-            error.toString(),
-          ];
+        this.addErrors(error)
       }
     },
     async newShare() {
       this.shareLoading = true;
-      if (this.tab == "url") {
-        const data = { "file": this.currentFile._id, "description": this.description, "expireTime": this.expireTime }
+      if (this.tab == "code") {
+        const data = {
+            "file": this.currentFile._id,
+            "description": this.description,
+            "expireTime": this.expireTime
+          }
         this.messages = []
         try {
-          const response = await shareUrlService.newUrl(data)
-          this.messages = [response.data._id]
+          const response = await shareCodesService.newUrl(data)
+          this.messages = [response.data]
           this.shareSuccess = true
 
         } catch (error) {
           this.shareSuccess = false
-          this.messages = (error.response &&
-            error.response.data &&
-            Array.isArray(error.response.data.message)
-            ? error.response.data.message
-            : [error.response.data.message]) || [error.message] || [
-              error.toString(),
-            ];
+          this.addErrors(error)
         }
         this.shareLoading = false
 
@@ -421,13 +409,7 @@ export default {
 
         } catch (error) {
           this.shareSuccess = false
-          this.messages = (error.response &&
-            error.response.data &&
-            Array.isArray(error.response.data.message)
-            ? error.response.data.message
-            : [error.response.data.message]) || [error.message] || [
-              error.toString(),
-            ];
+          this.addErrors(error)
         }
         this.shareLoading = false
 
@@ -439,13 +421,7 @@ export default {
 
         } catch (error) {
           this.shareSuccess = false
-          this.messages = (error.response &&
-            error.response.data &&
-            Array.isArray(error.response.data.message)
-            ? error.response.data.message
-            : [error.response.data.message]) || [error.message] || [
-              error.toString(),
-            ];
+          this.addErrors(error)
         }
         this.shareLoading = false
 
@@ -460,13 +436,7 @@ export default {
         await this.fecthAuthorized()
       } catch (error) {
         this.shareSuccess = false
-        this.messages = (error.response &&
-          error.response.data &&
-          Array.isArray(error.response.data.message)
-          ? error.response.data.message
-          : [error.response.data.message]) || [error.message] || [
-            error.toString(),
-          ];
+        this.addErrors(error)
       }
       this.shareLoading = false
 
@@ -478,17 +448,20 @@ export default {
         this.shareSuccess = true
       } catch (error) {
         this.shareSuccess = false
-        this.messages = (error.response &&
+        this.addErrors(error)
+      }
+    },
+    async updateSpaceUsage() {
+      await this.$store.dispatch("files/fetchStorageUsage");
+    },
+    addErrors(error){
+      this.messages = (error.response &&
           error.response.data &&
           Array.isArray(error.response.data.message)
           ? error.response.data.message
           : [error.response.data.message]) || [error.message] || [
             error.toString(),
           ];
-      }
-    },
-    async updateSpaceUsage() {
-      await this.$store.dispatch("files/fetchStorageUsage");
     },
     closeDialog() {
       this.$emit('close');

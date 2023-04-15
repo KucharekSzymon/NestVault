@@ -5,7 +5,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './files/files.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { ShareUrlsModule } from './share-urls/share-urls.module';
+import { ShareCodesModule } from './share-codes/share-codes.module';
 import { DelayMiddleware } from './common/guards/sleep.guard';
 
 @Module({
@@ -24,7 +24,7 @@ import { DelayMiddleware } from './common/guards/sleep.guard';
     MulterModule.register({
       dest: './upload',
     }),
-    ShareUrlsModule,
+    ShareCodesModule,
   ],
 })
 export class AppModule {

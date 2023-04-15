@@ -2,16 +2,25 @@
   <div>
     <v-card :loading="loading" class="pa-2">
       <v-row class="d-flex justify-space-between pa-2">
-        <v-col class="subtitle-1 font-weight-bold">My files</v-col>
+        <v-col class="subtitle-1 font-weight-bold">Files shared to me</v-col>
         <v-col class="d-flex justify-end">
-          <v-btn
-            prepend-icon="fa fa-upload"
-            variant="outlined"
-            href="/files/upload"
-            color="primary"
-            dark
-            >Upload file</v-btn
+          <v-text-field
+            :rules="codeRoles"
+            :counter="24"
+            clearable
+            v-model="shareCode"
+            label="Share code"
           >
+            <template v-slot:append>
+              <v-slide-x-reverse-transition mode="out-in">
+                <v-icon
+                  color="primary"
+                  v-if="shareCode"
+                  icon="fa fa-angles-right"
+                  @click="useCode"
+                ></v-icon>
+              </v-slide-x-reverse-transition> </template
+          ></v-text-field>
         </v-col>
       </v-row>
       <v-autocomplete
@@ -69,7 +78,7 @@
       </v-row>
     </v-card>
 
-    <file-preview-dialog
+    <basic-file-preview-dialog
       v-if="dialog"
       :current-file="currentFile"
       @close="this.dialog = false"
@@ -79,13 +88,14 @@
 
 <script>
 import filesService from "../../services/files.service";
-import FilePreviewDialog from "./FileDialog.vue";
+import shareCodeService from "../../services/shareCode.service";
+import BasicFilePreviewDialog from "./BasicFileDialog.vue";
 import { useToast } from "vue-toastification";
 
 export default {
-  name: "MyFiles",
+  name: "SharedWithMe",
   components: {
-    FilePreviewDialog,
+    BasicFilePreviewDialog,
   },
   data() {
     return {
@@ -94,7 +104,16 @@ export default {
       dialog: false,
       currentFile: null,
       selectedFile: null,
+      shareCode: null,
       messages: [],
+      success: false,
+      codeRoles: [
+        (value) => {
+          if (value?.length == 24) return true;
+
+          return "Code must have 24 characters.";
+        },
+      ],
     };
   },
   async mounted() {
@@ -103,24 +122,47 @@ export default {
       if (this.messages) {
         if (Array.isArray(this.messages)) {
           this.messages.forEach((element) => {
-            toast.error(element);
+            this.success ? toast.success(element) : toast.error(element);
           });
-        } else toast.error(this.messages);
+        } else
+          this.success
+            ? toast.success(this.messages)
+            : toast.error(this.messages);
       }
     });
-    try {
-      const res = await filesService.getMyFiles();
-      this.files = res.data;
-      this.updateSpaceUsage();
-    } catch (err) {
-      this.addErrors(err);
-    } finally {
-      this.loading = false;
-    }
+    this.fetchFiles();
   },
   methods: {
-    async updateSpaceUsage() {
-      await this.$store.dispatch("files/fetchStorageUsage");
+    async fetchFiles() {
+      try {
+        const res = await filesService.getSharedWithMe();
+        this.files = res.data;
+      } catch (err) {
+        console.error(err);
+      } finally {
+        this.loading = false;
+      }
+    },
+    setCurrentFile(file) {
+      this.currentFile = file;
+      this.dialog = true;
+    },
+    findFile() {
+      const file = this.files.find((obj) => obj._id === this.selectedFile);
+      this.setCurrentFile(file);
+    },
+    async useCode() {
+      if (this.shareCode.length === 24) {
+        try {
+          const response = await shareCodeService.use(this.shareCode);
+          this.success = true;
+          this.messages = [response.data.message];
+          this.fetchFiles();
+        } catch (error) {
+          this.success = false;
+          this.addErrors(error);
+        }
+      } else this.messages = ["Share code must be 24 letters!"];
     },
     convertSize(size) {
       return filesService.convertSize(size);
@@ -163,14 +205,6 @@ export default {
         default:
           return "fa-regular fa-file";
       }
-    },
-    setCurrentFile(file) {
-      this.currentFile = file;
-      this.dialog = true;
-    },
-    findFile() {
-      const file = this.files.find((obj) => obj._id === this.selectedFile);
-      this.setCurrentFile(file);
     },
   },
 };

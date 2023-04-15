@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsString } from 'class-validator';
+import { IsMongoId } from 'class-validator';
 import mongoose from 'mongoose';
 
-export class CreateShareUrlDto {
+export class CreateShareCodeDto {
   @ApiProperty()
   @IsMongoId()
   file: mongoose.Schema.Types.ObjectId;
