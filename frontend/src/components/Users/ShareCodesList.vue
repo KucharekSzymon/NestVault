@@ -4,14 +4,31 @@
       <v-row class="d-flex justify-space-between pa-2">
         <v-col class="subtitle-1 font-weight-bold">My share codes</v-col>
       </v-row>
-
+      <v-autocomplete
+        v-if="codes.length !== 0"
+        clearable
+        v-model="selectedSearch"
+        label="Find a code"
+        :loading="loading"
+        :items="codes"
+        item-title="_id"
+        item-value="_id"
+      >
+        <template v-slot:append>
+          <v-slide-x-reverse-transition mode="out-in">
+            <v-icon
+              color="primary"
+              :loading="loading"
+              v-if="selectedSearch"
+              icon="fa fa-angles-right"
+              @click="findCode(selectedSearch)"
+            ></v-icon>
+          </v-slide-x-reverse-transition>
+        </template>
+      </v-autocomplete>
       <v-row>
-        <v-expansion-panels
-          variant="popout"
-          v-for="(code, index) in codes"
-          :key="index"
-        >
-          <v-expansion-panel>
+        <v-expansion-panels v-model="selectedCode" variant="popout">
+          <v-expansion-panel v-for="(code, index) in codes" :key="index">
             <v-expansion-panel-title v-slot="{ open }">
               <v-row>
                 <v-col class="d-flex justify-start">
@@ -93,6 +110,8 @@ export default {
       messages: [],
       success: false,
       removing: false,
+      selectedSearch: null,
+      selectedCode: null,
     };
   },
   async mounted() {
@@ -134,6 +153,12 @@ export default {
         this.addErrors(error);
       } finally {
         this.removing = false;
+      }
+    },
+    findCode(selectedSearch) {
+      const index = this.codes.findIndex((code) => code._id === selectedSearch);
+      if (index !== -1) {
+        this.selectedCode = index;
       }
     },
     checkDate(date) {
