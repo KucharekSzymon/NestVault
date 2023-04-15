@@ -27,8 +27,8 @@ export class ShareCodesService {
     shareUrl.owner = data.owner;
     if (data.expireTime != null) shareUrl.expireTime = data.expireTime;
     const createdShareUrl = new this.shareCodeModel(shareUrl);
-    const newUrl = createdShareUrl.save();
-    return newUrl;
+    const newUrl = await createdShareUrl.save();
+    return 'Share code created - ' + newUrl._id;
   }
 
   async findByOwner(owner: string) {
