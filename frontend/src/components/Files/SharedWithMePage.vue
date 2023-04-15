@@ -88,6 +88,7 @@
 
 <script>
 import filesService from "../../services/files.service";
+import shareCodeService from "../../services/shareCode.service";
 import BasicFilePreviewDialog from "./BasicFileDialog.vue";
 import { useToast } from "vue-toastification";
 
@@ -104,6 +105,8 @@ export default {
       currentFile: null,
       selectedFile: null,
       shareCode: null,
+      messages: [],
+      success: false,
       codeRoles: [
         (value) => {
           if (value?.length == 24) return true;
@@ -114,16 +117,29 @@ export default {
     };
   },
   async mounted() {
-    try {
-      const res = await filesService.getSharedWithMe();
-      this.files = res.data;
-    } catch (err) {
-      console.error(err);
-    } finally {
-      this.loading = false;
-    }
+    this.$watch("messages", () => {
+      const toast = useToast();
+      if (this.messages) {
+        if (Array.isArray(this.messages)) {
+          this.messages.forEach((element) => {
+            this.success ? toast(element) : toast.error(element);
+          });
+        } else this.success ? toast(this.messages) : toast.error(this.messages);
+      }
+    });
+    this.fetchFiles();
   },
   methods: {
+    async fetchFiles() {
+      try {
+        const res = await filesService.getSharedWithMe();
+        this.files = res.data;
+      } catch (err) {
+        console.error(err);
+      } finally {
+        this.loading = false;
+      }
+    },
     setCurrentFile(file) {
       this.currentFile = file;
       this.dialog = true;
@@ -132,9 +148,24 @@ export default {
       const file = this.files.find((obj) => obj._id === this.selectedFile);
       this.setCurrentFile(file);
     },
-    useCode() {
-      const toast = useToast();
-      toast(this.shareCode);
+    async useCode() {
+      if (this.shareCode.length === 24) {
+        try {
+          const response = await shareCodeService.use(this.shareCode);
+          this.success = true;
+          this.messages = [response.data.message];
+          this.fetchFiles();
+        } catch (error) {
+          this.success = false;
+          this.messages = (error.response &&
+          error.response.data &&
+          Array.isArray(error.response.data.message)
+            ? error.response.data.message
+            : [error.response.data.message]) || [error.message] || [
+              error.toString(),
+            ];
+        }
+      } else this.messages = ["Share code must be 24 letters!"];
     },
     convertSize(size) {
       return filesService.convertSize(size);
