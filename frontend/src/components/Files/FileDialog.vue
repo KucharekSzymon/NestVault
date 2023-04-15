@@ -81,7 +81,7 @@
           <v-dialog
             v-model="removeNestedDialog"
             persistent
-            width="auto"
+            width="30vw"
             transition="dialog-bottom-transition"
           >
             <v-card>
@@ -96,25 +96,19 @@
                 <v-toolbar-title> Are you sure? </v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
-              <v-btn-group rounded="sm">
-                <v-btn
-                  :width="removalSuccess ? '100%' : 'auto'"
-                  href="/files/mine"
-                  color="info"
-                  prepend-icon="fa fa-share"
-                >
-                  Return to my files
-                </v-btn>
-                <v-btn
-                  v-if="!removalSuccess"
-                  color="error"
-                  prepend-icon="fa fa-trash"
-                  @click="fileRemoval"
-                  :disabled="messages.length !== 0"
-                  :loading="messages.length !== 0"
-                  >Remove pernamently
-                </v-btn>
-              </v-btn-group>
+              <v-btn v-if="removalSuccess" rounded="sm" href="/files/mine"
+                >Return to my files</v-btn
+              >
+
+              <v-btn
+                v-if="!removalSuccess"
+                rounded="sm"
+                color="error"
+                prepend-icon="fa fa-trash"
+                @click="fileRemoval"
+                :loading="messages.length !== 0"
+                >Remove pernamently
+              </v-btn>
             </v-card>
           </v-dialog>
           <v-dialog
