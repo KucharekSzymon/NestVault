@@ -220,8 +220,8 @@
                       clearable
                       v-model="revokeFrom"
                       label="Select user"
-                      :loading="users.length === 0"
-                      :items="users"
+                      :loading="authorizedUsersLoading"
+                      :items="authorizedUsers"
                       item-title="name"
                       item-value="_id"
                     >
