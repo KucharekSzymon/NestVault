@@ -47,6 +47,7 @@ export class ShareCodesService {
 
   async activate(urlId: string, userId: string) {
     const url = await this.shareCodeModel.findById(urlId);
+    if (url == null) throw new NotFoundException('Share code not found');
     const file = await this.fileService.findById(url.file.toString());
     const user = await this.userService.findById(userId);
     const date = new Date(url.expireTime);
