@@ -29,7 +29,7 @@
       <v-row>
         <v-expansion-panels v-model="selectedCode" variant="popout">
           <v-expansion-panel v-for="(code, index) in codes" :key="index">
-            <v-expansion-panel-title v-slot="{ open }">
+            <v-expansion-panel-title>
               <v-row>
                 <v-col class="d-flex justify-start">
                   <v-icon
