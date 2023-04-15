@@ -34,11 +34,3 @@ export const files = {
     },
   },
 };
-/**
- * light-green 15
-lime 30
-yellow 50
-amber 65
-amber-darken-4 84 80
-red-accent-4 93 95
- */
