@@ -4,11 +4,10 @@
       <v-row class="d-flex justify-space-between pa-2">
         <v-col class="subtitle-1 font-weight-bold">Mine</v-col>
         <v-col class="d-flex justify-end">
-          <router-link to="/files/upload">
+          <router-link class="text-decoration-none" to="/files/upload">
             <v-btn
               prepend-icon="fa fa-upload"
               variant="outlined"
-              href="/files/upload"
               color="primary"
               dark
               >Upload file</v-btn
@@ -35,6 +34,9 @@
               @click="findFile"
             ></v-icon>
           </v-slide-x-reverse-transition>
+        </template>
+        <template v-slot:prepend>
+          <v-icon :loading="loading" icon="fa fa-refresh" @click="fetchFiles" />
         </template>
       </v-autocomplete>
       <v-row>
@@ -91,7 +93,7 @@ export default {
   },
   data() {
     return {
-      loading: true,
+      loading: false,
       files: [],
       dialog: false,
       currentFile: null,
@@ -110,17 +112,21 @@ export default {
         } else toast.error(this.messages);
       }
     });
-    try {
-      const res = await filesService.getMyFiles();
-      this.files = res.data;
-      this.updateSpaceUsage();
-    } catch (err) {
-      this.addErrors(err);
-    } finally {
-      this.loading = false;
-    }
+    await this.fetchFiles();
   },
   methods: {
+    async fetchFiles() {
+      try {
+        this.loading = true;
+        const res = await filesService.getMyFiles();
+        this.files = res.data;
+        this.updateSpaceUsage();
+      } catch (err) {
+        this.addErrors(err);
+      } finally {
+        this.loading = false;
+      }
+    },
     async updateSpaceUsage() {
       await this.$store.dispatch("files/fetchStorageUsage");
     },
