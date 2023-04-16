@@ -3,6 +3,12 @@
     <v-card :loading="loading" class="pa-2">
       <v-row class="d-flex justify-space-between pa-2">
         <v-col class="subtitle-1 font-weight-bold">My share codes</v-col>
+        <v-btn
+          class="ma-5"
+          :loading="loading"
+          @click="fetchCodes"
+          icon="fa fa-refresh"
+        />
       </v-row>
       <v-autocomplete
         v-if="codes.length !== 0"
@@ -115,7 +121,7 @@ export default {
 
   data() {
     return {
-      loading: true,
+      loading: false,
       codes: [],
       messages: [],
       success: false,
@@ -143,6 +149,7 @@ export default {
   methods: {
     async fetchCodes() {
       try {
+        this.loading = true;
         const res = await shareCodeService.getMyUrls();
         this.codes = res.data;
       } catch (err) {
