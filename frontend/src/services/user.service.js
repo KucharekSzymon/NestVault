@@ -1,23 +1,20 @@
 import api from "./api";
 
 class UserService {
-  getPublicContent() {
+  getMyData() {
     return api.get("/users/me");
   }
-
-  getUserBoard() {
-    return api.get("/users/me");
+  updateUserData(data, userId) {
+    return api.patch("/users/update/" + userId, data);
   }
-
-  getAdminBoard() {
-    return api.get("/users/me");
-  }
-
   getStorageData() {
     return api.get("/users/storage");
   }
   getAllUsers() {
     return api.get("/users");
+  }
+  removeUser(userId) {
+    return api.delete("/users/" + userId);
   }
 }
 

@@ -11,6 +11,7 @@ import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UsersService {
@@ -81,6 +82,22 @@ export class UsersService {
       .exec();
   }
 
+  async updateData(id: string, updateUserDto: UpdateUserDto, reqId: string) {
+    const user = await this.userModel.findById(id);
+    if (user == null) throw new NotFoundException('User not found');
+    const requestor = await this.userModel.findById(reqId);
+    if (requestor._id.toString() == user._id.toString() || requestor.isAdmin) {
+      const newUser = user;
+      if (updateUserDto.name) newUser.name = updateUserDto.name;
+      if (updateUserDto.password)
+        newUser.password = await argon2.hash(updateUserDto.password);
+      return this.userModel
+        .findByIdAndUpdate(id, newUser, { new: true })
+        .exec();
+    } else
+      throw new UnauthorizedException('You dont have permission to do that!');
+  }
+
   /**
    * Remove one user witch id matches provided one
    * @param id User unique id
@@ -88,10 +105,10 @@ export class UsersService {
    */
   async remove(id: string, reqId: string): Promise<UserDocument> {
     const user = await this.userModel.findById(reqId);
-    if (user._id != id)
+    if (user.isAdmin || user._id.toString() == id.toString()) {
+      return this.userModel.findByIdAndDelete(id).exec();
+    } else
       throw new UnauthorizedException('You dont have permission to do that!');
-
-    return this.userModel.findByIdAndDelete(id).exec();
   }
 
   /**

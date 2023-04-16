@@ -38,10 +38,19 @@ export class UsersController {
     return this.usersService.findById(req.user._id);
   }
 
-  @UseGuards(AccessTokenGuard, RolesGuard)
+  @UseGuards(AccessTokenGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
+  }
+  @UseGuards(AccessTokenGuard)
+  @Patch('/update/:id')
+  updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() req,
+  ) {
+    return this.usersService.updateData(id, updateUserDto, req.user._id);
   }
 
   @UseGuards(AccessTokenGuard, RolesGuard)
