@@ -201,6 +201,9 @@ export class FilesService {
       spaceUsed += user.storedData;
       spaceLimit += user.storageLimit;
     });
+    const mostStored = users.reduce((prev, curr) =>
+      prev.storedData > curr.storedData ? prev : curr,
+    );
     const smallest =
       allFiles != null
         ? allFiles.reduce((prev, curr) => (prev.size < curr.size ? prev : curr))
@@ -219,6 +222,8 @@ export class FilesService {
       spaceLimit: spaceLimit,
       smallestFile: smallest,
       biggestFile: biggest,
+      hoarder: mostStored.name,
+      mostStored: mostStored.storedData,
     };
     return data;
   }
