@@ -50,6 +50,7 @@
         </v-card>
       </v-col>
     </v-row>
+    <RouterView />
   </v-card>
   <v-dialog v-model="dialog">
     <v-card>
