@@ -16,6 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { multerOptions } from './common/multer-options';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { Response } from 'express';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @ApiTags('files')
 @Controller('files')
@@ -107,6 +108,12 @@ export class FilesController {
   @Get('stats')
   getStats(@Req() req) {
     return this.filesService.stats(req.user._id);
+  }
+
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Get('adminStats')
+  getAdminStats() {
+    return this.filesService.adminStats();
   }
 
   @UseGuards(AccessTokenGuard)

@@ -189,6 +189,40 @@ export class FilesService {
     return data;
   }
 
+  async adminStats() {
+    const allFiles = await this.fileModel.find().exec();
+    const users = await this.userService.findAll();
+    let spaceUsed = 0;
+    let spaceLimit = 0;
+    let admins = 0;
+
+    users.forEach((user) => {
+      if (user.isAdmin) admins++;
+      spaceUsed += user.storedData;
+      spaceLimit += user.storageLimit;
+    });
+    const smallest =
+      allFiles != null
+        ? allFiles.reduce((prev, curr) => (prev.size < curr.size ? prev : curr))
+            .size
+        : 0;
+    const biggest =
+      allFiles != null
+        ? allFiles.reduce((prev, curr) => (prev.size > curr.size ? prev : curr))
+            .size
+        : 0;
+    const data = {
+      allFiles: allFiles.length,
+      allUsers: users.length,
+      admins: admins,
+      spaceUsed: spaceUsed,
+      spaceLimit: spaceLimit,
+      smallestFile: smallest,
+      biggestFile: biggest,
+    };
+    return data;
+  }
+
   async remove(fileId: string, reqId: string) {
     const file = await this.fileModel.findById(fileId);
 
