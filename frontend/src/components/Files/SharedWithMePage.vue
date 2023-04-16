@@ -2,7 +2,7 @@
   <div>
     <v-card :loading="loading" class="pa-2">
       <v-row class="d-flex justify-space-between pa-2">
-        <v-col class="subtitle-1 font-weight-bold">Shared to me</v-col>
+        <v-col class="subtitle-1 font-weight-bold">Shared with me</v-col>
         <v-col class="d-flex justify-end">
           <v-text-field
             :rules="codeRoles"
@@ -11,6 +11,13 @@
             v-model="shareCode"
             label="Share code"
           >
+            <template v-slot:prepend>
+              <v-icon
+                color="primary"
+                icon="fa fa-refresh"
+                @click="fetchFiles"
+              />
+            </template>
             <template v-slot:append>
               <v-slide-x-reverse-transition mode="out-in">
                 <v-icon
@@ -18,9 +25,10 @@
                   v-if="shareCode"
                   icon="fa fa-angles-right"
                   @click="useCode"
-                ></v-icon>
-              </v-slide-x-reverse-transition> </template
-          ></v-text-field>
+                />
+              </v-slide-x-reverse-transition>
+            </template>
+          </v-text-field>
         </v-col>
       </v-row>
       <v-autocomplete
@@ -99,7 +107,7 @@ export default {
   },
   data() {
     return {
-      loading: true,
+      loading: false,
       files: [],
       dialog: false,
       currentFile: null,
@@ -135,6 +143,7 @@ export default {
   methods: {
     async fetchFiles() {
       try {
+        this.loading = true;
         const res = await filesService.getSharedWithMe();
         this.files = res.data;
       } catch (err) {
