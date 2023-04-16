@@ -112,7 +112,7 @@
   </div>
 </template>
 
-<script>
+<script lang="js">
 import shareCodeService from "../../services/shareCode.service";
 import { useToast } from "vue-toastification";
 
