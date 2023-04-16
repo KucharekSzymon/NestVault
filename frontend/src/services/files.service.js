@@ -38,6 +38,9 @@ class FilesService {
   revokeAll(fileId) {
     return api.get("/files/revokeAll/" + fileId);
   }
+  getStats() {
+    return api.get("/files/stats");
+  }
   convertSize(size) {
     const units = ["B", "KB", "MB", "GB", "TB"];
     let index = 0;

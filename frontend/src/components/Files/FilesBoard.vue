@@ -6,18 +6,16 @@
       </v-row>
       <v-row>
         <v-col cols="4" md="2">
-          <h3>Mine: {{ files.length }}</h3>
+          <h4>Mine: {{ stats.mine }}</h4>
         </v-col>
-        <v-col cols="4" md="2"> Largest: {{ convertSize(biggestFile) }}</v-col>
         <v-col cols="4" md="2">
-          Smallest: {{ convertSize(smallestFile) }}</v-col
-        >
-        <v-col cols="6" md="2">
-          <h4>Shared to me: {{ shared.length }}</h4>
+          Largest: {{ convertSize(stats.biggest) }}
         </v-col>
-        <v-col cols="6" md="2">
-          <h4>Shared by me: {{ iShare.length }}</h4>
+        <v-col cols="4" md="2">
+          Smallest: {{ convertSize(stats.smallest) }}
         </v-col>
+        <v-col cols="6" md="2"> Shared to me: {{ stats.sharedWithMe }} </v-col>
+        <v-col cols="6" md="2"> Shared by me: {{ stats.shared }} </v-col>
 
         <v-col cols="12" md="2">
           <v-btn
@@ -44,13 +42,9 @@ export default {
   data() {
     return {
       loading: false,
-      files: [],
-      shared: [],
-      iShare: [],
+      stats: {},
       messages: [],
       success: false,
-      smallestFile: 0,
-      biggestFile: 0,
     };
   },
   async mounted() {
@@ -72,44 +66,14 @@ export default {
   methods: {
     async fetchStats() {
       this.loading = true;
-      await this.fetchMyFiles();
-      await this.fetchShared();
-      await this.fetchIShare();
-      this.setBiggest();
-      this.setSmallest();
+      try {
+        const response = await filesService.getStats();
+        this.stats = response.data;
+      } catch (err) {
+        this.addErrors(err);
+      }
       this.loading = false;
     },
-    setSmallest() {
-      this.smallestFile = Math.min(...this.files.map((file) => file.size));
-    },
-    setBiggest() {
-      this.biggestFile = Math.max(...this.files.map((file) => file.size));
-    },
-    async fetchMyFiles() {
-      try {
-        const res = await filesService.getMyFiles();
-        this.files = res.data;
-      } catch (err) {
-        this.addErrors(err);
-      }
-    },
-    async fetchShared() {
-      try {
-        const res = await filesService.getSharedWithMe();
-        this.shared = res.data;
-      } catch (err) {
-        this.addErrors(err);
-      }
-    },
-    async fetchIShare() {
-      try {
-        const res = await filesService.getSharedByMe();
-        this.iShare = res.data;
-      } catch (err) {
-        this.addErrors(err);
-      }
-    },
-
     convertSize(size) {
       return filesService.convertSize(size);
     },

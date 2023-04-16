@@ -70,12 +70,6 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('shared')
-  findFilesShared(@Req() req) {
-    return this.filesService.findFilesShared(req.user._id);
-  }
-
-  @UseGuards(AccessTokenGuard)
   @Get('sharedWithMe')
   findFilesSharedWithMe(@Req() req) {
     return this.filesService.findFilesSharedWithMe(req.user._id);
@@ -107,6 +101,12 @@ export class FilesController {
   ) {
     const file = await this.filesService.imageBuffer(fileId, req.user._id);
     response.send(file);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('stats')
+  getStats(@Req() req) {
+    return this.filesService.stats(req.user._id);
   }
 
   @UseGuards(AccessTokenGuard)

@@ -163,6 +163,32 @@ export class FilesService {
     return readFileSync(join(process.cwd(), 'upload', file.path, file.name));
   }
 
+  async stats(userId: string) {
+    const user = await this.userService.findById(userId);
+    if (user == null) throw new NotFoundException('User not found');
+    const filesShared = await this.findFilesShared(userId);
+    const filesSharedWithMe = await this.findFilesSharedWithMe(userId);
+    const mine = await this.findByOwner(userId);
+    const smallest =
+      mine != null
+        ? mine.reduce((prev, curr) => (prev.size < curr.size ? prev : curr))
+            .size
+        : 0;
+    const biggest =
+      mine != null
+        ? mine.reduce((prev, curr) => (prev.size > curr.size ? prev : curr))
+            .size
+        : 0;
+    const data = {
+      mine: mine.length,
+      shared: filesShared.length,
+      sharedWithMe: filesSharedWithMe.length,
+      smallest: smallest,
+      biggest: biggest,
+    };
+    return data;
+  }
+
   async remove(fileId: string, reqId: string) {
     const file = await this.fileModel.findById(fileId);
 
