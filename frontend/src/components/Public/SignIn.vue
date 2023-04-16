@@ -1,7 +1,6 @@
 <template>
   <div>
     <div>
-      <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
       <Form @submit="handleLogin" :validation-schema="schema">
         <div>
           <label for="email">Email</label>

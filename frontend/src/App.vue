@@ -56,7 +56,7 @@
         <router-link
           v-if="currentRole"
           class="text-decoration-none"
-          to="/admin/dashboard/"
+          to="/admin/"
         >
           <v-list-item
             prepend-icon="fa-solid fa-screwdriver-wrench"
