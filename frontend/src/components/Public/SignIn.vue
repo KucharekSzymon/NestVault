@@ -74,7 +74,7 @@ export default {
       }
     });
     if (this.loggedIn) {
-      this.$router.push("/user/dashboard");
+      this.$router.push("/user/");
     }
   },
   methods: {
@@ -84,7 +84,9 @@ export default {
       try {
         await this.$store.dispatch("auth/login", user);
         await this.$store.dispatch("role/fetchRole");
-        this.$router.push("/user/dashboard");
+        this.success = true;
+        this.messages = ["Signed in succesfully"];
+        this.$router.push("/user/");
       } catch (error) {
         this.loading = false;
         this.addErrors(error);
