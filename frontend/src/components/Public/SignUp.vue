@@ -171,7 +171,7 @@ export default {
         const data = await this.$store.dispatch("auth/register", user);
         this.success = true;
         this.messages = [data.message];
-        this.$router.push("/signin");
+        this.$router.push("/login");
       } catch (error) {
         this.success = false;
         this.addErrors(error);
