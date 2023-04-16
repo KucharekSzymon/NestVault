@@ -98,12 +98,13 @@
         >
         </v-list-item>
         <v-divider v-if="currentUser"></v-divider>
-        <v-list-item
-          v-if="currentUser"
-          @click.prevent="logOut"
-          prepend-icon="fa fa-right-from-bracket "
-          title="Logout"
-        ></v-list-item>
+        <a v-if="currentUser" @click.prevent="logOut">
+          <v-list-item
+            prepend-icon="fa fa-right-from-bracket "
+            title="Logout"
+            value="Logout"
+          ></v-list-item>
+        </a>
       </v-list>
     </v-navigation-drawer>
 
@@ -120,6 +121,7 @@
 import eventBus from "./common/eventBus";
 import filesService from "./services/files.service";
 import BreadcrumbsList from "./components/Common/BreadcrumbsList.vue";
+import { useToast } from "vue-toastification";
 
 export default {
   data() {
@@ -171,6 +173,8 @@ export default {
       return filesService.convertSize(size);
     },
     logOut() {
+      const toast = useToast();
+      toast("Signed out");
       this.$store.dispatch("auth/logout");
       this.$router.push("/login");
     },
