@@ -2,7 +2,7 @@
   <div>
     <v-card :loading="loading" class="pa-2">
       <v-row class="d-flex justify-space-between pa-2">
-        <v-col class="subtitle-1 font-weight-bold">My files</v-col>
+        <v-col class="subtitle-1 font-weight-bold">Mine</v-col>
         <v-col class="d-flex justify-end">
           <router-link to="/files/upload">
             <v-btn
