@@ -1,5 +1,8 @@
 <template>
   <v-card :loading="loading" class="pa-2">
+    <v-row>
+      <v-col class="subtitle-1 font-weight-bold">User panel</v-col>
+    </v-row>
     <v-row v-if="user">
       <v-col>
         <v-progress-circular
@@ -25,37 +28,35 @@
         </span>
       </v-col>
       <v-col>
-        <v-card>
-          <h1>
-            {{ user.name }}
-          </h1>
-          <h2>
-            {{ user.email }}
-          </h2>
-          <h3>Role: {{ user.isAdmin ? "Administrator" : "User" }}</h3>
-          <v-col> Share codes: {{ codes.length }} </v-col>
-          <v-btn-group>
-            <v-btn
-              color="cyan"
-              prepend-icon="fa fa-refresh"
-              @click="fetchStats"
-              :loading="loading"
-              >Refresh stats</v-btn
-            >
-            <v-btn
-              color="primary"
-              prepend-icon="fa-solid fa-pen-to-square"
-              @click="dialog = true"
-              >Change data</v-btn
-            >
-            <v-btn
-              color="error"
-              prepend-icon="fa-solid fa-user-slash"
-              @click="removeDialog = true"
-              >Delete user</v-btn
-            >
-          </v-btn-group>
-        </v-card>
+        <h1>
+          {{ user.name }}
+        </h1>
+        <h2>
+          {{ user.email }}
+        </h2>
+        <h3>Role: {{ user.isAdmin ? "Administrator" : "User" }}</h3>
+        <v-col> Share codes: {{ codes.length }} </v-col>
+        <v-btn-group>
+          <v-btn
+            color="cyan"
+            prepend-icon="fa fa-refresh"
+            @click="fetchStats"
+            :loading="loading"
+            >Refresh stats</v-btn
+          >
+          <v-btn
+            color="primary"
+            prepend-icon="fa-solid fa-pen-to-square"
+            @click="dialog = true"
+            >Change data</v-btn
+          >
+          <v-btn
+            color="error"
+            prepend-icon="fa-solid fa-user-slash"
+            @click="removeDialog = true"
+            >Delete user</v-btn
+          >
+        </v-btn-group>
       </v-col>
     </v-row>
     <RouterView />

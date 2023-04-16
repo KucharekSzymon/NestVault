@@ -1,6 +1,9 @@
 <template>
   <v-card :loading="loading" class="pa-2">
     <v-row>
+      <v-col class="subtitle-1 font-weight-bold">Admin panel</v-col>
+    </v-row>
+    <v-row>
       <v-col>
         <span>All used space of all users</span>
         <br />
@@ -15,7 +18,7 @@
           color="teal"
           :indeterminate="loading"
         >
-          {{ allStoragePercentage }} %
+          {{ allStoragePercentage }}%
         </v-progress-circular>
         <br />
         <br />
@@ -41,6 +44,8 @@
           Biggest hoarder is <strong>{{ data.hoarder }}</strong> stored
           <strong>{{ convertSize(data.mostStored) }}</strong>
         </p>
+        <br />
+        <br />
         <v-btn
           color="cyan"
           prepend-icon="fa fa-refresh"
