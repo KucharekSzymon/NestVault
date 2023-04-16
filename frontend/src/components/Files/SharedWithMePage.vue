@@ -2,7 +2,7 @@
   <div>
     <v-card :loading="loading" class="pa-2">
       <v-row class="d-flex justify-space-between pa-2">
-        <v-col class="subtitle-1 font-weight-bold">Files shared to me</v-col>
+        <v-col class="subtitle-1 font-weight-bold">Shared to me</v-col>
         <v-col class="d-flex justify-end">
           <v-text-field
             :rules="codeRoles"
@@ -138,7 +138,7 @@ export default {
         const res = await filesService.getSharedWithMe();
         this.files = res.data;
       } catch (err) {
-        console.error(err);
+        this.addErrors(err);
       } finally {
         this.loading = false;
       }

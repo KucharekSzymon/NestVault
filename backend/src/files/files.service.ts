@@ -46,6 +46,13 @@ export class FilesService {
     return user.storageLimit - user.storedData;
   }
 
+  async findFilesShared(owner: string) {
+    const user = await this.userService.findById(owner);
+    return await this.fileModel
+      .find({ owner: user._id, authorizedUsers: { $ne: [] } })
+      .exec();
+  }
+
   async findFilesSharedWithMe(owner: string) {
     const user = await this.userService.findById(owner);
     return await this.fileModel.find({ authorizedUsers: user._id }).exec();

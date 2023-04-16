@@ -33,7 +33,15 @@
             {{ user.email }}
           </h2>
           <h3>Role: {{ user.isAdmin ? "Administrator" : "User" }}</h3>
+          <v-col> Share codes: {{ codes.length }} </v-col>
           <v-btn-group>
+            <v-btn
+              color="cyan"
+              prepend-icon="fa fa-refresh"
+              @click="fetchStats"
+              :loading="loading"
+              >Refresh stats</v-btn
+            >
             <v-btn
               color="primary"
               prepend-icon="fa-solid fa-pen-to-square"
@@ -147,6 +155,7 @@
 
 <script>
 import filesService from "../../services/files.service";
+import shareCodeService from "../../services/shareCode.service";
 import userService from "../../services/user.service";
 import { useToast } from "vue-toastification";
 
@@ -166,6 +175,7 @@ export default {
       scdName: null,
       password: null,
       removalLoading: false,
+      codes: [],
     };
   },
   computed: {
@@ -187,10 +197,16 @@ export default {
             : toast.error(this.messages);
       }
     });
-    this.getMyData();
-    this.updateSpaceUsage();
+    this.fetchStats();
   },
   methods: {
+    async fetchStats() {
+      this.loading = true;
+      await this.getMyData();
+      await this.updateSpaceUsage();
+      await this.fetchCodes();
+      this.loading = false;
+    },
     async getMyData() {
       try {
         this.loading = true;
@@ -206,6 +222,14 @@ export default {
         this.loading = false;
       }
     },
+    async fetchCodes() {
+      try {
+        const res = await shareCodeService.getMyUrls();
+        this.codes = res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
     async updateData() {
       try {
         this.updating = true;
@@ -217,11 +241,9 @@ export default {
         this.success = true;
         this.messages = ["Data updated successfully"];
         this.dialog = false;
-        this.getMyData();
+        this.fetchStats();
       } catch (error) {
         this.addErrors(error);
-      } finally {
-        this.updating = false;
       }
     },
     async removeUser() {
