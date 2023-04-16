@@ -102,7 +102,6 @@
           <v-list-item
             prepend-icon="fa fa-right-from-bracket "
             title="Logout"
-            value="Logout"
           ></v-list-item>
         </a>
       </v-list>
