@@ -29,12 +29,6 @@
           :title="currentUser.name"
           :subtitle="currentUser.email"
         ></v-list-item>
-        <v-list-item
-          @click.prevent="logOut"
-          prepend-icon="fa fa-right-from-bracket "
-          title="Logout"
-          value="Logout"
-        ></v-list-item>
         <v-divider />
         <router-link class="text-decoration-none" to="/files/mine">
           <v-list-item
@@ -81,6 +75,7 @@
       </v-list>
       <v-list nav class="mt-auto">
         <v-progress-linear
+          v-if="currentUser"
           v-model="dataUsagePercentage"
           :indeterminate="storageLoading"
           absolute
@@ -102,6 +97,13 @@
           title="Change theme"
         >
         </v-list-item>
+        <v-divider v-if="currentUser"></v-divider>
+        <v-list-item
+          v-if="currentUser"
+          @click.prevent="logOut"
+          prepend-icon="fa fa-right-from-bracket "
+          title="Logout"
+        ></v-list-item>
       </v-list>
     </v-navigation-drawer>
 
