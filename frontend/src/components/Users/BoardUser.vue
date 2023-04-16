@@ -209,7 +209,6 @@ export default {
     },
     async getMyData() {
       try {
-        this.loading = true;
         const response = await userService.getMyData();
         this.success = true;
         this.user = response.data;
@@ -218,8 +217,6 @@ export default {
       } catch (error) {
         this.success = false;
         this.addErrors(error);
-      } finally {
-        this.loading = false;
       }
     },
     async fetchCodes() {
