@@ -1,4 +1,5 @@
 import AuthService from "../services/auth.service";
+import usersService from "../services/user.service";
 
 const user = JSON.parse(localStorage.getItem("user"));
 const initialState = user
@@ -29,8 +30,20 @@ export const auth = {
     refreshAccessToken({ commit }, accessToken) {
       if (user != null) commit("refreshAccessToken", accessToken);
     },
+    async fetchData({ commit }) {
+      try {
+        const response = await usersService.getMyData();
+        const data = response.data;
+        commit("setUser", data);
+      } catch (err) {
+        console.log(err);
+      }
+    },
   },
   mutations: {
+    setUser(state, user) {
+      state.user = user;
+    },
     loginSuccess(state, user) {
       state.status.loggedIn = true;
       state.user = user;
