@@ -13,8 +13,8 @@ class AuthService {
   }
 
   async logout() {
-    localStorage.removeItem("user");
     await api.get("/auth/logout");
+    localStorage.removeItem("user");
   }
 
   async register(user) {
