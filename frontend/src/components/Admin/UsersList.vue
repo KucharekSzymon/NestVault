@@ -291,6 +291,7 @@ export default {
         this.success = true;
         this.messages = ["User deleted"];
         this.removeDialog = false
+        this.dialog = false
         this.fetchUsers();
       } catch (error) {
         this.success = false;
