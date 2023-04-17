@@ -14,7 +14,6 @@
         <v-autocomplete
           v-if="users.length !== 0"
           clearable
-          v-model="selectedSearch"
           label="Find user"
           :loading="loading"
           :items="users"
@@ -73,7 +72,7 @@
                     : 'fa-solid fa-arrow-trend-up'
                 "
                 :color="user.isAdmin ? 'warning' : 'success'"
-                >Role
+                >{{ user.isAdmin ? "DEMOTE" : "PROMOTE" }}
               </v-btn>
               <v-btn
                 color="primary"
@@ -82,13 +81,42 @@
               >
                 Edit
               </v-btn>
-              <v-btn color="error" :loading="removing" icon="fa fa-trash" />
+              <v-btn
+                color="error"
+                :loading="removing"
+                icon="fa fa-trash"
+                @click="(removeDialog = true), (selectedUser = user._id)"
+              />
             </v-btn-group>
           </v-col>
         </v-row>
       </v-row>
     </v-card>
   </div>
+  <v-dialog v-model="removeDialog" transition="dialog-bottom-transition">
+    <v-card>
+      <v-toolbar>
+        <v-toolbar-items>
+          <v-btn
+            icon="fa fa-xmark"
+            size="large"
+            @click="removeDialog = false"
+          ></v-btn>
+        </v-toolbar-items>
+        <v-toolbar-title> Are you sure? </v-toolbar-title>
+        <v-spacer></v-spacer>
+      </v-toolbar>
+
+      <v-btn
+        rounded="sm"
+        color="error"
+        prepend-icon="fa fa-trash"
+        :loading="removing"
+        @click="removeUser()"
+        >Remove pernamently
+      </v-btn>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="js">
@@ -102,12 +130,13 @@ export default {
   data() {
     return {
       loading: false,
+      removeDialog: false,
       users: [],
+      selectedUser: null,
       messages: [],
       success: false,
       removing: false,
-      selectedSearch: null,
-      selectedCode: null,
+
     };
   },
   async mounted() {
@@ -138,13 +167,13 @@ export default {
         this.loading = false;
       }
     },
-    async removeCode(codeId) {
-      this.removing = true;
+    async removeUser() {
       try {
-        const response = await userService.remove(codeId);
+        this.removing = true;
+        await userService.removeUser(this.selectedUser);
         this.success = true;
-        this.messages = [response.data.message];
-        await this.fetchCodes();
+        this.messages = ["User deleted"];
+        this.fetchUsers();
       } catch (error) {
         this.success = false;
         this.addErrors(error);
@@ -152,12 +181,7 @@ export default {
         this.removing = false;
       }
     },
-    findCode(selectedSearch) {
-      const index = this.users.findIndex((code) => code._id === selectedSearch);
-      if (index !== -1) {
-        this.selectedCode = index;
-      }
-    },
+
     convertSize(size) {
       return filesService.convertSize(size);
     },
