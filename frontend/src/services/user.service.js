@@ -7,6 +7,9 @@ class UserService {
   updateUserData(data, userId) {
     return api.patch("/users/update/" + userId, data);
   }
+  updateStorageLimit(data) {
+    return api.post("/users/storageLimit", data);
+  }
   promote(userId) {
     return api.post("/users/promote/" + userId);
   }

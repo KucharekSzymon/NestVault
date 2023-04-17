@@ -140,10 +140,47 @@
                 :loading="updating"
                 @click="updateData"
               >
-                Update details
+                Details
               </v-btn>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12">
+              <v-row>
+                <v-slider
+                  v-model="selectedUser.storageLimit"
+                  :min="selectedUser.storedData"
+                  :max="50 * 1024 * 1024 * 1024"
+                  :step="1024 * 1024 * 1024"
+                  label="Storage limit"
+                />
+              </v-row>
+              <v-row>
+                <v-col cols="8" md="8">
+                  <v-text-field
+                    v-model="selectedUser.storageLimit"
+                    type="number"
+                    variant="outlined"
+                  />
+                </v-col>
+                <v-col cols="4" md="2">
+                  <v-text-field
+                    :value="convertSize(selectedUser.storageLimit)"
+                    disabled
+                  />
+                </v-col>
+                <v-col cols="12" md="2">
+                  <v-btn
+                    prepend-icon="fa fa-pen-clip"
+                    size="x-large"
+                    color="blue-darken-1"
+                    :loading="updating"
+                    @click="updateStorage"
+                  >
+                    Storage
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="12">
               <v-switch
                 v-model="selectedUser.isAdmin"
                 inset
@@ -247,6 +284,23 @@ export default {
         this.storeUpdate()
         this.success = true;
         this.messages = ["Data updated successfully"];
+        this.fetchUsers();
+      } catch (error) {
+        this.addErrors(error);
+      }
+      finally{this.updating = false}
+    },
+    async updateStorage() {
+      try {
+        this.updating = true;
+        const data = {
+          userId: this.selectedUser._id,
+          newStorageLimit: this.selectedUser.storageLimit,
+        };
+        await userService.updateStorageLimit(data);
+        this.storeUpdate()
+        this.success = true;
+        this.messages = ["Storage limit updated successfully"];
         this.fetchUsers();
       } catch (error) {
         this.addErrors(error);
