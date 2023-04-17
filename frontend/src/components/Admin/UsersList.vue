@@ -252,6 +252,7 @@ export default {
           password: this.password,
         };
         await userService.updateUserData(data, this.selectedUser._id);
+        this.storeUpdate()
         this.success = true;
         this.messages = ["Data updated successfully"];
         this.fetchUsers();
@@ -268,7 +269,7 @@ export default {
          response = await userService.demote(this.selectedUser._id)}
         else{
          response = await userService.promote(this.selectedUser._id)}
-
+         this.storeUpdate()
          this.success = true
          this.selectedUser = response.data.user
          this.messages = [response.data.message]
@@ -311,6 +312,11 @@ export default {
         : [error.response.data.message]) || [error.message] || [
           error.toString(),
         ];
+    },
+    async storeUpdate() {
+      await this.$store.dispatch("files/fetchStorageUsage");
+      await this.$store.dispatch("role/fetchRole");
+      await this.$store.dispatch("auth/fetchData");
     },
   },
 };

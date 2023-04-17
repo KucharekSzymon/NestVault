@@ -236,12 +236,14 @@ export default {
           password: this.password,
         };
         await userService.updateUserData(data, this.user._id);
+        this.storeUpdate();
         this.success = true;
         this.messages = ["Data updated successfully"];
-        this.dialog = false;
         this.fetchStats();
       } catch (error) {
         this.addErrors(error);
+      } finally {
+        this.updating = false;
       }
     },
     async removeUser() {
@@ -280,6 +282,11 @@ export default {
     },
     convertSize(size) {
       return filesService.convertSize(size);
+    },
+    async storeUpdate() {
+      await this.$store.dispatch("files/fetchStorageUsage");
+      await this.$store.dispatch("role/fetchRole");
+      await this.$store.dispatch("auth/fetchData");
     },
   },
 };
