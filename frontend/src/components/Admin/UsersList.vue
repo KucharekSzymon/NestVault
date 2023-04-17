@@ -112,7 +112,7 @@
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-text-field v-model="selectedUser.name" label="Name*" required>
                 <template v-slot:prepend>
                   <v-icon icon="fa fa-user"></v-icon>
@@ -120,7 +120,7 @@
               </v-text-field>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-text-field
                 label="Password*"
                 v-model="password"
@@ -131,6 +131,17 @@
                   <v-icon icon="fa fa-key"></v-icon>
                 </template>
               </v-text-field>
+            </v-col>
+            <v-col cols="12" md="4">
+              <v-btn
+                prepend-icon="fa fa-pen-clip"
+                size="x-large"
+                color="blue-darken-1"
+                :loading="updating"
+                @click="updateData"
+              >
+                Update details
+              </v-btn>
             </v-col>
             <v-col cols="12" md="6">
               <v-switch
@@ -145,25 +156,6 @@
           </v-row>
         </v-container>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          color="error"
-          prepend-icon="fa-regular fa-circle-xmark"
-          @click="dialog = false"
-        >
-          Close
-        </v-btn>
-        <v-btn
-          prepend-icon="fa fa-pen-clip"
-          color="blue-darken-1"
-          variant="text"
-          :loading="updating"
-          @click="updateData"
-        >
-          Update
-        </v-btn>
-      </v-card-actions>
     </v-card>
   </v-dialog>
   <v-dialog v-model="removeDialog">
