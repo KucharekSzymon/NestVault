@@ -26,6 +26,11 @@ export class UsersController {
   userList(@Req() req) {
     return this.usersService.findAllButMe(req.user._id);
   }
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Get('all')
+  userListAdmin() {
+    return this.usersService.findAllAdmin();
+  }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {

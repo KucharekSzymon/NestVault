@@ -46,6 +46,13 @@ export class FilesService {
     return user.storageLimit - user.storedData;
   }
 
+  async findFilesShared(owner: string) {
+    const user = await this.userService.findById(owner);
+    return await this.fileModel
+      .find({ owner: user._id, authorizedUsers: { $ne: [] } })
+      .exec();
+  }
+
   async findFilesSharedWithMe(owner: string) {
     const user = await this.userService.findById(owner);
     return await this.fileModel.find({ authorizedUsers: user._id }).exec();
@@ -154,6 +161,72 @@ export class FilesService {
     await this.checkFile(fileId, userId);
 
     return readFileSync(join(process.cwd(), 'upload', file.path, file.name));
+  }
+
+  async stats(userId: string) {
+    const user = await this.userService.findById(userId);
+    if (user == null) throw new NotFoundException('User not found');
+    const filesShared = await this.findFilesShared(userId);
+    const filesSharedWithMe = await this.findFilesSharedWithMe(userId);
+    const mine = await this.findByOwner(userId);
+
+    const smallest =
+      mine.length != 0
+        ? mine.reduce((prev, curr) => (prev.size < curr.size ? prev : curr))
+            .size
+        : 0;
+    const biggest =
+      mine.length != 0
+        ? mine.reduce((prev, curr) => (prev.size > curr.size ? prev : curr))
+            .size
+        : 0;
+    const data = {
+      mine: mine.length,
+      shared: filesShared.length,
+      sharedWithMe: filesSharedWithMe.length,
+      smallest: smallest,
+      biggest: biggest,
+    };
+    return data;
+  }
+
+  async adminStats() {
+    const allFiles = await this.fileModel.find().exec();
+    const users = await this.userService.findAll();
+    let spaceUsed = 0;
+    let spaceLimit = 0;
+    let admins = 0;
+
+    users.forEach((user) => {
+      if (user.isAdmin) admins++;
+      spaceUsed += user.storedData;
+      spaceLimit += user.storageLimit;
+    });
+    const mostStored = users.reduce((prev, curr) =>
+      prev.storedData > curr.storedData ? prev : curr,
+    );
+    const smallest =
+      allFiles.length != 0
+        ? allFiles.reduce((prev, curr) => (prev.size < curr.size ? prev : curr))
+            .size
+        : 0;
+    const biggest =
+      allFiles.length != 0
+        ? allFiles.reduce((prev, curr) => (prev.size > curr.size ? prev : curr))
+            .size
+        : 0;
+    const data = {
+      allFiles: allFiles.length,
+      allUsers: users.length,
+      admins: admins,
+      spaceUsed: spaceUsed,
+      spaceLimit: spaceLimit,
+      smallestFile: smallest,
+      biggestFile: biggest,
+      hoarder: mostStored.name,
+      mostStored: mostStored.storedData,
+    };
+    return data;
   }
 
   async remove(fileId: string, reqId: string) {

@@ -49,6 +49,20 @@ export class UsersService {
     }));
   }
 
+  async findAllAdmin() {
+    const users = await this.userModel.find();
+
+    return users.map((user) => ({
+      _id: user._id,
+      isAdmin: user.isAdmin,
+      combo: `${user.name} - ${user.email}`,
+      name: user.name,
+      email: user.email,
+      storedData: user.storedData,
+      storageLimit: user.storageLimit,
+    }));
+  }
+
   /**
    * Finding one specific user in database
    * @param id User unique id
@@ -104,8 +118,13 @@ export class UsersService {
    * @returns Request to remove user from database
    */
   async remove(id: string, reqId: string): Promise<UserDocument> {
-    const user = await this.userModel.findById(reqId);
-    if (user.isAdmin || user._id.toString() == id.toString()) {
+    const requestor = await this.userModel.findById(reqId);
+    if (requestor.isAdmin || requestor._id.toString() == id.toString()) {
+      const admins = await this.userModel.find({ isAdmin: true });
+      if (admins.length === 1 && admins[0]._id.equals(id))
+        throw new UnauthorizedException(
+          'You cannot delete this user, he is an only administrator',
+        );
       return this.userModel.findByIdAndDelete(id).exec();
     } else
       throw new UnauthorizedException('You dont have permission to do that!');
@@ -155,8 +174,8 @@ export class UsersService {
     const requestor = await this.userModel.findById(reqId);
     if (user == null || requestor == null)
       throw new NotFoundException('User not found');
-    if (!isNumberString(newStorageLimit))
-      throw new BadRequestException('Provided value is not an number');
+    // if (!isNumberString(newStorageLimit))
+    //   throw new BadRequestException('Provided value is not an number');
 
     user.storageLimit = newStorageLimit;
     return this.userModel
@@ -188,10 +207,19 @@ export class UsersService {
   async changeRole(userId, isAdmin: boolean) {
     const user = await this.userModel.findById(userId);
     if (user == null) throw new NotFoundException('User not found');
+    const admins = await this.userModel.find({ isAdmin: true });
+    if (!isAdmin && admins.length === 1 && admins[0]._id.equals(userId))
+      throw new UnauthorizedException(
+        'You cannot demote this user, he is an only administrator',
+      );
 
     user.isAdmin = isAdmin;
-    return this.userModel
+    await this.userModel
       .findByIdAndUpdate(userId, user)
       .setOptions({ overwrite: true, new: true });
+
+    return user.isAdmin
+      ? { user: user, message: 'User promoted to administrator' }
+      : { user: user, message: 'User demoted to normal user' };
   }
 }

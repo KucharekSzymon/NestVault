@@ -8,7 +8,9 @@ import SignUp from "../components/Public/SignUp.vue";
 // lazy-loaded
 const BoardAdmin = () => import("../components/Admin/BoardAdmin.vue");
 const BoardUser = () => import("../components/Users/BoardUser.vue");
+const FilesBoard = () => import("../components/Files/FilesBoard.vue");
 const ShareCodesList = () => import("../components/Users/ShareCodesList.vue");
+const UsersList = () => import("../components/Admin/UsersList.vue");
 const MyFilesPage = () => import("../components/Files/MyFilesPage.vue");
 const SharedWithMePage = () =>
   import("../components/Files/SharedWithMePage.vue");
@@ -53,12 +55,18 @@ const routes = [
     path: "/admin",
     name: "admin",
     component: BoardAdmin,
-
-    children: [],
+    children: [
+      {
+        path: "users",
+        name: "userList",
+        component: UsersList,
+      },
+    ],
   },
   {
     path: "/files",
     name: "files",
+    component: FilesBoard,
     children: [
       {
         path: "mine",
