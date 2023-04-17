@@ -169,13 +169,14 @@ export class FilesService {
     const filesShared = await this.findFilesShared(userId);
     const filesSharedWithMe = await this.findFilesSharedWithMe(userId);
     const mine = await this.findByOwner(userId);
+
     const smallest =
-      mine != null
+      mine.length != 0
         ? mine.reduce((prev, curr) => (prev.size < curr.size ? prev : curr))
             .size
         : 0;
     const biggest =
-      mine != null
+      mine.length != 0
         ? mine.reduce((prev, curr) => (prev.size > curr.size ? prev : curr))
             .size
         : 0;
@@ -205,12 +206,12 @@ export class FilesService {
       prev.storedData > curr.storedData ? prev : curr,
     );
     const smallest =
-      allFiles != null
+      allFiles.length != 0
         ? allFiles.reduce((prev, curr) => (prev.size < curr.size ? prev : curr))
             .size
         : 0;
     const biggest =
-      allFiles != null
+      allFiles.length != 0
         ? allFiles.reduce((prev, curr) => (prev.size > curr.size ? prev : curr))
             .size
         : 0;
