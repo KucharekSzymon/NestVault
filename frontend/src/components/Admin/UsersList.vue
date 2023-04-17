@@ -63,6 +63,16 @@
         <v-col>
           <v-btn-group>
             <v-btn
+              :loading="roleChange"
+              :color="user.isAdmin ? 'success' : 'info'"
+              :prepend-icon="
+                user.isAdmin ? 'fa fa-arrow-down' : 'fa fa-arrow-up'
+              "
+              @click="(selectedUser = user), changeRole(false)"
+            >
+              Role
+            </v-btn>
+            <v-btn
               color="primary"
               prepend-icon="fa fa-edit"
               @click="(dialog = true), (selectedUser = user)"
@@ -129,7 +139,7 @@
                 :loading="roleChange ? 'warning' : false"
                 color="info"
                 label="Admin role"
-                @click="changeRole"
+                @click="changeRole(true)"
               ></v-switch>
             </v-col>
           </v-row>
@@ -250,7 +260,7 @@ export default {
       }
       finally{this.updating = false}
     },
-    async changeRole(){
+    async changeRole(isSwitch){
        this.roleChange = true
        try {
         let response = []
@@ -260,11 +270,13 @@ export default {
          response = await userService.promote(this.selectedUser._id)}
 
          this.success = true
-         this.selectedUser = response.data
-         this.messages = [response.data]
+         this.selectedUser = response.data.user
+         this.messages = [response.data.message]
+         await this.fetchUsers()
 
        } catch (error) {
-        this.selectedUser.isAdmin = !this.selectedUser.isAdmin
+        if(isSwitch)
+          this.selectedUser.isAdmin = !this.selectedUser.isAdmin
         this.success = false
         this.addErrors(error)
        }
