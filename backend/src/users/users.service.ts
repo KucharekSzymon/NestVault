@@ -49,6 +49,20 @@ export class UsersService {
     }));
   }
 
+  async findAllAdmin() {
+    const users = await this.userModel.find();
+
+    return users.map((user) => ({
+      _id: user._id,
+      isAdmin: user.isAdmin,
+      combo: `${user.name} - ${user.email}`,
+      name: user.name,
+      email: user.email,
+      storedData: user.storedData,
+      storageLimit: user.storageLimit,
+    }));
+  }
+
   /**
    * Finding one specific user in database
    * @param id User unique id

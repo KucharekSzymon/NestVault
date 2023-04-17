@@ -13,6 +13,9 @@ class UserService {
   getAllUsers() {
     return api.get("/users");
   }
+  getAllUsersAdmin() {
+    return api.get("/users/all");
+  }
   removeUser(userId) {
     return api.delete("/users/" + userId);
   }
