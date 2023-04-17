@@ -149,9 +149,38 @@
                   v-model="selectedUser.storageLimit"
                   :min="selectedUser.storedData"
                   :max="50 * 1024 * 1024 * 1024"
-                  :step="1024 * 1024 * 1024"
+                  :step="1024 * 1024 * 512"
                   label="Storage limit"
-                />
+                >
+                  <template v-slot:prepend>
+                    <v-btn
+                      icon="fa fa-minus"
+                      density="compact"
+                      variant="outlined"
+                      @click="selectedUser.storageLimit -= 1024 * 1024 * 256"
+                    />
+                    <v-btn
+                      icon="fa fa-minus"
+                      density="comfortable"
+                      variant="outlined"
+                      @click="selectedUser.storageLimit -= 1024 * 1024 * 1024"
+                    />
+                  </template>
+                  <template v-slot:append>
+                    <v-btn
+                      icon="fa fa-plus"
+                      density="comfortable"
+                      variant="outlined"
+                      @click="selectedUser.storageLimit += 1024 * 1024 * 1024"
+                    />
+                    <v-btn
+                      icon="fa fa-plus"
+                      density="compact"
+                      variant="outlined"
+                      @click="selectedUser.storageLimit += 1024 * 1024 * 256"
+                    />
+                  </template>
+                </v-slider>
               </v-row>
               <v-row>
                 <v-col cols="8" md="8">
