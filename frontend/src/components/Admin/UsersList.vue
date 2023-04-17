@@ -64,23 +64,7 @@
           <v-divider vertical class="mx-4"></v-divider>
           <v-col>
             <v-btn-group>
-              <v-btn
-                :loading="removing"
-                :prepend-icon="
-                  user.isAdmin
-                    ? 'fa-solid fa-arrow-trend-down'
-                    : 'fa-solid fa-arrow-trend-up'
-                "
-                :color="user.isAdmin ? 'warning' : 'success'"
-                >{{ user.isAdmin ? "DEMOTE" : "PROMOTE" }}
-              </v-btn>
-              <v-btn
-                color="primary"
-                :loading="removing"
-                prepend-icon="fa fa-edit"
-              >
-                Edit
-              </v-btn>
+              <v-btn color="primary" prepend-icon="fa fa-edit"> Edit </v-btn>
               <v-btn
                 color="error"
                 :loading="removing"
