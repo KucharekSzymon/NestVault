@@ -37,6 +37,7 @@
         <v-col> Id </v-col>
         <v-col> Name </v-col>
         <v-col> Email</v-col>
+        <v-col> Storage</v-col>
         <v-col> Action </v-col>
       </v-row>
 
@@ -57,6 +58,10 @@
           <v-col>
             {{ user.email }}
           </v-col>
+          <v-col>
+            {{ convertSize(user.storedData) }} /
+            {{ convertSize(user.storageLimit) }}</v-col
+          >
           <v-divider vertical class="mx-4"></v-divider>
           <v-col>
             <v-btn-group>
@@ -87,6 +92,7 @@
 </template>
 
 <script lang="js">
+import filesService from "../../services/files.service";
 import userService from "../../services/user.service";
 import { useToast } from "vue-toastification";
 
@@ -146,22 +152,14 @@ export default {
         this.removing = false;
       }
     },
-    copyCode(code) {
-      navigator.clipboard.writeText(code);
-      this.success = true;
-      this.messages = ["Code copied to clipboard"];
-    },
     findCode(selectedSearch) {
       const index = this.users.findIndex((code) => code._id === selectedSearch);
       if (index !== -1) {
         this.selectedCode = index;
       }
     },
-    checkDate(date) {
-      const now = new Date();
-      const expireTime = new Date(date);
-      console.log(date);
-      return expireTime > now ? "fa fa-active" : "fa fa-error";
+    convertSize(size) {
+      return filesService.convertSize(size);
     },
     addErrors(error) {
       this.messages = (error.response &&
