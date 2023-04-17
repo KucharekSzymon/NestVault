@@ -62,19 +62,101 @@
         >
         <v-col>
           <v-btn-group>
-            <v-btn color="primary" prepend-icon="fa fa-edit"> Edit </v-btn>
+            <v-btn
+              color="primary"
+              prepend-icon="fa fa-edit"
+              @click="(dialog = true), (selectedUser = user)"
+            >
+              Edit
+            </v-btn>
             <v-btn
               color="error"
               :loading="removing"
               icon="fa fa-trash"
-              @click="(removeDialog = true), (selectedUser = user._id)"
+              @click="(removeDialog = true), (selectedUser = user)"
             />
           </v-btn-group>
         </v-col>
       </v-row>
     </v-card>
   </div>
-  <v-dialog v-model="removeDialog" transition="dialog-bottom-transition">
+  <v-dialog v-model="dialog">
+    <v-card>
+      <v-toolbar>
+        <v-toolbar-items>
+          <v-btn icon="fa fa-xmark" size="large" @click="dialog = false" />
+        </v-toolbar-items>
+        <v-toolbar-title> Edit user data </v-toolbar-title>
+
+        <v-spacer></v-spacer>
+        <v-toolbar-items>
+          <v-btn
+            class="d-flex"
+            icon="fa fa-trash"
+            color="red"
+            size="large"
+            @click="removeDialog = true"
+          />
+        </v-toolbar-items>
+      </v-toolbar>
+      <v-card-text>
+        <v-container>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field v-model="selectedUser.name" label="Name*" required>
+                <template v-slot:prepend>
+                  <v-icon icon="fa fa-user"></v-icon>
+                </template>
+              </v-text-field>
+            </v-col>
+
+            <v-col cols="12" md="6">
+              <v-text-field
+                label="Password*"
+                v-model="password"
+                type="password"
+                required
+              >
+                <template v-slot:prepend>
+                  <v-icon icon="fa fa-key"></v-icon>
+                </template>
+              </v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-switch
+                v-model="selectedUser.isAdmin"
+                inset
+                :loading="roleChange ? 'warning' : false"
+                color="info"
+                label="Admin role"
+                @click="changeRole"
+              ></v-switch>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="error"
+          prepend-icon="fa-regular fa-circle-xmark"
+          @click="dialog = false"
+        >
+          Close
+        </v-btn>
+        <v-btn
+          prepend-icon="fa fa-pen-clip"
+          color="blue-darken-1"
+          variant="text"
+          :loading="updating"
+          @click="updateData"
+        >
+          Update
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <v-dialog v-model="removeDialog">
     <v-card>
       <v-toolbar>
         <v-toolbar-items>
@@ -110,6 +192,7 @@ export default {
 
   data() {
     return {
+      dialog: false,
       loading: false,
       removeDialog: false,
       users: [],
@@ -117,6 +200,9 @@ export default {
       messages: [],
       success: false,
       removing: false,
+      password: null,
+      updating: false,
+      roleChange: false
 
     };
   },
@@ -148,10 +234,48 @@ export default {
         this.loading = false;
       }
     },
+    async updateData() {
+      try {
+        this.updating = true;
+        const data = {
+          name: this.selectedUser.name,
+          password: this.password,
+        };
+        await userService.updateUserData(data, this.selectedUser._id);
+        this.success = true;
+        this.messages = ["Data updated successfully"];
+        this.fetchUsers();
+      } catch (error) {
+        this.addErrors(error);
+      }
+      finally{this.updating = false}
+    },
+    async changeRole(){
+       this.roleChange = true
+       try {
+        let response = []
+        if(this.selectedUser.isAdmin){
+         response = await userService.demote(this.selectedUser._id)}
+        else{
+         response = await userService.promote(this.selectedUser._id)}
+
+         this.success = true
+         this.selectedUser = response.data
+         this.messages = [response.data]
+
+       } catch (error) {
+        this.selectedUser.isAdmin = !this.selectedUser.isAdmin
+        this.success = false
+        this.addErrors(error)
+       }
+       finally{
+        this.roleChange = false
+       }
+    },
     async removeUser() {
       try {
         this.removing = true;
-        await userService.removeUser(this.selectedUser);
+        await userService.removeUser(this.selectedUser._id);
         this.success = true;
         this.messages = ["User deleted"];
         this.removeDialog = false
@@ -163,7 +287,6 @@ export default {
         this.removing = false;
       }
     },
-
     convertSize(size) {
       return filesService.convertSize(size);
     },
