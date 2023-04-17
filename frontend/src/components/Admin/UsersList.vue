@@ -32,48 +32,45 @@
         </v-autocomplete>
       </v-row>
       <v-row>
-        <v-col>Role</v-col>
-        <v-col> Id </v-col>
+        <v-col> Role</v-col>
+        <!-- <v-col> Id </v-col> -->
         <v-col> Name </v-col>
         <v-col> Email</v-col>
         <v-col> Storage</v-col>
         <v-col> Action </v-col>
       </v-row>
 
-      <v-row cols="12" v-for="(user, index) in users" :key="index" class="pa-2">
-        <v-row>
-          <v-col>
-            <v-icon
-              :icon="user.isAdmin ? 'fa fa-user-shield' : 'fa fa-user'"
-              :color="user.isAdmin ? 'indigo' : 'green'"
+      <v-row cols="12" v-for="(user, index) in users" :key="index">
+        <v-col>
+          <v-icon
+            :icon="user.isAdmin ? 'fa fa-user-shield' : 'fa fa-user'"
+            :color="user.isAdmin ? 'indigo' : 'green'"
+          />
+        </v-col>
+        <!-- <v-col>
+          {{ user._id }}
+        </v-col> -->
+        <v-col>
+          {{ user.name }}
+        </v-col>
+        <v-col>
+          {{ user.email }}
+        </v-col>
+        <v-col>
+          {{ convertSize(user.storedData) }} /
+          {{ convertSize(user.storageLimit) }}</v-col
+        >
+        <v-col>
+          <v-btn-group>
+            <v-btn color="primary" prepend-icon="fa fa-edit"> Edit </v-btn>
+            <v-btn
+              color="error"
+              :loading="removing"
+              icon="fa fa-trash"
+              @click="(removeDialog = true), (selectedUser = user._id)"
             />
-          </v-col>
-          <v-col>
-            {{ user._id }}
-          </v-col>
-          <v-col>
-            {{ user.name }}
-          </v-col>
-          <v-col>
-            {{ user.email }}
-          </v-col>
-          <v-col>
-            {{ convertSize(user.storedData) }} /
-            {{ convertSize(user.storageLimit) }}</v-col
-          >
-          <v-divider vertical class="mx-4"></v-divider>
-          <v-col>
-            <v-btn-group>
-              <v-btn color="primary" prepend-icon="fa fa-edit"> Edit </v-btn>
-              <v-btn
-                color="error"
-                :loading="removing"
-                icon="fa fa-trash"
-                @click="(removeDialog = true), (selectedUser = user._id)"
-              />
-            </v-btn-group>
-          </v-col>
-        </v-row>
+          </v-btn-group>
+        </v-col>
       </v-row>
     </v-card>
   </div>
@@ -157,6 +154,7 @@ export default {
         await userService.removeUser(this.selectedUser);
         this.success = true;
         this.messages = ["User deleted"];
+        this.removeDialog = false
         this.fetchUsers();
       } catch (error) {
         this.success = false;
