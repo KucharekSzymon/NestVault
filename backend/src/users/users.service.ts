@@ -123,7 +123,7 @@ export class UsersService {
       const admins = await this.userModel.find({ isAdmin: true });
       if (admins.length === 1 && admins[0]._id.equals(id))
         throw new UnauthorizedException(
-          'You cannot delete this user, he is an last administrator',
+          'You cannot delete this user, he is an only administrator',
         );
       return this.userModel.findByIdAndDelete(id).exec();
     } else
@@ -207,6 +207,11 @@ export class UsersService {
   async changeRole(userId, isAdmin: boolean) {
     const user = await this.userModel.findById(userId);
     if (user == null) throw new NotFoundException('User not found');
+    const admins = await this.userModel.find({ isAdmin: true });
+    if (!isAdmin && admins.length === 1 && admins[0]._id.equals(userId))
+      throw new UnauthorizedException(
+        'You cannot demote this user, he is an only administrator',
+      );
 
     user.isAdmin = isAdmin;
     return this.userModel
