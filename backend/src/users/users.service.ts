@@ -174,8 +174,8 @@ export class UsersService {
     const requestor = await this.userModel.findById(reqId);
     if (user == null || requestor == null)
       throw new NotFoundException('User not found');
-    if (!isNumberString(newStorageLimit))
-      throw new BadRequestException('Provided value is not an number');
+    // if (!isNumberString(newStorageLimit))
+    //   throw new BadRequestException('Provided value is not an number');
 
     user.storageLimit = newStorageLimit;
     return this.userModel
