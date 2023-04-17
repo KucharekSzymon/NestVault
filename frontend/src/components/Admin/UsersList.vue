@@ -13,6 +13,7 @@
       <v-row>
         <v-autocomplete
           v-if="users.length !== 0"
+          v-model="selectedSearch"
           clearable
           label="Find user"
           :loading="loading"
@@ -23,9 +24,11 @@
           <template v-slot:append>
             <v-slide-x-reverse-transition mode="out-in">
               <v-icon
+                v-if="selectedSearch"
                 color="primary"
                 :loading="loading"
                 icon="fa fa-angles-right"
+                @click="findInUsers"
               ></v-icon>
             </v-slide-x-reverse-transition>
           </template>
@@ -270,8 +273,8 @@ export default {
       removing: false,
       password: null,
       updating: false,
-      roleChange: false
-
+      roleChange: false,
+      selectedSearch: null,
     };
   },
   async mounted() {
@@ -375,6 +378,11 @@ export default {
       } finally {
         this.removing = false;
       }
+    },
+    findInUsers() {
+      const search = this.users.find((obj) => obj._id === this.selectedSearch);
+      this.selectedUser = search;
+      this.dialog = true
     },
     convertSize(size) {
       return filesService.convertSize(size);
