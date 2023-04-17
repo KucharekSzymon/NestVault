@@ -214,8 +214,12 @@ export class UsersService {
       );
 
     user.isAdmin = isAdmin;
-    return this.userModel
+    await this.userModel
       .findByIdAndUpdate(userId, user)
       .setOptions({ overwrite: true, new: true });
+
+    return user.isAdmin
+      ? { user: user, message: 'User promoted to administrator' }
+      : { user: user, message: 'User demoted to normal user' };
   }
 }
