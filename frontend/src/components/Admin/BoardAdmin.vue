@@ -55,16 +55,18 @@
         >
       </v-col>
     </v-row>
-    <RouterView />
+    <UsersList />
   </v-card>
 </template>
 
 <script>
 import filesService from "../../services/files.service";
+import UsersList from "./UsersList.vue";
 import { useToast } from "vue-toastification";
 
 export default {
   name: "AdminBoard",
+  components: { UsersList },
   data() {
     return {
       dialog: false,
