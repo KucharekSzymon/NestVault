@@ -118,8 +118,13 @@ export class UsersService {
    * @returns Request to remove user from database
    */
   async remove(id: string, reqId: string): Promise<UserDocument> {
-    const user = await this.userModel.findById(reqId);
-    if (user.isAdmin || user._id.toString() == id.toString()) {
+    const requestor = await this.userModel.findById(reqId);
+    if (requestor.isAdmin || requestor._id.toString() == id.toString()) {
+      const admins = await this.userModel.find({ isAdmin: true });
+      if (admins.length === 1 && admins[0]._id.equals(id))
+        throw new UnauthorizedException(
+          'You cannot delete this user, he is an last administrator',
+        );
       return this.userModel.findByIdAndDelete(id).exec();
     } else
       throw new UnauthorizedException('You dont have permission to do that!');
