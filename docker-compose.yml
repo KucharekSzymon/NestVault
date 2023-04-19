@@ -1,33 +1,5 @@
 version: '3.9'
 services:
-  nginx:
-    container_name: nginx
-    build: ./nginx
-    ports:
-    - '80:80'
-    depends_on:
-    - backend
-    - frontend
-  backend:
-    container_name: backend
-    hostname: backend
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile
-    env_file:
-      - ./backend/.env
-    restart: unless-stopped
-
-    depends_on:
-     - mongodb
-  frontend:
-    container_name: frontend
-    build: 
-      context: ./frontend
-      dockerfile: Dockerfile
-    env_file:
-      - ./frontend/.env
-
   mongodb:
     image: mongo:5.0.0
     container_name: mongodb
@@ -42,3 +14,33 @@ services:
       timeout: 10s
       retries: 3
     restart: unless-stopped
+
+  backend:
+    container_name: backend
+    hostname: backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+    depends_on:
+     - mongodb
+     
+  frontend:
+    container_name: frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - ./frontend/.env
+
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    ports:
+    - '80:80'
+    depends_on:
+    - backend
+    - frontend
