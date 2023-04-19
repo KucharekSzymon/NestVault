@@ -27,20 +27,13 @@ services:
 
     depends_on:
      - mongodb
-     
-  frontend:
-    container_name: frontend
-    build: 
-      context: ./frontend
-      dockerfile: Dockerfile
-    env_file:
-      - ./frontend/.env
 
   nginx:
     container_name: nginx
-    build: ./nginx
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
     - '80:80'
     depends_on:
     - backend
-    - frontend
