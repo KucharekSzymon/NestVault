@@ -9,7 +9,7 @@ services:
     - backend
     - frontend
   backend:
-    container_name: nestjs_backend
+    container_name: backend
     hostname: backend
     build: 
       context: ./backend
@@ -21,7 +21,7 @@ services:
     depends_on:
      - mongodb
   frontend:
-    container_name: vue_frontend
+    container_name: frontend
     build: 
       context: ./frontend
       dockerfile: Dockerfile
@@ -30,7 +30,7 @@ services:
 
   mongodb:
     image: mongo:5.0.0
-    container_name: mongo_db
+    container_name: mongodb
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=pass12345
