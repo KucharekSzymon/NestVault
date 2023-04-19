@@ -1,36 +1,39 @@
 version: '3.9'
 services:
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    ports:
+    - '80:80'
+    depends_on:
+    - backend
+    - frontend
   backend:
-    container_name: nestjs_bakend
+    container_name: nestjs_backend
     hostname: backend
     build: 
       context: ./backend
       dockerfile: Dockerfile
     env_file:
       - ./backend/.env
-    ports:
-      - 3000:3000
     restart: unless-stopped
 
     depends_on:
      - mongodb
   frontend:
-    container_name: frontend
+    container_name: vue_frontend
     build: 
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-     - 8000:8000
+    env_file:
+      - ./frontend/.env
 
   mongodb:
     image: mongo:5.0.0
-    container_name: server-mongodb
+    container_name: mongo_db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=pass12345
-      # - MONGO_INITDB_DATABASE: file
-    networks:
-      - server-network
     ports:
       - 27017:27017
     healthcheck:
@@ -39,6 +42,3 @@ services:
       timeout: 10s
       retries: 3
     restart: unless-stopped
-networks:
-  server-network:
-
