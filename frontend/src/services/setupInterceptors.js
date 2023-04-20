@@ -34,7 +34,7 @@ const setup = (store) => {
           };
           try {
             const rs = await axios.get(
-              "http://localhost:3000/auth/refresh",
+              "http://localhost/api/auth/refresh",
               tempConfig
             );
             const { accessToken } = rs.data;
