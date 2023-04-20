@@ -10,7 +10,6 @@
   "dependencies": {
     "@mdi/js": "^7.2.96",
     "axios": "^1.2.2",
-    "serve": "^14.2.0",
     "vee-validate": "^4.7.3",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",
