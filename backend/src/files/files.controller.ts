@@ -24,6 +24,12 @@ export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @UseGuards(AccessTokenGuard)
+  @Get('stats')
+  getPublicStats() {
+    return this.filesService.publicStats();
+  }
+
+  @UseGuards(AccessTokenGuard)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', multerOptions))
   uploadfile(@UploadedFile() file: Express.Multer.File, @Req() req) {
