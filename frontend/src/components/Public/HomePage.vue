@@ -1,18 +1,14 @@
 <template>
-  <v-card :loading="loading" class="pa-2">
-    <v-row>
-      <v-col class="subtitle-1 font-weight-bold">User panel</v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <span>All users : {{ getAllUsers }} </span>
-        <span>All files : {{ getAllFiles }} </span>
-        <span>Space used : {{ convertSize(getSpaceUsed) }} </span>
-      </v-col>
-      <v-col> </v-col>
-    </v-row>
-    <RouterView />
-  </v-card>
+  <v-row>
+    <v-col>
+      <p>All users : {{ getAllUsers }}</p>
+      <p>All files : {{ getAllFiles }}</p>
+      <p>Space used : {{ convertSize(getSpaceUsed) }}</p>
+    </v-col>
+    <v-col>
+      <RouterView />
+    </v-col>
+  </v-row>
 </template>
 
 <script>
