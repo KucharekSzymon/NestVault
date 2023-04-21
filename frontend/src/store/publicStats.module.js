@@ -1,6 +1,6 @@
 import filesService from "../services/files.service";
 
-export const stats = {
+export const publicStats = {
   namespaced: true,
   state: {
     allFiles: 0,
