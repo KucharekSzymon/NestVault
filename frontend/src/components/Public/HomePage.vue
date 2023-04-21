@@ -5,7 +5,9 @@
     </v-row>
     <v-row>
       <v-col>
-        <span> Space used : {{ convertSize(allSpaceUsed) }} </span>
+        <span>All users : {{ getAllUsers }} </span>
+        <span>All files : {{ getAllFiles }} </span>
+        <span>Space used : {{ convertSize(getSpaceUsed) }} </span>
       </v-col>
       <v-col> </v-col>
     </v-row>
@@ -21,21 +23,13 @@ export default {
   name: "HomePage",
   data() {
     return {
+      allFiles: null,
+      allUsers: null,
+      spaceUsed: null,
       success: false,
       loading: false,
       messages: [],
     };
-  },
-  computed: {
-    allFiles() {
-      return this.$store.state.public.allFiles;
-    },
-    allUsers() {
-      return this.$store.state.public.allUsers;
-    },
-    allSpaceUsed() {
-      return this.$store.state.public.spaceUsed;
-    },
   },
   mounted() {
     this.$watch("messages", () => {
@@ -52,6 +46,17 @@ export default {
       }
     });
     this.storeUpdate();
+  },
+  computed: {
+    getAllFiles() {
+      return this.$store.state.publicStats.allFiles;
+    },
+    getAllUsers() {
+      return this.$store.state.publicStats.allUsers;
+    },
+    getSpaceUsed() {
+      return this.$store.state.publicStats.spaceUsed;
+    },
   },
   methods: {
     addErrors(error) {

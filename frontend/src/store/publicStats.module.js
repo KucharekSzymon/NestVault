@@ -3,9 +3,9 @@ import filesService from "../services/files.service";
 export const publicStats = {
   namespaced: true,
   state: {
-    allFiles: 0,
-    allUsers: 0,
-    spaceUsed: 0,
+    allFiles: null,
+    allUsers: null,
+    spaceUsed: null,
   },
 
   mutations: {
