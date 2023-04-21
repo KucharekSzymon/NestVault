@@ -1,11 +1,11 @@
 <template>
   <v-row>
-    <v-col>
+    <v-col class="flex-column">
       <p>All users : {{ getAllUsers }}</p>
       <p>All files : {{ getAllFiles }}</p>
       <p>Space used : {{ convertSize(getSpaceUsed) }}</p>
     </v-col>
-    <v-col>
+    <v-col class="d-flex justify-end">
       <RouterView />
     </v-col>
   </v-row>
