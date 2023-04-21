@@ -23,7 +23,6 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
-  @UseGuards(AccessTokenGuard)
   @Get('stats')
   getPublicStats() {
     return this.filesService.publicStats();
