@@ -26,17 +26,11 @@ const routes = [
     path: "/login",
     name: "login",
     component: SignIn,
-    meta: {
-      breadcrumbText: "Login",
-    },
   },
   {
     path: "/register",
     name: "register",
     component: SignUp,
-    meta: {
-      breadcrumbText: "Register",
-    },
   },
   {
     path: "/user",
