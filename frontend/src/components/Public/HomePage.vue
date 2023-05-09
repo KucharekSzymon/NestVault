@@ -1,20 +1,30 @@
 <template>
-  <div class="container">
-    <header>
-      <h3>{{ content }}</h3>
-    </header>
-  </div>
+  <v-row>
+    <v-col class="flex-column">
+      <p>All users : {{ getAllUsers }}</p>
+      <p>All files : {{ getAllFiles }}</p>
+      <p>Space used : {{ convertSize(getSpaceUsed) }}</p>
+    </v-col>
+    <v-col class="d-flex justify-end">
+      <RouterView />
+    </v-col>
+  </v-row>
 </template>
 
 <script>
-import UserService from "../../services/user.service";
+import filesService from "../../services/files.service";
 import { useToast } from "vue-toastification";
 
 export default {
   name: "HomePage",
   data() {
     return {
-      content: "",
+      allFiles: null,
+      allUsers: null,
+      spaceUsed: null,
+      success: false,
+      loading: false,
+      messages: [],
     };
   },
   mounted() {
@@ -31,22 +41,22 @@ export default {
             : toast.error(this.messages);
       }
     });
-    UserService.getPublicContent().then(
-      (response) => {
-        this.content = response.data;
-      },
-      (error) => {
-        this.content =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-      }
-    );
+    this.storeUpdate();
+  },
+  computed: {
+    getAllFiles() {
+      return this.$store.state.publicStats.allFiles;
+    },
+    getAllUsers() {
+      return this.$store.state.publicStats.allUsers;
+    },
+    getSpaceUsed() {
+      return this.$store.state.publicStats.spaceUsed;
+    },
   },
   methods: {
     addErrors(error) {
+      this.success = false;
       this.messages = (error.response &&
       error.response.data &&
       Array.isArray(error.response.data.message)
@@ -54,6 +64,14 @@ export default {
         : [error.response.data.message]) || [error.message] || [
           error.toString(),
         ];
+    },
+    convertSize(size) {
+      return filesService.convertSize(size);
+    },
+    async storeUpdate() {
+      this.loading = true;
+      await this.$store.dispatch("publicStats/fetchStats");
+      this.loading = false;
     },
   },
 };

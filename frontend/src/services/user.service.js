@@ -1,6 +1,9 @@
 import api from "./api";
 
 class UserService {
+  getPublicStats() {
+    return api.get("/files/publicStats");
+  }
   getMyData() {
     return api.get("/users/me");
   }

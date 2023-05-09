@@ -23,6 +23,11 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
+  @Get('stats')
+  getPublicStats() {
+    return this.filesService.publicStats();
+  }
+
   @UseGuards(AccessTokenGuard)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', multerOptions))

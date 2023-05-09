@@ -229,6 +229,23 @@ export class FilesService {
     return data;
   }
 
+  async publicStats() {
+    const allFiles = await this.fileModel.find().exec();
+    const users = await this.userService.findAll();
+    let spaceUsed = 0;
+
+    users.forEach((user) => {
+      spaceUsed += user.storedData;
+    });
+
+    const data = {
+      allFiles: allFiles.length,
+      allUsers: users.length,
+      spaceUsed: spaceUsed,
+    };
+    return data;
+  }
+
   async remove(fileId: string, reqId: string) {
     const file = await this.fileModel.findById(fileId);
 

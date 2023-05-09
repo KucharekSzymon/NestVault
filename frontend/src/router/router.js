@@ -21,23 +21,20 @@ const routes = [
     path: "/",
     name: "home",
     component: HomePage,
+    children: [
+      {
+        path: "/login",
+        name: "login",
+        component: SignIn,
+      },
+      {
+        path: "/register",
+        name: "register",
+        component: SignUp,
+      },
+    ],
   },
-  {
-    path: "/login",
-    name: "login",
-    component: SignIn,
-    meta: {
-      breadcrumbText: "Login",
-    },
-  },
-  {
-    path: "/register",
-    name: "register",
-    component: SignUp,
-    meta: {
-      breadcrumbText: "Register",
-    },
-  },
+
   {
     path: "/user",
     name: "user",
@@ -93,7 +90,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const publicPages = ["/login", "/register", "/home"];
+  const publicPages = ["/login", "/register", "/"];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem("user");
   const adminPaths = ["/admin", "/admin"];
