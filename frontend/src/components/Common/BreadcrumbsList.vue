@@ -8,50 +8,32 @@
 
 <script>
 export default {
-  data() {
-    return {
-      breadcrumbs: [],
-    };
-  },
-  methods: {
-    updatePaths() {
-      /**
-       * Splitting path by slash and filter empty strings
-       */
-      const paths = window.location.pathname.split("/").filter(Boolean);
+  computed: {
+    breadcrumbs() {
+      const matchedRoutes = this.$route.matched;
 
-      /**
-       * Looping through path for breadcrubs
-       */
-      const homeElement = { text: "Home", href: "/" };
-      this.breadcrumbs = [
-        homeElement,
-        ...paths.map((path, index) => {
-          return {
-            text: path,
-            href: "/" + paths.slice(0, index + 1).join("/"),
-          };
-        }),
-      ];
+      // Add a link to the homepage at the beginning of the breadcrumbs
+      const homeBreadcrumb = {
+        text: "Home",
+        to: "/",
+      };
+
+      const routeBreadcrumbs = matchedRoutes.map((route) => ({
+        text: route.name,
+        to: route.path,
+      }));
+
+      // Check if the current route is the homepage
+      const publicPages = ["/login", "/register", "/"];
+      const authRequired = publicPages.includes(this.$route.path);
+
+      // Exclude the "Home" breadcrumb when already on the homepage
+      if (authRequired) {
+        return routeBreadcrumbs;
+      } else {
+        return [homeBreadcrumb, ...routeBreadcrumbs];
+      }
     },
-  },
-  mounted() {
-    this.updatePaths();
-  },
-  created() {
-    /**
-     * Watcher for route changes
-     */
-    this.$router.afterEach(() => {
-      this.updatePaths();
-    });
-
-    /**
-     * ALternative as event listnerer on change in browser path
-     */
-    window.addEventListener("popstate", () => {
-      this.updatePaths();
-    });
   },
 };
 </script>
