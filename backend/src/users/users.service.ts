@@ -174,7 +174,7 @@ export class UsersService {
     const requestor = await this.userModel.findById(reqId);
     if (user == null || requestor == null)
       throw new NotFoundException('User not found');
-    if (newStorageLimit < user.storageLimit)
+    if (newStorageLimit < user.storedData)
       throw new BadRequestException('User limit cannot be set below already used limit');
 
     user.storageLimit = newStorageLimit;

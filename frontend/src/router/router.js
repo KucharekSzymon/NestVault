@@ -19,17 +19,17 @@ const UploadFilePage = () => import("../components/Files/UploadFilePage.vue");
 const routes = [
   {
     path: "/",
-    name: "home",
+    name: "Home",
     component: HomePage,
     children: [
       {
         path: "/login",
-        name: "login",
+        name: "Sign in",
         component: SignIn,
       },
       {
         path: "/register",
-        name: "register",
+        name: "Sign up",
         component: SignUp,
       },
     ],
@@ -37,47 +37,47 @@ const routes = [
 
   {
     path: "/user",
-    name: "user",
+    name: "User",
     component: BoardUser,
 
     children: [
       {
         path: "share-codes",
-        name: "shareCodesList",
+        name: "Share Codes",
         component: ShareCodesList,
       },
     ],
   },
   {
     path: "/admin",
-    name: "admin",
+    name: "Admin Board",
     component: BoardAdmin,
     children: [
       {
         path: "users",
-        name: "userList",
+        name: "User List",
         component: UsersList,
       },
     ],
   },
   {
     path: "/files",
-    name: "files",
+    name: "Files",
     component: FilesBoard,
     children: [
       {
         path: "mine",
-        name: "myFiles",
+        name: "Mine",
         component: MyFilesPage,
       },
       {
         path: "sharedwithme",
-        name: "sharedWithMe",
+        name: "Shared to me",
         component: SharedWithMePage,
       },
       {
         path: "upload",
-        name: "newFile",
+        name: "Upload",
         component: UploadFilePage,
       },
     ],

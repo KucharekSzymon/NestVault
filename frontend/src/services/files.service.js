@@ -39,7 +39,10 @@ class FilesService {
     return api.get("/files/revokeAll/" + fileId);
   }
   getStats() {
-    return api.get("/files/stats");
+    return api.get("/files/stats/");
+  }
+  getMyStats() {
+    return api.get("/files/stats/mine");
   }
   getAdminStats() {
     return api.get("/files/adminStats");
