@@ -110,7 +110,7 @@ export class FilesController {
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get('stats')
+  @Get('stats/mine')
   getStats(@Req() req) {
     return this.filesService.stats(req.user._id);
   }

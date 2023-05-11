@@ -67,7 +67,7 @@ export default {
     async fetchStats() {
       this.loading = true;
       try {
-        const response = await filesService.getStats();
+        const response = await filesService.getMyStats();
         this.stats = response.data;
       } catch (err) {
         this.addErrors(err);
