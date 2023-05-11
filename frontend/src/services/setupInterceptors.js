@@ -24,18 +24,19 @@ const setup = (store) => {
       const originalConfig = err.config;
 
       if (originalConfig.url !== "/auth/signin" && err.response) {
-        // Access Token was expired
+        /**
+         * Access Token was expired
+         */
         if (err.response.status === 401 && !originalConfig._retry) {
           originalConfig._retry = true;
-          const tempConfig = {
-            headers: {
-              Authorization: `Bearer ${TokenService.getLocalRefreshToken()}`,
-            },
-          };
           try {
             const rs = await axios.get(
-              "http://localhost/api/auth/refresh",
-              tempConfig
+              import.meta.env.VITE_API_URL + "auth/refresh",
+              {
+                headers: {
+                  Authorization: `Bearer ${TokenService.getLocalRefreshToken()}`,
+                },
+              }
             );
             const { accessToken } = rs.data;
             const { refreshToken } = rs.data;

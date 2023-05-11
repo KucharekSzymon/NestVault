@@ -162,16 +162,24 @@ export default {
     }
   },
   methods: {
+    async recaptcha() {
+      await this.$recaptchaLoaded();
+
+      const token = await this.$recaptcha("register");
+      return token != null ? true : false;
+    },
     async handleRegister(user) {
       this.messages = [];
       this.success = false;
       this.loading = true;
 
       try {
-        const data = await this.$store.dispatch("auth/register", user);
-        this.success = true;
-        this.messages = [data.message];
-        this.$router.push("/login");
+        if (await this.recaptcha()) {
+          const data = await this.$store.dispatch("auth/register", user);
+          this.success = true;
+          this.messages = [data.message];
+          this.$router.push("/login");
+        }
       } catch (error) {
         this.success = false;
         this.addErrors(error);
