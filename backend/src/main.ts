@@ -17,7 +17,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
   app.setGlobalPrefix('api');
-  
+
   app.useGlobalPipes(
     new ValidationPipe({
       forbidUnknownValues: false,
