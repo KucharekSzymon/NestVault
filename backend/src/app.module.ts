@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
@@ -6,8 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { FilesModule } from './files/files.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ShareCodesModule } from './share-codes/share-codes.module';
-import { DelayMiddleware } from './common/guards/sleep.guard';
-
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 @Module({
   imports: [
     ConfigModule.forRoot(/*{ cache: true }*/),
@@ -25,10 +25,16 @@ import { DelayMiddleware } from './common/guards/sleep.guard';
       dest: './upload',
     }),
     ShareCodesModule,
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 30,
+    }),
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
-export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(DelayMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}
