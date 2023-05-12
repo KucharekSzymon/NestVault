@@ -1,11 +1,21 @@
 <template>
   <v-app :theme="theme">
+    <div class="fixed-top-right">
+      <v-slide-x-reverse-transition mode="out-in">
+        <v-btn
+          v-if="isMobile"
+          :icon="drawer ? 'fa fa-xmark' : 'fa fa-hamburger'"
+          @click="toggleDrawer"
+        />
+      </v-slide-x-reverse-transition>
+    </div>
     <v-navigation-drawer
       v-model="drawer"
-      expand-on-hover
-      rail
+      :expand-on-hover="!isMobile"
+      :rail="!isMobile"
       class="d-flex flex-column"
       style="height: 100vh"
+      :temporary="isMobile"
     >
       <v-list v-if="!currentUser" nav>
         <router-link class="text-decoration-none" to="/login">
@@ -129,6 +139,7 @@ export default {
       loading: true,
       storageLoading: true,
       darkTheme: false,
+      isMobile: false,
     };
   },
   computed: {
@@ -156,7 +167,7 @@ export default {
   },
   methods: {
     async updateSpaceUsage() {
-      this.storageLoading = true;
+      if (this.isMobile) this.storageLoading = true;
       if (this.currentUser)
         await this.$store.dispatch("files/fetchStorageUsage");
       this.storageLoading = false;
@@ -177,6 +188,17 @@ export default {
       this.$store.dispatch("auth/logout");
       this.$router.push("/login");
     },
+    isMobileDevice() {
+      const mobileBreakpoint = 1280; // Set your desired breakpoint for mobile devices
+
+      return window.innerWidth < mobileBreakpoint;
+    },
+    handleWindowResize() {
+      this.isMobile = this.isMobileDevice();
+    },
+    toggleDrawer() {
+      this.drawer = !this.drawer;
+    },
   },
   created() {
     const storedDarkTheme = localStorage.getItem("darkTheme");
@@ -190,9 +212,13 @@ export default {
     eventBus.on("logout", () => {
       this.logOut();
     });
+
+    this.isMobile = this.isMobileDevice();
+    window.addEventListener("resize", this.handleWindowResize);
   },
   beforeUnmount() {
     eventBus.remove("logout");
+    window.removeEventListener("resize", this.handleWindowResize);
   },
   watch: {
     currentUser: async function (newUser) {
@@ -212,5 +238,11 @@ export default {
 .v-navigation-drawer__content {
   display: flex;
   flex-direction: column;
+}
+.fixed-top-right {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 99;
 }
 </style>
