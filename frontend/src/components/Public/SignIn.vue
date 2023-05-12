@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-10 pa-5 w-100">
+  <v-card class="pa-5 w-100">
     <v-card-title class="text-h6 font-weight-regular justify-space-between">
       <v-chip variant="outlined" color="primary" rounded>{{ step }}</v-chip>
       <span> Sign in</span>
