@@ -15,9 +15,11 @@
             type="Email"
             placeholder="example@email.com"
           ></v-text-field>
-          <v-alert v-if="!validateEmail" color="error">
-            Email must be valid
-          </v-alert>
+          <v-slide-x-reverse-transition mode="out-in">
+            <v-alert v-if="!validateEmail" color="error">
+              Email must be valid
+            </v-alert>
+          </v-slide-x-reverse-transition>
           <span class="text-caption text-grey-darken-1">
             This is the email you will use to login to your Vuetify account
           </span>
@@ -38,13 +40,17 @@
             label="Last name"
             placeholder="Smith"
           />
-          <v-alert v-if="!validateString(firstName)" color="error">
-            First name cannot not be empty
-          </v-alert>
+          <v-slide-x-reverse-transition mode="out-in">
+            <v-alert v-if="!validateString(firstName)" color="error">
+              First name cannot not be empty
+            </v-alert>
+          </v-slide-x-reverse-transition>
           <br />
-          <v-alert v-if="!validateString(lastName)" color="error">
-            Last name cannot not be empty
-          </v-alert>
+          <v-slide-x-reverse-transition mode="out-in">
+            <v-alert v-if="!validateString(lastName)" color="error">
+              Last name cannot not be empty
+            </v-alert>
+          </v-slide-x-reverse-transition>
           <span class="text-caption text-grey-darken-1">
             This is your displayed personal information
           </span>
@@ -58,9 +64,11 @@
             label="Password"
             type="password"
           ></v-text-field>
-          <v-alert v-if="!validateString(password)" color="error">
-            Password cannot be empty
-          </v-alert>
+          <v-slide-x-reverse-transition mode="out-in">
+            <v-alert v-if="!validateString(password)" color="error">
+              Password cannot be empty
+            </v-alert>
+          </v-slide-x-reverse-transition>
           <span class="text-caption text-grey-darken-1">
             Please enter a password for your account
           </span>
