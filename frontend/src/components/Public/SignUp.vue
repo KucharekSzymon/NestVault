@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <!-- <div>
     <div>
       <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
       <Form @submit="handleRegister" :validation-schema="schema">
@@ -32,20 +32,26 @@
         </div>
       </Form>
     </div>
-  </div>
-  <v-card class="mx-auto" max-width="500">
+  </div> -->
+  <v-card class="mx-10 pa-5">
     <v-card-title class="text-h6 font-weight-regular justify-space-between">
-      <span>{{ currentTitle }}</span>
-      <v-avatar color="primary" size="24" v-text="step"></v-avatar>
+      <v-chip variant="outlined" color="primary" rounded>{{ step }}</v-chip>
+      <span> Sign up</span>
     </v-card-title>
 
     <v-window v-model="step">
       <v-window-item :value="1">
         <v-card-text>
           <v-text-field
+            v-model="email"
+            name="Email"
             label="Email"
-            placeholder="john@google.com"
+            type="Email"
+            placeholder="example@email.com"
           ></v-text-field>
+          <v-alert v-if="!validateEmail" color="error">
+            Email must be valid
+          </v-alert>
           <span class="text-caption text-grey-darken-1">
             This is the email you will use to login to your Vuetify account
           </span>
@@ -54,25 +60,44 @@
 
       <v-window-item :value="2">
         <v-card-text>
-          <v-text-field label="Password" type="password"></v-text-field>
-          <v-text-field label="Confirm Password" type="password"></v-text-field>
+          <v-text-field
+            v-model="firstName"
+            name="firstName"
+            label="First name"
+            placeholder="John"
+          />
+          <v-text-field
+            v-model="lastName"
+            name="lastName"
+            label="Last name"
+            placeholder="Smith"
+          />
+          <v-alert v-if="!validateString(firstName)" color="error">
+            First name should not be empty
+          </v-alert>
+          <v-alert v-if="!validateString(lastName)" color="error">
+            Last name should not be empty
+          </v-alert>
           <span class="text-caption text-grey-darken-1">
-            Please enter a password for your account
+            This is your displayed personal information
           </span>
         </v-card-text>
       </v-window-item>
 
       <v-window-item :value="3">
-        <div class="pa-4 text-center">
-          <v-img
-            class="mb-4"
-            contain
-            height="128"
-            src="https://cdn.vuetifyjs.com/images/logos/v.svg"
-          ></v-img>
-          <h3 class="text-h6 font-weight-light mb-2">Welcome to Vuetify</h3>
-          <span class="text-caption text-grey">Thanks for signing up!</span>
-        </div>
+        <v-card-text>
+          <v-text-field
+            v-model="password"
+            label="Password"
+            type="password"
+          ></v-text-field>
+          <v-alert v-if="!validateString(password)" color="error">
+            Password cannot be empty
+          </v-alert>
+          <span class="text-caption text-grey-darken-1">
+            Please enter a password for your account
+          </span>
+        </v-card-text>
       </v-window-item>
     </v-window>
 
@@ -81,66 +106,62 @@
     <v-card-actions>
       <v-btn v-if="step > 1" variant="text" @click="step--"> Back </v-btn>
       <v-spacer></v-spacer>
-      <v-btn v-if="step < 3" color="primary" variant="flat" @click="step++">
+      <v-btn
+        v-if="step === 1 && validateEmail"
+        color="primary"
+        variant="flat"
+        @click="step++"
+      >
         Next
+      </v-btn>
+      <v-btn
+        v-if="
+          step === 2 && validateString(firstName) && validateString(lastName)
+        "
+        color="primary"
+        variant="flat"
+        @click="step++"
+      >
+        Next
+      </v-btn>
+      <v-btn
+        v-if="step === 3 && validateString(password)"
+        color="primary"
+        variant="flat"
+        :loading="loading"
+        :disabled="loading"
+        @click="handleRegister"
+      >
+        Sign up
       </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import { Form, Field, ErrorMessage } from "vee-validate";
-import * as yup from "yup";
 import { useToast } from "vue-toastification";
 
 export default {
   name: "SignUp",
-  components: {
-    // eslint-disable-next-line vue/no-reserved-component-names
-    Form,
-    Field,
-    ErrorMessage,
-  },
   data() {
-    const schema = yup.object().shape({
-      email: yup
-        .string()
-        .required("Email is required!")
-        .email("Email is invalid!")
-        .max(50, "Must be maximum 50 characters!"),
-      name: yup
-        .string()
-        .required("Name is required!")
-        .min(3, "Must be at least 3 characters!")
-        .max(20, "Must be maximum 20 characters!"),
-      password: yup
-        .string()
-        .required("Password is required!")
-        .min(6, "Must be at least 6 characters!")
-        .max(40, "Must be maximum 40 characters!"),
-    });
-
     return {
+      step: 1,
+      email: "",
+      firstName: "",
+      lastName: "",
+      password: "",
       success: false,
       loading: false,
       messages: [],
-      schema,
-      step: 1,
     };
   },
   computed: {
     loggedIn() {
       return this.$store.state.auth.status.loggedIn;
     },
-    currentTitle() {
-      switch (this.step) {
-        case 1:
-          return "Sign-up";
-        case 2:
-          return "Create a password";
-        default:
-          return "Account created";
-      }
+    validateEmail() {
+      // Simple email validation
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email);
     },
   },
   mounted() {
@@ -168,14 +189,18 @@ export default {
       const token = await this.$recaptcha("register");
       return token != null ? true : false;
     },
-    async handleRegister(user) {
+    async handleRegister() {
       this.messages = [];
       this.success = false;
       this.loading = true;
 
       try {
         if (await this.recaptcha()) {
-          const data = await this.$store.dispatch("auth/register", user);
+          const data = await this.$store.dispatch("auth/register", {
+            email: this.email,
+            name: this.firstName + " " + this.lastName,
+            password: this.password,
+          });
           this.success = true;
           this.messages = [data.message];
           this.$router.push("/login");
@@ -186,6 +211,9 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    validateString(text) {
+      return text.length == 0 ? false : true;
     },
     addErrors(error) {
       this.messages = (error.response &&
