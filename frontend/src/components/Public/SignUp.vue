@@ -1,38 +1,4 @@
 <template>
-  <!-- <div>
-    <div>
-      <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
-      <Form @submit="handleRegister" :validation-schema="schema">
-        <div v-if="!success">
-          <div>
-            <label for="email">Email</label>
-            <Field name="email" type="email" />
-            <ErrorMessage name="email" />
-          </div>
-          <div>
-            <label for="name">Name</label>
-            <Field name="name" type="text" />
-            <ErrorMessage name="name" />
-          </div>
-          <div>
-            <label for="password">Password</label>
-            <Field name="password" type="password" />
-            <ErrorMessage name="password" />
-          </div>
-
-          <div>
-            <button
-              :disabled="loading"
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              <span v-show="loading"></span>
-              Sign Up
-            </button>
-          </div>
-        </div>
-      </Form>
-    </div>
-  </div> -->
   <v-card class="mx-10 pa-5">
     <v-card-title class="text-h6 font-weight-regular justify-space-between">
       <v-chip variant="outlined" color="primary" rounded>{{ step }}</v-chip>
@@ -73,10 +39,11 @@
             placeholder="Smith"
           />
           <v-alert v-if="!validateString(firstName)" color="error">
-            First name should not be empty
+            First name cannot not be empty
           </v-alert>
+          <br />
           <v-alert v-if="!validateString(lastName)" color="error">
-            Last name should not be empty
+            Last name cannot not be empty
           </v-alert>
           <span class="text-caption text-grey-darken-1">
             This is your displayed personal information
