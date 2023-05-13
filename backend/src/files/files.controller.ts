@@ -27,6 +27,10 @@ export class FilesController {
   getPublicStats() {
     return this.filesService.publicStats();
   }
+  @Get('tip')
+  getTip(){
+    return this.filesService.randomTip()
+  }
 
   @UseGuards(AccessTokenGuard)
   @Post('upload')

@@ -47,6 +47,9 @@ class FilesService {
   getAdminStats() {
     return api.get("/files/adminStats");
   }
+  getTip() {
+    return api.get("/files/tip");
+  }
   convertSize(size) {
     const units = ["B", "KB", "MB", "GB", "TB"];
     let index = 0;
