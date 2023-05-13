@@ -17,7 +17,12 @@
               >.
             </p>
             <br />
-            <p class="text-medium-emphasis">{{ tipCategory }} tip: {{ tip }}</p>
+            <p
+              v-if="tipCategory != null && tip != null"
+              class="text-medium-emphasis"
+            >
+              {{ tipCategory }} tip: {{ tip }}
+            </p>
           </v-col>
         </v-row>
       </v-col>
@@ -97,14 +102,11 @@ export default {
     },
     async fetchTip() {
       try {
-        this.loading = true;
         const res = await filesService.getTip();
         this.tipCategory = res.data.category;
         this.tip = res.data.tip;
       } catch (err) {
         console.error(err);
-      } finally {
-        this.loading = false;
       }
     },
   },
