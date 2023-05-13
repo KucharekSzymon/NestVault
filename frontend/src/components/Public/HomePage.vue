@@ -17,9 +17,7 @@
               >.
             </p>
             <br />
-            <p class="text-medium-emphasis">
-              Tip about {{ tipCategory }}: {{ tip }}
-            </p>
+            <p class="text-medium-emphasis">{{ tipCategory }} tip: {{ tip }}</p>
           </v-col>
         </v-row>
       </v-col>
