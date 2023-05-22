@@ -164,7 +164,7 @@ export default {
           return "fa-regular fa-file-image";
         case "audio/mpeg":
         case "audio/wav":
-          return "fa-regular fa-ile-music";
+          return "fa-regular fa-file-audio";
         case "video/mp4":
         case "video/mpeg":
           return "fa-regular fa-file-video";
