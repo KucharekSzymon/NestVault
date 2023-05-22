@@ -98,7 +98,7 @@ export class FilesController {
     @Req() req,
     @Param('id') fileId: string,
   ) {
-    const file = await this.filesService.imageStream(fileId, req.user._id);
+    const file = await this.filesService.fileStream(fileId, req.user._id);
     file.pipe(response);
   }
 
@@ -109,7 +109,7 @@ export class FilesController {
     @Req() req,
     @Param('id') fileId: string,
   ) {
-    const file = await this.filesService.imageBuffer(fileId, req.user._id);
+    const file = await this.filesService.fileBuffer(fileId, req.user._id);
     response.send(file);
   }
 
