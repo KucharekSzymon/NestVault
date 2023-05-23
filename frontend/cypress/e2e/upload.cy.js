@@ -1,4 +1,4 @@
-it("Sign in", () => {
+it("File upload", () => {
   cy.visit("/");
   cy.get(".fixed-top-right").click();
   cy.get(".v-navigation-drawer").should("be.visible");
