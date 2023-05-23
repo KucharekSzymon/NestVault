@@ -28,8 +28,6 @@ it("Sign in", () => {
   cy.get('a[href="/files/upload"]').click();
   cy.url().should("include", "upload");
 
-  const filePath = `${__dirname}/upload.cy.js`;
-
   cy.get("input").selectFile({
     contents: Cypress.Buffer.from(""),
     fileName: "test.txt",
