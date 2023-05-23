@@ -1,4 +1,4 @@
-describe("Auth test", () => {
+describe("File upload", () => {
   it("File upload", () => {
     cy.visit("/");
     cy.get(".fixed-top-right").click();
