@@ -6,7 +6,7 @@ NestVault is a self-hosted, secure file server application built on modern techn
 
 ## Tech Stack
 
-**Client:** Vue.js 3, Nuxt.js 2, Vuetify, TailwindCSS
+**Client:** Vue.js 3, Vuetify
 
 **Server:** Node.js, NestJS, Mongoose
 
