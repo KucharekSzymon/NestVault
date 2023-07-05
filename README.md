@@ -30,15 +30,12 @@ To deploy the NestVault project using Docker, follow these steps:
 Docker will build the required images and set up the containers for the NestVault application.
 
 ## Screenshots
-![Torunament Page](https://i.imgur.com/KuiIFK9.png)
-![Dashboard](https://i.imgur.com/ghchrQl.png)
-![Performance](https://i.imgur.com/IoWYZve.png)
 
-![Sign up page shown as two themes](https://imgur.com/9wdtc8z)
-![Mobile wariant of sing up page](https://imgur.com/C7Rsl3K)
-![Two themes files list](https://imgur.com/ckV1OP5)
-![File preview](https://imgur.com/Nl8f3b9)
-![File sharing menu](https://imgur.com/Vl2C1Rx)
+![Sign up page shown as two themes](https://i.imgur.com/9wdtc8z)
+![Mobile wariant of sing up page](https://i.imgur.com/C7Rsl3K)
+![Two themes files list](https://i.imgur.com/ckV1OP5)
+![File preview](https://i.imgur.com/Nl8f3b9)
+![File sharing menu](https://i.imgur.com/Vl2C1Rx)
 
 ## Author
 
