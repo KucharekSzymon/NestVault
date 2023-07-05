@@ -24,6 +24,9 @@ To deploy the NestVault project using Docker, follow these steps:
 2. Navigate to the project directory.
 3. Run the following command:
 
+```bash
+  docker-compose up
+```
 Docker will build the required images and set up the containers for the NestVault application.
 
 ## Screenshots
