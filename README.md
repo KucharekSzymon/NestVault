@@ -31,9 +31,11 @@ Docker will build the required images and set up the containers for the NestVaul
 
 ## Screenshots
 
-![File Upload](https://i.imgur.com/XnWm7qN.png)
-![File Management](https://i.imgur.com/g2H3g4r.png)
-![Access Control](https://i.imgur.com/6vM9GB1.png)
+![Sign up page shown as two themes](https://imgur.com/9wdtc8z)
+![Mobile wariant of sing up page](https://imgur.com/C7Rsl3K)
+![Two themes files list](https://imgur.com/ckV1OP5)
+![File preview](https://imgur.com/Nl8f3b9)
+![File sharing menu](https://imgur.com/Vl2C1Rx)
 
 ## Author
 
